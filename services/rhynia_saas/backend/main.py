@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 
 from services.rhynia_saas.backend.config import settings
 from services.rhynia_saas.backend.database import init_db
-from services.rhynia_saas.backend.routers import auth
+from services.rhynia_saas.backend.routers import auth, chat, sessions
 
 
 @asynccontextmanager
@@ -54,6 +54,8 @@ async def security_headers_middleware(request: Request, call_next):
 
 # Include Modular Routers
 app.include_router(auth.router)
+app.include_router(chat.router)
+app.include_router(sessions.router)
 
 
 @app.get("/", tags=["General"])
