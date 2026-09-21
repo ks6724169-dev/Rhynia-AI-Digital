@@ -2,12 +2,24 @@
 Rhynia Intelligence SaaS — Main Application Entrypoint
 """
 
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from services.rhynia_saas.backend.config import settings
+from services.rhynia_saas.backend.database import init_db
+from services.rhynia_saas.backend.routers import auth
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application startup and shutdown events."""
+    # Ensure database tables exist on startup
+    init_db()
+    yield
+
 
 # Initialize FastAPI application
 app = FastAPI(
@@ -16,6 +28,7 @@ app = FastAPI(
     version=settings.APP_VERSION,
     docs_url="/api/docs" if settings.ENVIRONMENT == "development" else None,
     redoc_url=None,
+    lifespan=lifespan,
 )
 
 # CORS Middleware configuration
@@ -37,6 +50,10 @@ async def security_headers_middleware(request: Request, call_next):
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Server"] = "Rhynia"
     return response
+
+
+# Include Modular Routers
+app.include_router(auth.router)
 
 
 @app.get("/", tags=["General"])
