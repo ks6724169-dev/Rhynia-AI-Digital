@@ -87,18 +87,11 @@ class CascadeLLMEngine:
             "Content-Type": "application/json",
         }
 
-        # Model resolution by tier
+        # Model resolution by tier from configuration
         if tier == 1:
-            models_to_try = [
-                "qwen/qwen3.8-27b:free",
-                "google/gemini-2.5-pro-exp-03-25:free",
-                "deepseek/deepseek-v4-flash:free",
-            ]
+            models_to_try = settings.CASCADE_TIER_1_MODELS
         else:
-            models_to_try = [
-                "qwen/qwen-3-7-flash",
-                "google/gemini-2.5-flash",
-            ]
+            models_to_try = settings.CASCADE_TIER_2_MODELS
 
         async with httpx.AsyncClient(timeout=30.0) as client:
             for model_id in models_to_try:

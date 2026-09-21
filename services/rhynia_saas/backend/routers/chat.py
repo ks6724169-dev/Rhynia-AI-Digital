@@ -87,7 +87,15 @@ async def send_chat_message(
     Send a message to Rhynia Intelligence with streaming token response (SSE).
     Enforces Plan limits, persists message history, and grounds with search if requested.
     """
-    # 1. Enforce Plan Limits
+    # 1. Validate Message Content
+    clean_message = req.message.strip()
+    if not clean_message:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Message cannot be empty or contain only whitespace.",
+        )
+
+    # 2. Enforce Plan Limits
     limit = enforce_daily_quota(current_user, db)
 
     # 2. Check Deep Reasoning Plan Gate
@@ -108,7 +116,7 @@ async def send_chat_message(
         if not session:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")
     else:
-        title_snippet = req.message[:35] + ("..." if len(req.message) > 35 else "")
+        title_snippet = clean_message[:35] + ("..." if len(clean_message) > 35 else "")
         session = ChatSession(user_id=current_user.id, title=title_snippet)
         db.add(session)
         db.commit()
@@ -118,7 +126,7 @@ async def send_chat_message(
     # 4. Web Search Grounding if enabled
     system_prompt = RHYNIA_SYSTEM_PROMPT
     if req.web_search:
-        search_results = await search_service.search(req.message)
+        search_results = await search_service.search(clean_message)
         search_context = search_service.format_search_context(search_results)
         system_prompt = f"{RHYNIA_SYSTEM_PROMPT}\n\n{search_context}"
 
@@ -127,8 +135,8 @@ async def send_chat_message(
         session_id=session_id,
         user_id=current_user.id,
         role="user",
-        content=req.message.strip(),
-        token_count=max(1, len(req.message) // 4),
+        content=clean_message,
+        token_count=max(1, len(clean_message) // 4),
     )
     db.add(user_msg)
     db.commit()

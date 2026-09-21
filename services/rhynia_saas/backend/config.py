@@ -60,15 +60,16 @@ class Settings(BaseSettings):
     GROQ_API_KEY: Optional[str] = None
     HUGGINGFACE_API_KEY: Optional[str] = None
 
-    # Cascade Tiers (Configured via env)
-    TIER_1_CHAT_MODEL: str = "primary_free_chat"
-    TIER_1_VISION_MODEL: str = "primary_free_vision"
-    TIER_1_CODE_MODEL: str = "primary_free_code"
-
-    TIER_2_CHAT_MODEL: str = "secondary_fast_chat"
-    TIER_2_VISION_MODEL: str = "secondary_fast_vision"
-    TIER_2_CODE_MODEL: str = "secondary_fast_code"
-
+    # Cascade Tiers (Configured dynamically via env)
+    CASCADE_TIER_1_MODELS: list[str] = [
+        "tier1_chat_model",
+        "tier1_vision_model",
+        "tier1_code_model",
+    ]
+    CASCADE_TIER_2_MODELS: list[str] = [
+        "tier2_fast_chat",
+        "tier2_fast_vision",
+    ]
     TIER_3_BACKUP_MODEL: str = "safety_backup_model"
 
     # Plan Limits & Quotas (PRICING_FEATURES_LOCKED.md)
