@@ -25,11 +25,14 @@ from services.rhynia_saas.backend.config import settings
 connect_args = {}
 if settings.DATABASE_URL.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
+else:
+    connect_args = {"connect_timeout": 15}
 
 engine = create_engine(
     settings.DATABASE_URL,
     connect_args=connect_args,
     pool_pre_ping=True,
+    pool_recycle=300,
     echo=settings.DEBUG,
 )
 
