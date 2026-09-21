@@ -54,3 +54,5 @@ temp/
 tmp/
 uploads/*
 !uploads/.gitkeep
+services/rhynia_saas/uploads/*
+!services/rhynia_saas/uploads/.gitkeep

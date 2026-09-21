@@ -65,6 +65,12 @@ class User(Base):
     last_active_date = Column(DateTime(timezone=True), default=get_utc_now, nullable=False)
     storage_used_bytes = Column(BigInteger, default=0, nullable=False)
 
+    # Profile & Preferences (Settings Screens 05/06)
+    display_name = Column(String(100), nullable=True)
+    avatar_url = Column(String(500), nullable=True)
+    theme = Column(String(20), default="dark", nullable=False)
+    accent_color = Column(String(20), default="#0078D4", nullable=False)
+
     # Account Status
     is_active = Column(Boolean, default=True, nullable=False)
     is_verified = Column(Boolean, default=False, nullable=False)
