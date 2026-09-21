@@ -1,0 +1,24 @@
+{
+  "epoch": 6,
+  "model_config": {
+    "type": "transformer",
+    "architecture": "gpt-like",
+    "vocab_size": 50000,
+    "max_sequence_length": 2048,
+    "embedding_dim": 768,
+    "num_heads": 12,
+    "num_layers": 12,
+    "dropout": 0.1
+  },
+  "training_config": {
+    "batch_size": 32,
+    "learning_rate": 0.0001,
+    "epochs": 10,
+    "warmup_steps": 1000,
+    "gradient_accumulation_steps": 4,
+    "max_grad_norm": 1.0,
+    "weight_decay": 0.01,
+    "save_steps": 2,
+    "eval_steps": 2
+  }
+}

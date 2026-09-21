@@ -1,0 +1,56 @@
+# Virtual Environments
+ai_env/
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Secrets & Environment Variables
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Large ML Weights, Models & Datasets (Hosted on HuggingFace/Cloud)
+*.safetensors
+*.gguf
+*.bin
+*.pt
+*.pth
+*.onnx
+*.tar.gz
+*.zip
+ml/models/
+ml/data/*.jsonl
+data/
+
+# Node / Frontend
+node_modules/
+dist/
+build/
+.cache/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Large binaries & temp
+temp/
+tmp/
+uploads/*
+!uploads/.gitkeep

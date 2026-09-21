@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings &amp; Profile - Rhynia AI</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter & Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"primary-container": "#a078ff", "on-surface": "#e4e1e9", tertiary: "#4edea3", "error-container": "#93000a", "on-tertiary-fixed": "#002113", surface: "#131318", background: "#131318", "surface-container-highest": "#35343a", "on-background": "#e4e1e9", "on-primary": "#3c0091", "on-error-container": "#ffdad6", "on-secondary-fixed-variant": "#004395", "secondary-container": "#0566d9", "tertiary-container": "#00a572", "secondary-fixed-dim": "#adc6ff", "on-secondary-container": "#e6ecff", "surface-container-lowest": "#0e0e13", "on-primary-container": "#340080", "primary-fixed-dim": "#d0bcff", "surface-container": "#1f1f24", "on-tertiary-fixed-variant": "#005236", "surface-tint": "#d0bcff", error: "#ffb4ab", "inverse-on-surface": "#303035", "tertiary-fixed": "#6ffbbe", outline: "#958ea0", "surface-bright": "#39393e", "on-secondary-fixed": "#001a42", primary: "#d0bcff", "outline-variant": "#494454", "on-primary-fixed-variant": "#5516be", "surface-container-low": "#1b1b20", "primary-fixed": "#e9ddff", secondary: "#adc6ff", "surface-dim": "#131318", "secondary-fixed": "#d8e2ff", "inverse-primary": "#6d3bd7", "on-tertiary": "#003824", "inverse-surface": "#e4e1e9", "tertiary-fixed-dim": "#4edea3", "on-tertiary-container": "#00311f", "on-error": "#690005", "surface-variant": "#35343a", "on-surface-variant": "#cbc3d7", "on-secondary": "#002e6a", "on-primary-fixed": "#23005c", "surface-container-high": "#2a292f"}, borderRadius: {DEFAULT: "1rem", lg: "2rem", xl: "3rem", full: "9999px"}, spacing: {"gutter-desktop": "1.5rem", "space-2xl": "3.5rem", "space-lg": "1.5rem", gutter: "1rem", "space-sm": "0.5rem", "margin-tablet": "2rem", "space-md": "1rem", "margin-desktop": "3rem", "space-xl": "2.25rem", "space-xs": "0.25rem", margin: "1rem"}, fontFamily: {"body-lg": ["Inter"], "label-md": ["Inter"], "headline-xl": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-sm": ["Inter"], "headline-sm": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-sm": ["Inter"], code: ["Inter"], "body-md": ["Inter"], headline: ["Plus Jakarta Sans"], display: ["Plus Jakarta Sans"], body: ["Inter"], label: ["Inter"]}, fontSize: {"body-lg": ["16px", {lineHeight: "26px", letterSpacing: "-0.005em", fontWeight: "400"}], "label-md": ["13px", {lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "500"}], "headline-xl": ["40px", {lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "600"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600"}], "headline-lg-mobile": ["24px", {lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600"}], "body-sm": ["12px", {lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "400"}], "headline-sm": ["18px", {lineHeight: "24px", letterSpacing: "0em", fontWeight: "500"}], "headline-xl-mobile": ["28px", {lineHeight: "36px", letterSpacing: "-0.015em", fontWeight: "600"}], "headline-md": ["22px", {lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "500"}], "label-sm": ["11px", {lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "600"}], code: ["13px", {lineHeight: "20px", letterSpacing: "0em", fontWeight: "400"}], "body-md": ["14px", {lineHeight: "22px", letterSpacing: "0em", fontWeight: "400"}]}}}};</script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 20px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Ambient backdrop glow and glass reflection */
+    .glass-card {
+      background: rgba(22, 22, 31, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
+    }
+    .composer-glow {
+      box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.65), 0 0 24px -4px rgba(160, 120, 255, 0.12);
+    }
+    /* Custom scrollbar for stealth dark canvas */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0e0e13;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #35343a;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #494454;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-lowest text-on-surface font-body-md antialiased min-h-screen selection:bg-primary selection:text-on-primary relative overflow-x-hidden">
+<!-- Background Ambient Lights -->
+<div class="fixed top-0 left-1/2 -translate-x-1/2 w-[720px] h-[340px] bg-primary-container/10 blur-[130px] rounded-full pointer-events-none -z-10"></div>
+<div class="fixed bottom-10 right-10 w-[380px] h-[380px] bg-secondary-container/5 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+<!-- Main Settings Panel Container (Centered strictly 720px / 840px max width flow) -->
+<div class="min-h-screen flex flex-col justify-between max-w-[740px] mx-auto px-margin md:px-margin-tablet py-space-md pb-space-2xl">
+<!-- Top Navigation Anchor / Header (Task-focused with Close Action) -->
+<!-- Main Content Stack -->
+<main class="flex-1 space-y-space-lg">
+<!-- Profile Section: Bento Glassmorphic Header -->
+<section class="glass-card rounded-lg p-space-lg border border-outline-variant/20 relative overflow-hidden transition-all duration-200 hover:border-outline-variant/40">
+<div class="flex flex-col sm:flex-row items-center sm:items-start gap-space-lg">
+<!-- Avatar with Edit Badge -->
+<div class="relative group shrink-0">
+<div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full p-1 bg-gradient-to-tr from-primary-container via-outline-variant to-secondary-container">
+<div class="w-full h-full rounded-full overflow-hidden bg-surface-container-low flex items-center justify-center relative shadow-inner">
+<img alt="Alex Rhynia avatar profile image" class="w-full h-full object-cover" data-alt="Photorealistic studio headshot portrait of Alex Rhynia, a creative tech director with modern styled hair, wearing a high-neck dark obsidian garment. Cinematic volumetric studio lighting with subtle violet rim light reflections against an ultra-dark background. Luminescent precision aesthetic, exceptionally high fidelity and refined sharpness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCj0EaB742_2EyFf53PkMVZptTh5m3I5ymoqf4jGDHLMnyDptvqTFVGIurMmiNkjlA1LVe5isy7V0NwDsJPqU5ed9LgrANwxQv4lyaTu6zwu-vbX1VboxcpQ14UuqKWpfx0t_gHzh79jIIYflnp2jGVB4io4pC6XyI3HmnmT_Ni65T5lmbobuZgQt1hbsQbfU2fwCnJS9Gs4UoyibQ9zjUl1XHlo4kObQhHYf0lruxfyYGHGAgqS75v"/>
+</div>
+</div>
+<!-- Edit Badge Overlay -->
+<button aria-label="Change profile photo" class="absolute bottom-1 right-1 w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform duration-150 ring-2 ring-surface-container-lowest" onclick="document.getElementById('edit-profile-modal').style.display='flex'" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="edit">edit</span>
+</button>
+</div>
+<!-- Identity Details & Actions -->
+<div class="flex-1 text-center sm:text-left flex flex-col justify-center"><div class="">
+<h2 class="font-headline-lg-mobile sm:font-headline-md text-headline-lg-mobile sm:text-headline-md font-bold text-on-surface tracking-tight">Alex Rhynia</h2>
+</div></div>
+</div>
+</section>
+<!-- Account Details Card -->
+<section class="glass-card rounded-lg p-space-lg border border-outline-variant/20 space-y-space-md">
+<div class="flex items-center justify-between pb-space-xs border-b border-outline-variant/15">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="badge">badge</span>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Account Details</h3>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Primary Credentials</span>
+</div>
+<div class="flex flex-col gap-space-sm pt-space-xs"><div class="p-space-md rounded-DEFAULT bg-surface-container-low/70 border border-outline-variant/20 flex flex-col justify-center"><span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1.5 mb-1.5"><span class="material-symbols-outlined text-[16px]" data-icon="mail">mail</span>Email ID</span><p class="font-body-md text-body-md font-medium text-on-surface truncate">alex.rhynia@example.com</p></div><div class="p-space-md rounded-DEFAULT bg-surface-container-low/70 border border-outline-variant/20 flex flex-col justify-center"><span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1.5 mb-1.5"><span class="material-symbols-outlined text-[16px]" data-icon="phone_iphone">phone_iphone</span>Mobile Number</span><p class="font-body-md text-body-md font-medium text-on-surface">+91 98765 43210</p></div></div>
+</section>
+<!-- Preferences Card -->
+<section class="glass-card rounded-lg p-space-lg border border-outline-variant/20 space-y-space-lg">
+<div class="flex items-center gap-2 pb-space-xs border-b border-outline-variant/15">
+<span class="material-symbols-outlined text-primary" data-icon="tune">tune</span>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Preferences</h3>
+</div>
+<div class="space-y-space-md">
+<!-- Appearance Segmented Switch -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm p-space-md rounded-DEFAULT bg-surface-container-low/50 border border-outline-variant/15">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-on-surface">Appearance</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Select interface luminance theme</p>
+</div>
+</div>
+<!-- Segmented Control -->
+<button class="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</div>
+<!-- Accent Color Palette Selector -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm p-space-md rounded-DEFAULT bg-surface-container-low/50 border border-outline-variant/15">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="palette">palette</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-on-surface">Accent Color</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Theme highlights and energetic glow</p>
+</div>
+</div>
+<!-- 5 Palette Dots -->
+<button class="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</div>
+<!-- Language Selector -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm p-space-md rounded-DEFAULT bg-surface-container-low/50 border border-outline-variant/15">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="language">language</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-on-surface">Language</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Primary system and speech recognition</p>
+</div>
+</div>
+<!-- Styled Dropdown Selector -->
+<button class="p-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</div>
+<!-- Notifications Push Alerts Toggle -->
+<div class="flex items-center justify-between p-space-md rounded-DEFAULT bg-surface-container-low/50 border border-outline-variant/15">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-on-surface">Notifications</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Push alerts for research updates</p>
+</div>
+</div>
+<!-- Tactile Interactive Switch -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Storage Bar Card -->
+<section class="glass-card rounded-lg p-space-lg border border-outline-variant/20 space-y-space-md">
+<div class="flex items-center justify-between flex-wrap gap-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="hard_drive">hard_drive</span>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Free Storage</h3>
+</div>
+<span class="font-label-md text-label-md font-semibold text-primary">
+            38 MB of 500 MB used (7.6%)
+          </span>
+</div>
+<!-- Visual Two-Tone Progress Bar -->
+<div class="space-y-space-sm">
+<div class="w-full h-3.5 bg-surface-container-highest rounded-full overflow-hidden flex p-0.5 gap-0.5 border border-outline-variant/30">
+<!-- Threads Segment (24MB = 4.8%) -->
+<div class="h-full bg-primary rounded-l-full relative group transition-all duration-300" style="width: 4.8%"></div>
+<!-- Media Segment (14MB = 2.8%) -->
+<div class="h-full bg-secondary rounded-r-none relative group transition-all duration-300" style="width: 2.8%"></div>
+<!-- Free Space remaining -->
+<div class="h-full bg-transparent flex-1"></div>
+</div>
+<!-- Breakdown Legend Pills -->
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs font-label-sm text-label-sm text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></span>
+<span class="">Threads <strong class="text-on-surface font-semibold">24 MB</strong></span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary shrink-0"></span>
+<span class="">Media <strong class="text-on-surface font-semibold">14 MB</strong></span>
+</div>
+<div class="flex items-center gap-2 ml-auto">
+<span class="w-2.5 h-2.5 rounded-full bg-surface-container-highest shrink-0"></span>
+<span class=""><strong class="text-on-surface font-semibold">462 MB</strong> Free</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Actions -->
+<section class="pt-space-sm">
+<button class="w-full py-3.5 px-space-lg rounded-DEFAULT bg-error-container/20 hover:bg-error-container/35 border border-error/30 text-error hover:text-on-error-container flex items-center justify-center gap-2 font-label-md text-label-md font-bold transition-all duration-150 active:scale-[0.99] shadow-sm" type="button">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+          Log Out
+        </button>
+<p class="text-center font-body-sm text-body-sm text-outline mt-3">Rhynia AI Core v2.4.9 • Luminescent Dark Environment</p>
+</section>
+</main>
+</div>
+<!-- Edit Profile Modal Backdrop & Dialog --><div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 flex items-end justify-center bg-black/70 transition-opacity duration-200" id="edit-profile-modal" role="dialog" style="display: flex;"><div class="w-full max-w-[700px] h-[459px] max-h-[751px] bg-[#16161e]/95 backdrop-blur-2xl rounded-t-[28px] border-t border-white/10 p-6 sm:px-8 shadow-2xl relative flex flex-col justify-between overflow-y-auto"><div class="space-y-4"><div class="w-10 h-1 bg-white/20 rounded-full mx-auto -mt-2 mb-2"></div><div class="flex items-center justify-between pb-3 border-b border-white/10"><div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[18px]">edit</span></div><h2 class="font-headline-sm text-headline-sm font-semibold text-white tracking-tight" id="modal-title">Edit Profile</h2></div><button aria-label="Close modal" class="w-8 h-8 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors" onclick="document.getElementById('edit-profile-modal').style.display='none'" type="button"><span class="material-symbols-outlined text-[20px]">close</span></button></div><div class="flex flex-col items-center justify-center gap-1.5 pt-1"><div class="relative group shrink-0"><div class="w-20 h-20 rounded-full p-[2px] bg-gradient-to-tr from-white/20 via-white/5 to-white/20 shadow-inner"><div class="w-full h-full rounded-full overflow-hidden bg-black/40 flex items-center justify-center"><img alt="Alex Rhynia avatar profile image" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCj0EaB742_2EyFf53PkMVZptTh5m3I5ymoqf4jGDHLMnyDptvqTFVGIurMmiNkjlA1LVe5isy7V0NwDsJPqU5ed9LgrANwxQv4lyaTu6zwu-vbX1VboxcpQ14UuqKWpfx0t_gHzh79jIIYflnp2jGVB4io4pC6XyI3HmnmT_Ni65T5lmbobuZgQt1hbsQbfU2fwCnJS9Gs4UoyibQ9zjUl1XHlo4kObQhHYf0lruxfyYGHGAgqS75v"/></div></div><button aria-label="Upload new photo" class="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center shadow-lg border border-white/20 backdrop-blur-md hover:scale-105 active:scale-95 transition-all duration-150" type="button"><span class="material-symbols-outlined text-[15px]">photo_camera</span></button></div><p class="font-label-sm text-[12px] text-white/50">Click camera to change photo</p></div><form class="space-y-3.5" onsubmit="event.preventDefault(); document.getElementById('edit-profile-modal').style.display='none';"><div class="space-y-1"><label class="block font-label-md text-label-md text-white/70 font-medium" for="profile-name-input">Name</label><div class="relative flex items-center"><input class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-body-md font-body-md text-white placeholder-white/30 focus:border-primary focus:bg-white/[0.08] focus:outline-none focus:ring-1 focus:ring-primary transition-all duration-150" id="profile-name-input" placeholder="Alex Rhynia" type="text" value="Alex Rhynia"/></div></div><div class="space-y-1"><label class="block font-label-md text-label-md text-white/70 font-medium" for="profile-username-input">Username</label><div class="relative flex items-center"><div class="absolute left-4 text-white/40 font-medium select-none text-body-md">@</div><input class="w-full rounded-xl bg-white/5 border border-white/10 pl-8 pr-4 py-2.5 text-body-md font-body-md text-white placeholder-white/30 focus:border-primary focus:bg-white/[0.08] focus:outline-none focus:ring-1 focus:ring-primary transition-all duration-150" id="profile-username-input" placeholder="alex_rhynia" type="text" value="alex_rhynia"/></div></div><div class="flex items-center justify-end gap-3 pt-3 border-t border-white/10"><button class="px-5 py-2 rounded-full bg-white/10 hover:bg-white/15 border border-white/10 text-white font-label-md text-label-md font-medium transition-all duration-150 active:scale-95 backdrop-blur-sm" onclick="document.getElementById('edit-profile-modal').style.display='none'" type="button">Cancel</button><button class="px-6 py-2 rounded-full bg-gradient-to-r from-[#3b82f6] to-[#6366f1] hover:brightness-110 text-white font-label-md text-label-md font-medium shadow-[0_0_20px_rgba(59,130,246,0.35)] transition-all duration-150 active:scale-95 flex items-center gap-1.5" type="submit"><span class="material-symbols-outlined text-[16px]">check</span>Save</button></div></form></div></div></div>
+</body></html>

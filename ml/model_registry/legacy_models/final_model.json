@@ -1,0 +1,9 @@
+{
+  "model_config": {
+    "vocab_size": 50000,
+    "embedding_dim": 768,
+    "num_layers": 12
+  },
+  "vocab_size": 50000,
+  "training_complete": true
+}

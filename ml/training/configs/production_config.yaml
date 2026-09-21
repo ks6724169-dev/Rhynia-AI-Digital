@@ -1,0 +1,165 @@
+# Production-Grade AI Training Configuration
+# Kimi 3 / OpenAI / Google level training setup
+
+project:
+  name: "kimi-3-style-llm"
+  version: "2.0.0"
+  description: "Production-grade LLM training similar to Kimi 3, OpenAI, Google"
+  experiment_name: "baseline_training"
+
+# Model Configuration - Similar to Kimi 3 architecture
+model:
+  type: "transformer"
+  architecture: "gpt-style"
+  vocab_size: 100000              # Large vocabulary
+  max_sequence_length: 4096      # Long context window
+  embedding_dim: 2048             # Large embedding dimension
+  num_heads: 32                  # Many attention heads
+  num_layers: 32                 # Deep network
+  ff_dim: 8192                   # Large feed-forward dimension
+  dropout: 0.1                   # Regularization
+
+# Training Configuration
+training:
+  # Optimizer settings
+  optimizer: "adamw"
+  learning_rate: 1.0e-4          # Initial learning rate
+  weight_decay: 0.01             # L2 regularization
+  beta1: 0.9
+  beta2: 0.999
+  
+  # Scheduler settings
+  scheduler: "cosine"
+  warmup_steps: 10000            # Gradual warmup
+  max_steps: 1000000             # Total training steps
+  max_epochs: 100               # Maximum epochs
+  
+  # Batch settings
+  batch_size: 32                 # Per-GPU batch size
+  gradient_accumulation_steps: 8 # Effective batch size = 32 * 8 = 256
+  max_grad_norm: 1.0             # Gradient clipping
+  
+  # Training optimization
+  mixed_precision: true          # Use FP16 for speed
+  compile_model: false           # PyTorch 2.0 compilation (experimental)
+  
+  # Checkpointing and evaluation
+  save_steps: 5000               # Save every 5K steps
+  eval_steps: 1000               # Evaluate every 1K steps
+  log_interval: 10               # Log every 10 steps
+  
+  # Distributed training
+  distributed: false             # Enable for multi-GPU
+  backend: "nccl"                # NCCL for NVIDIA GPUs
+
+# Data Configuration
+data:
+  # Data paths
+  train_path: "ml/data/datasets/large/train_large.jsonl"
+  validation_path: "ml/data/datasets/large/val_large.jsonl"
+  test_path: "ml/data/datasets/large/test_large.jsonl"
+  
+  # Tokenization
+  tokenizer: "gpt2"             # Base tokenizer
+  max_length: 4096               # Maximum sequence length
+  text_field: "text"             # Field containing text data
+  
+  # Data loading
+  batch_size: 32
+  num_workers: 8                 # Data loading workers
+  pin_memory: true               # Faster GPU transfer
+  cache_dir: "ml/data/cache"     # Tokenizer cache
+  
+  # Data processing
+  preprocessing:
+    lowercase: false
+    remove_special_chars: false
+    chunk_long_texts: true
+    chunk_size: 1000
+
+# Hardware Configuration
+hardware:
+  device: "cuda"                  # cuda, cpu, tpu
+  num_gpus: 1                     # Number of GPUs to use
+  mixed_precision: true           # FP16 training
+  bf16: false                     # BFloat16 (newer GPUs)
+  
+  # Memory optimization
+  gradient_checkpointing: false  # Trade compute for memory
+  offload_optimizer: false       # CPU offloading (for large models)
+
+# Monitoring and Logging
+logging:
+  log_dir: "logs"
+  tensorboard: true
+  wandb: false                   # Weights & Biases
+  wandb_project: "kimi-3-training"
+  log_interval: 10
+  
+  # Metrics to track
+  metrics:
+    - "train/loss"
+    - "train/learning_rate"
+    - "train/gradient_norm"
+    - "val/loss"
+    - "val/perplexity"
+    - "val/accuracy"
+
+# Output Configuration
+output_dir: "ml/experiments/outputs"
+checkpoint_dir: "ml/checkpoints"
+log_dir: "ml/experiments/logs"
+model_dir: "ml/model_registry"
+
+# Inference Configuration
+inference:
+  temperature: 0.7
+  top_k: 50
+  top_p: 0.9
+  max_new_tokens: 512
+  do_sample: true
+  num_return_sequences: 1
+
+# Cloud Configuration (optional)
+cloud:
+  provider: "aws"                 # aws, gcp, azure
+  region: "us-east-1"
+  instance_type: "p3.2xlarge"    # GPU instance
+  spot_instance: false
+  
+  # Storage
+  use_s3: false
+  s3_bucket: "my-ai-training-bucket"
+  
+  # Distributed training
+  use_distributed: false
+  num_nodes: 1
+  processes_per_node: 1
+
+# Security and Environment
+security:
+  use_venv: true
+  requirements_file: "requirements-production.txt"
+  
+  # Environment variables
+  env_vars:
+    CUDA_VISIBLE_DEVICES: "0"
+    PYTHONPATH: "."
+
+# Advanced Features
+advanced:
+  # Model parallelism (for very large models)
+  pipeline_parallel: false
+  tensor_parallel: false
+  
+  # Expert systems (Mixture of Experts)
+  use_moe: false
+  num_experts: 8
+  
+  # Optimization techniques
+  use_flash_attention: false     # Flash Attention (requires install)
+  use_apex: false                # NVIDIA APEX optimization
+  
+  # Knowledge distillation
+  distillation: false
+  teacher_model_path: null

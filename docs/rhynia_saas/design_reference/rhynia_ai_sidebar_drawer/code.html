@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Rhynia AI - Navigation Drawer</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"primary-container": "#a078ff", "on-surface": "#e4e1e9", tertiary: "#4edea3", "error-container": "#93000a", "on-tertiary-fixed": "#002113", surface: "#131318", background: "#131318", "surface-container-highest": "#35343a", "on-background": "#e4e1e9", "on-primary": "#3c0091", "on-error-container": "#ffdad6", "on-secondary-fixed-variant": "#004395", "secondary-container": "#0566d9", "tertiary-container": "#00a572", "secondary-fixed-dim": "#adc6ff", "on-secondary-container": "#e6ecff", "surface-container-lowest": "#0e0e13", "on-primary-container": "#340080", "primary-fixed-dim": "#d0bcff", "surface-container": "#1f1f24", "on-tertiary-fixed-variant": "#005236", "surface-tint": "#d0bcff", error: "#ffb4ab", "inverse-on-surface": "#303035", "tertiary-fixed": "#6ffbbe", outline: "#958ea0", "surface-bright": "#39393e", "on-secondary-fixed": "#001a42", primary: "#d0bcff", "outline-variant": "#494454", "on-primary-fixed-variant": "#5516be", "surface-container-low": "#1b1b20", "primary-fixed": "#e9ddff", secondary: "#adc6ff", "surface-dim": "#131318", "secondary-fixed": "#d8e2ff", "inverse-primary": "#6d3bd7", "on-tertiary": "#003824", "inverse-surface": "#e4e1e9", "tertiary-fixed-dim": "#4edea3", "on-tertiary-container": "#00311f", "on-error": "#690005", "surface-variant": "#35343a", "on-surface-variant": "#cbc3d7", "on-secondary": "#002e6a", "on-primary-fixed": "#23005c", "surface-container-high": "#2a292f"}, borderRadius: {DEFAULT: "1rem", lg: "2rem", xl: "3rem", full: "9999px"}, spacing: {"gutter-desktop": "1.5rem", "space-2xl": "3.5rem", "space-lg": "1.5rem", gutter: "1rem", "space-sm": "0.5rem", "margin-tablet": "2rem", "space-md": "1rem", "margin-desktop": "3rem", "space-xl": "2.25rem", "space-xs": "0.25rem", margin: "1rem"}, fontFamily: {"body-lg": ["Inter"], "label-md": ["Inter"], "headline-xl": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-sm": ["Inter"], "headline-sm": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-sm": ["Inter"], code: ["Inter"], "body-md": ["Inter"], headline: ["Plus Jakarta Sans"], display: ["Plus Jakarta Sans"], body: ["Inter"], label: ["Inter"]}, fontSize: {"body-lg": ["16px", {lineHeight: "26px", letterSpacing: "-0.005em", fontWeight: "400"}], "label-md": ["13px", {lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "500"}], "headline-xl": ["40px", {lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "600"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600"}], "headline-lg-mobile": ["24px", {lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600"}], "body-sm": ["12px", {lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "400"}], "headline-sm": ["18px", {lineHeight: "24px", letterSpacing: "0em", fontWeight: "500"}], "headline-xl-mobile": ["28px", {lineHeight: "36px", letterSpacing: "-0.015em", fontWeight: "600"}], "headline-md": ["22px", {lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "500"}], "label-sm": ["11px", {lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "600"}], code: ["13px", {lineHeight: "20px", letterSpacing: "0em", fontWeight: "400"}], "body-md": ["14px", {lineHeight: "22px", letterSpacing: "0em", fontWeight: "400"}]}}}};</script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .glass-drawer {
+      background: rgba(22, 22, 31, 0.78);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    }
+    .glass-card {
+      background: rgba(26, 26, 38, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+    }
+    .ambient-glow {
+      box-shadow: 0 0 24px -4px rgba(160, 120, 255, 0.18);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 9999px;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-lowest text-on-surface font-body-md min-h-screen overflow-x-hidden antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- Background Base App Mockup (Blurred Canvas underneath Drawer overlay) -->
+<div class="relative w-full min-h-screen flex flex-col pointer-events-none bg-surface-container-lowest"><header class="h-14 border-b border-outline-variant/20 bg-surface/90 px-4 md:px-6 flex items-center justify-between z-10"><div class="flex items-center gap-3"><button class="p-2 -ml-2 text-on-surface-variant"><span class="material-symbols-outlined text-xl">menu</span></button><div class="flex flex-col"><span class="font-headline-sm text-base md:text-headline-sm font-semibold text-on-surface flex items-center gap-2">I Mobile Architecture <span class="material-symbols-outlined text-xs text-primary" style="font-variation-settings: 'FILL' 1;">keep</span></span><span class="text-xs text-on-surface-variant">Active • Gemini 1.5 Pro</span></div></div><div class="flex items-center gap-2"><button class="p-2 text-on-surface-variant"><span class="material-symbols-outlined text-xl">share</span></button><button class="p-2 text-on-surface-variant"><span class="material-symbols-outlined text-xl">more_vert</span></button></div></header><main class="flex-1 w-full max-w-3xl mx-auto px-4 py-6 space-y-6 overflow-hidden flex flex-col justify-between"><div class="space-y-6"><div class="flex justify-end"><div class="bg-primary-container/20 border border-primary/30 text-on-surface p-4 rounded-2xl rounded-tr-sm max-w-[85%] md:max-w-[75%]"><p class="text-body-md font-medium">How should we structure high-concurrency neural inference pipelines for mobile devices while keeping UI interactions 60fps?</p><span class="text-[11px] text-outline mt-1.5 block text-right">10:42 AM</span></div></div><div class="flex gap-3.5 items-start"><div class="w-8 h-8 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center text-primary font-bold text-sm ring-1 ring-primary/40">R</div><div class="space-y-3 flex-1"><div class="glass-card border border-outline-variant/20 p-4 rounded-2xl rounded-tl-sm space-y-2.5"><p class="text-body-md text-on-surface">For high-concurrency neural pipelines on edge devices, implement a decoupled 3-tier architecture:</p><ul class="list-disc pl-5 space-y-1 text-sm text-on-surface-variant"><li class=""><strong>Worker Thread Isolation:</strong> Offload NPU/GPU dispatch queue to dedicated C++ runtime bindings.</li><li class=""><strong>Quantized Batching:</strong> Dynamically buffer token generation at 4-bit weights without blocking the main event loop.</li><li class=""><strong>Predictive Frame Synthesis:</strong> Keep gestures synchronous via UI thread shaders.</li></ul></div><div class="flex items-center gap-2 text-xs text-outline"><button class="flex items-center gap-1 p-1 hover:text-on-surface"><span class="material-symbols-outlined text-sm">thumb_up</span> 12</button><button class="flex items-center gap-1 p-1 hover:text-on-surface"><span class="material-symbols-outlined text-sm">content_copy</span> Copy</button></div></div></div></div><div class="mt-auto pt-4"><div class="border border-outline-variant/30 rounded-2xl bg-surface-container-high/60 p-3 flex items-center justify-between gap-3 shadow-lg"><span class="text-sm text-outline">Ask follow-up or explore pipeline variants...</span><div class="flex items-center gap-2 text-primary"><span class="material-symbols-outlined text-xl">mic</span><div class="w-8 h-8 rounded-xl bg-primary text-on-primary flex items-center justify-center"><span class="material-symbols-outlined text-lg">arrow_upward</span></div></div></div></div></main></div>
+<!-- Ambient Backdrop Scrim with subtle violet radial shade -->
+<!-- Shared Component: NavigationDrawer -->
+<!-- Anchors: docked left fixed top-0 bottom-0 w-80 max-w-[85vw] rounded-r-2xl border-r border-outline-variant/20 shadow-2xl -->
+<aside class="fixed inset-y-0 left-0 z-50 flex flex-col justify-between w-80 max-w-[85vw] glass-drawer border-r border-outline-variant/20 shadow-2xl rounded-r-2xl transition-transform duration-300"><div class="p-4 border-b border-outline-variant/20 flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-xl bg-primary-container/20 border border-primary/30 flex items-center justify-center text-primary font-bold text-sm shadow-sm">R</div><span class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight">Rhynia</span></div><div class="flex items-center gap-1"><button aria-label="Search chat history" class="p-2 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60 active:scale-95 transition-all" title="Search chat history"><span class="material-symbols-outlined text-xl">search</span></button></div></div><div class="flex-1 overflow-y-auto custom-scrollbar px-3 py-4 space-y-5"><div class="space-y-2"><div class="px-3 flex items-center justify-between text-label-sm font-label-sm uppercase tracking-wider text-primary"><span class="font-semibold">Pinned</span><span class="material-symbols-outlined text-xs text-primary" style="font-variation-settings: 'FILL' 1;">keep</span></div><div class="space-y-1.5"><div class="rounded-xl p-1 bg-surface-container-high/60 border border-primary/30 ambient-glow transition-all"><div class="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container-highest/60"><div class="flex items-center gap-2.5 overflow-hidden"><span class="material-symbols-outlined text-base text-primary flex-shrink-0" style="font-variation-settings: 'FILL' 1;">chat_bubble</span><span class="font-body-md text-body-md font-medium text-on-surface truncate">AI Mobile Architecture</span></div><span class="w-2 h-2 rounded-full bg-primary flex-shrink-0 shadow-sm shadow-primary/50"></span></div><div class="mt-1 pt-1 border-t border-outline-variant/20 p-1 flex flex-col gap-0.5 bg-surface-container-lowest/80 rounded-lg"><button class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-label-sm font-label-sm text-primary hover:bg-primary/10 transition-colors text-left" title="Pinned status"><span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">keep</span><span class="">Pinned</span></button><button class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-label-sm font-label-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors text-left" title="Rename Chat"><span class="material-symbols-outlined text-sm">edit</span><span class="">Rename</span></button><div class="h-px bg-outline-variant/10 my-0.5"></div><button class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-label-sm font-label-sm text-error hover:bg-error-container/20 transition-colors text-left" title="Delete Chat"><span class="material-symbols-outlined text-sm">delete</span><span class="">Delete</span></button></div></div></div></div><div class="space-y-2 pt-1"><div class="px-3 text-label-sm font-label-sm uppercase tracking-wider text-outline"><span class="font-semibold">Recent</span></div><div class="space-y-1"><button class="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60 active:scale-[0.99] transition-all"><div class="flex items-center gap-2.5 overflow-hidden"><span class="material-symbols-outlined text-base text-outline flex-shrink-0">chat_bubble_outline</span><span class="font-body-md text-body-md truncate">Creative Prompting Lab</span></div></button><button class="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60 active:scale-[0.99] transition-all"><div class="flex items-center gap-2.5 overflow-hidden"><span class="material-symbols-outlined text-base text-outline flex-shrink-0">translate</span><span class="font-body-md text-body-md truncate">Global Translation Engine</span></div></button><button class="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60 active:scale-[0.99] transition-all"><div class="flex items-center gap-2.5 overflow-hidden"><span class="material-symbols-outlined text-base text-outline flex-shrink-0">devices</span><span class="font-body-md text-body-md truncate">UI Component Guidelines</span></div></button><button class="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60 active:scale-[0.99] transition-all"><div class="flex items-center gap-2.5 overflow-hidden"><span class="material-symbols-outlined text-base text-outline flex-shrink-0">terminal</span><span class="font-body-md text-body-md truncate">Vector Embeddings Benchmark</span></div></button><button class="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60 active:scale-[0.99] transition-all"><div class="flex items-center gap-2.5 overflow-hidden"><span class="material-symbols-outlined text-base text-outline flex-shrink-0">dataset</span><span class="font-body-md text-body-md truncate">Knowledge Graph Synapses</span></div></button></div></div></div><div class="p-3.5 border-t border-outline-variant/20 bg-surface-container-low/90 flex items-center justify-between"><button aria-label="New Chat" class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg shadow-primary-container/25 hover:shadow-primary-container/40 active:scale-95 transition-all" title="New Chat"><span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">add</span></button><button aria-label="Profile &amp; Settings" class="relative w-10 h-10 rounded-full p-0.5 border border-outline-variant/20 hover:border-primary/40 active:scale-95 transition-all flex items-center justify-center" title="Alex Rhynia"><img alt="Alex Rhynia" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZQQ4eHExiyNvgLL-9689W_GBMfrS1W1L4R1mGQ3u7RdqTYjRp-_neLm0VUzYUAtgf7gjzokePMW_ChK3qRDa6BVCGy-TfSYnblNakmHyyke-dHWaq8P1f6eEAjdq4ln1JkghuDZEWjGcFDYy-_wc1E6jfKCP5huIJUbGWtmQFH9pUEN_bNWccy4n7fsvkhoQkyICa8Vp8FwFJXwDBpMh_O76w-_-HVmvz57naxGox3f7y22IBi0bU"/><span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary border border-surface-container-low rounded-full ring-1 ring-primary/40"></span></button></div></aside>
+<!-- Interactive Demo Script: Allows testing item interactions and search filtering -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.querySelector('input[type="text"]');
+      const chatButtons = document.querySelectorAll('.custom-scrollbar button');
+
+      // Search micro-filter
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const query = e.target.value.toLowerCase();
+          chatButtons.forEach(btn => {
+            const text = btn.innerText.toLowerCase();
+            if (text.includes(query)) {
+              btn.style.display = 'flex';
+            } else {
+              btn.style.display = 'none';
+            }
+          });
+        });
+      }
+    });
+  </script>
+</body></html>

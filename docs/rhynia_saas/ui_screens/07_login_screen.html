@@ -1,0 +1,251 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Rhynia Intelligence - Sign In</title>
+<!-- Google Fonts: Inter & Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS with Container Queries and Forms -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary": "#1cdec3",
+            "surface-bright": "#393939",
+            "error": "#ffb4ab",
+            "error-container": "#93000a",
+            "surface-container-lowest": "#0e0e0e",
+            "on-secondary-container": "#003653",
+            "on-secondary-fixed-variant": "#004b71",
+            "tertiary-fixed-dim": "#1cdec3",
+            "tertiary-container": "#008674",
+            "secondary-fixed-dim": "#8ecdff",
+            "surface": "#131313",
+            "surface-dim": "#131313",
+            "on-surface": "#e5e2e1",
+            "on-error": "#690005",
+            "on-tertiary": "#00382f",
+            "surface-tint": "#a3c9ff",
+            "on-background": "#e5e2e1",
+            "secondary": "#8ecdff",
+            "on-error-container": "#ffdad6",
+            "primary": "#a3c9ff",
+            "secondary-fixed": "#cbe6ff",
+            "on-tertiary-container": "#ffffff",
+            "surface-container": "#202020",
+            "primary-container": "#0078d4",
+            "on-primary-container": "#ffffff",
+            "background": "#131313",
+            "on-secondary-fixed": "#001e30",
+            "surface-container-low": "#1b1c1c",
+            "surface-container-highest": "#353535",
+            "on-primary-fixed": "#001c39",
+            "inverse-primary": "#0060ab",
+            "on-tertiary-fixed-variant": "#005045",
+            "on-primary-fixed-variant": "#004883",
+            "on-secondary": "#00344f",
+            "tertiary-fixed": "#50fbdf",
+            "outline": "#8a919e",
+            "on-surface-variant": "#c0c7d4",
+            "on-tertiary-fixed": "#00201b",
+            "outline-variant": "#404752",
+            "on-primary": "#00315c",
+            "surface-container-high": "#2a2a2a",
+            "inverse-on-surface": "#303030",
+            "inverse-surface": "#e5e2e1",
+            "surface-variant": "#353535",
+            "secondary-container": "#00a4ef",
+            "primary-fixed": "#d3e3ff",
+            "primary-fixed-dim": "#a3c9ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-md": "0.75rem",
+            "margin-wide": "2rem",
+            "space-2xl": "2rem",
+            "gutter-compact": "0.75rem",
+            "space-xl": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-3xl": "3rem",
+            "space-lg": "1rem",
+            "margin-mobile": "1rem",
+            "gutter": "1rem",
+            "space-sm": "0.5rem",
+            "margin": "1.5rem",
+            "gutter-loose": "1.5rem"
+          },
+          "fontFamily": {
+            "body-md": ["Inter"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "display-mobile": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "label-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "headline-sm": ["Inter"],
+            "display": ["Plus Jakarta Sans"],
+            "caption": ["Inter"],
+            "code": ["JetBrains Mono"]
+          },
+          "fontSize": {
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.005em", "fontWeight": "500" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.015em", "fontWeight": "600" }],
+            "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-sm": ["16px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "display": ["40px", { "lineHeight": "52px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "caption": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "400" }],
+            "code": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 20px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Fluent specular top-light stroke */
+    .fluent-border {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.06);
+    }
+    .fluent-card {
+      background: #202020;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.35);
+    }
+    .fluent-input {
+      background: #1b1c1c;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+      transition: all 0.15s ease-in-out;
+    }
+    .fluent-input:focus-within {
+      background: #252525;
+      border-bottom: 2px solid #0078d4;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex items-center justify-center p-0 sm:p-margin relative selection:bg-primary-container selection:text-on-primary-container antialiased">
+<!-- Ambient Mica Background Glow -->
+<div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 flex justify-center">
+<div class="absolute -top-24 w-[380px] h-[380px] bg-primary-container/15 rounded-full blur-[110px]"></div>
+<div class="absolute top-1/3 -right-20 w-[260px] h-[260px] bg-secondary-container/10 rounded-full blur-[90px]"></div>
+<div class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-tertiary-container/10 rounded-full blur-[100px]"></div>
+</div>
+<!-- Mobile Canvas Device Simulator Shell (Max 390px / standard modern viewport) -->
+<main class="w-full max-w-[390px] min-h-screen sm:min-h-[844px] sm:max-h-[890px] sm:rounded-2xl flex flex-col justify-between p-margin-mobile sm:p-margin bg-surface-container-lowest/80 backdrop-blur-2xl border-0 sm:border border-outline-variant/30 sm:shadow-2xl relative overflow-y-auto">
+<!-- Top System Status / Utility Bar (Fluent Mobile Header) -->
+
+<!-- Main Content Container -->
+<div class="w-full flex items-center justify-between pt-1 pb-2"><button type="button" aria-label="Go back" class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95"><span class="material-symbols-outlined text-[20px]" data-icon="arrow_back">arrow_back</span></button></div><section class="flex-1 flex flex-col justify-center py-space-sm">
+<!-- Brand & Title Block -->
+<div class="text-center flex flex-col items-center mb-space-xl">
+<!-- Fluent Hexagonal Glowing AI Brandmark -->
+<div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden mx-auto mb-3 shadow-lg border border-outline-variant/30 flex items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0g53l73BFIUJQEGClYQvCeFHCOAJ5F-xPnnlC3VzFzsLM30ggTqpe9sd6E4_AlMfCrPVPmiGmunH_0aOwg1rxxFdPlNHT1uLMIDpaZh1oPtgZzZgo4ifqvQmIaSw0wtX2A6o2Z7QV33OI8xlhYghR6S1Rlanhbq1X-8jke3CkGIwr6Z0UbCoDYD09m-JtfY628fbkKbAd-LorlTWNbjqjPjXG1pYQcZyodUcCsrYxXLFoIyZ0p3yPKmNHRD2ZMHdCpA" alt="Rhynia Intelligence Logo" class="w-full h-full object-cover"></div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold tracking-tight text-on-surface flex items-center gap-1.5">
+          Rhynia
+        </h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 max-w-[260px]">
+          Sign in to your Rhynia account
+        </p>
+</div>
+<!-- Authentication Form -->
+<form class="flex flex-col gap-space-md" onsubmit="event.preventDefault();">
+<!-- Email Input -->
+<div class="flex flex-col gap-1.5">
+
+<div class="fluent-input flex items-center px-3 py-2.5 rounded-lg text-on-surface">
+<span class="material-symbols-outlined text-outline mr-2 text-[18px]" data-icon="mail">mail</span>
+<input class="w-full bg-transparent border-0 p-0 text-on-surface placeholder:text-outline/70 font-body-md text-body-md focus:ring-0 focus:outline-none" id="email" inputmode="email" name="email" placeholder="name@example.com" required="" type="email">
+</div>
+</div>
+<!-- Password Input -->
+<div class="flex flex-col gap-1.5">
+
+<div class="fluent-input flex items-center px-3 py-2.5 rounded-lg text-on-surface">
+<span class="material-symbols-outlined text-outline mr-2 text-[18px]" data-icon="lock">lock</span>
+<input class="w-full bg-transparent border-0 p-0 text-on-surface placeholder:text-outline/70 font-body-md text-body-md focus:ring-0 focus:outline-none tracking-wider" id="password" name="password" placeholder="••••••••••••" required="" type="password">
+<button aria-label="Toggle password visibility" class="text-outline hover:text-on-surface p-1 rounded transition-colors active:scale-90" id="togglePassword" onclick="const pwd = document.getElementById('password'); const icon = this.querySelector('.material-symbols-outlined'); if(pwd.type === 'password'){ pwd.type = 'text'; icon.textContent = 'visibility_off'; } else { pwd.type = 'password'; icon.textContent = 'visibility'; }" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<!-- Primary Action CTA Button: Microsoft Fluent Azure Blue -->
+<div class="flex justify-end -mt-1"><a href="#" class="text-body-sm text-primary hover:text-secondary hover:underline transition-colors">Forgot password?</a></div><button class="w-full mt-2 h-11 rounded-lg bg-primary-container hover:bg-[#0086F0] active:bg-[#005A9E] text-on-primary-container font-label-md text-label-md flex items-center justify-center gap-2 border border-white/15 shadow-md active:scale-[0.98] transition-all duration-150" style="box-shadow: inset 0px 1px 0px rgba(255, 255, 255, 0.25);" type="submit">
+<span class="">Sign In</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<!-- Biometric / Passkey Sign-in Pill -->
+
+</form>
+<!-- Divider: 'OR CONTINUE WITH' -->
+<div class="relative my-space-lg flex items-center justify-center">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-outline-variant/25"></div>
+</div>
+<div class="relative px-3 bg-surface-container-lowest text-outline font-label-sm text-caption tracking-wider">
+          OR CONTINUE WITH
+        </div>
+</div>
+<!-- Social / Federated Sign-in Buttons -->
+<div class="flex flex-col gap-2"><button class="w-full h-10 px-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/30 hover:border-outline-variant/60 flex items-center justify-between text-on-surface font-label-md text-label-md active:scale-[0.99] transition-all duration-150" type="button"><div class="flex items-center gap-3"><svg class="w-4 h-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"></path></svg><span class="">Continue with Google</span></div><span class="material-symbols-outlined text-outline text-[16px]" data-icon="chevron_right">chevron_right</span></button><button class="w-full h-10 px-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/30 hover:border-outline-variant/60 flex items-center justify-between text-on-surface font-label-md text-label-md active:scale-[0.99] transition-all duration-150" type="button"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-primary text-[18px]" data-icon="smartphone">smartphone</span><span class="">Continue with Mobile Number</span></div><span class="material-symbols-outlined text-outline text-[16px]" data-icon="chevron_right">chevron_right</span></button></div>
+</section>
+<!-- Bottom Account Switcher & Terms -->
+<footer class="pt-space-md pb-space-xs text-center border-t border-outline-variant/20 flex flex-col gap-2">
+<div class="font-body-md text-body-md text-on-surface-variant">
+        Don't have an account? 
+        <a class="font-label-md text-label-md text-primary font-semibold hover:text-secondary hover:underline transition-colors ml-1" href="#">
+          Sign Up
+        </a>
+</div>
+<!-- Micro Legal Link -->
+<div class="flex items-center justify-center gap-3 font-caption text-caption text-outline">
+<a class="hover:text-on-surface-variant transition-colors" href="#">Privacy Notice</a>
+<span class="">•</span>
+<a class="hover:text-on-surface-variant transition-colors" href="#">Terms of Service</a>
+</div>
+</footer>
+</main>
+
+
+
+
+
+
+
+
+
+
+</body></html>
