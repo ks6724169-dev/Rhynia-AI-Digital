@@ -244,7 +244,7 @@ async function openSession(sessionId) {
           appendUserMessageUI(msg.content, []);
         } else {
           // Rhynia Response Message
-          const { textContainer, actionsContainer } = appendRhyniaPlaceholderUI();
+          const { textContainer, actionsContainer } = appendRhyniaPlaceholderUI(msg.id);
           textContainer.innerHTML = renderMarkdown(msg.content);
           actionsContainer.classList.remove("hidden");
           actionsContainer.classList.add("flex");

@@ -133,6 +133,13 @@ async function sendChatMessage() {
 
           try {
             const parsed = JSON.parse(payload);
+            if (parsed.type === "done" && parsed.message_id) {
+              const msgEl = document.getElementById(rhyniaMessageId);
+              if (msgEl) {
+                msgEl.dataset.messageId = parsed.message_id;
+              }
+              continue;
+            }
             const token = parsed.token || parsed.delta || parsed.content || "";
             fullResponse += token;
             textContainer.innerHTML = renderMarkdown(fullResponse);
@@ -203,12 +210,15 @@ function appendUserMessageUI(text, files) {
 /**
  * Append Rhynia Placeholder UI (Left-aligned, open layout with 5 action buttons)
  */
-function appendRhyniaPlaceholderUI() {
+function appendRhyniaPlaceholderUI(existingMessageId) {
   const container = document.getElementById("chat-messages-container");
-  const msgId = "ai-msg-" + Date.now();
+  const msgId = "ai-msg-" + (existingMessageId || Date.now());
 
   const msgDiv = document.createElement("div");
   msgDiv.id = msgId;
+  if (existingMessageId) {
+    msgDiv.dataset.messageId = existingMessageId;
+  }
   msgDiv.className = "flex flex-col gap-3 w-full pr-2 sm:pr-8 py-4 animate-fade-in border-b border-white/[0.04]";
 
   msgDiv.innerHTML = `
@@ -241,7 +251,9 @@ function appendRhyniaPlaceholderUI() {
   scrollChatToBottom();
 
   return {
+    rhyniaMessageId: msgId,
     assistantMessageId: msgId,
+    msgDiv: msgDiv,
     textContainer: msgDiv.querySelector(".ai-text-body"),
     actionsContainer: msgDiv.querySelector(".ai-actions-bar")
   };
@@ -315,13 +327,15 @@ function speakResponseText(buttonEl) {
 }
 
 /**
- * 5 Actions: Like / Dislike Feedback
+ * 5 Actions: Like / Dislike Feedback (Triggers Interactive Modal)
  */
 function feedbackResponse(buttonEl, isPositive) {
-  const icon = buttonEl.querySelector(".material-symbols-outlined");
-  buttonEl.classList.add(isPositive ? "text-[#0078d4]" : "text-red-400");
-  buttonEl.classList.add("bg-white/10");
-  showToast(isPositive ? "Thanks for your feedback!" : "Feedback recorded", "info");
+  if (typeof openFeedbackModal === "function") {
+    openFeedbackModal(buttonEl, isPositive);
+  } else {
+    buttonEl.classList.add(isPositive ? "text-[#0078d4]" : "text-red-400");
+    buttonEl.classList.add("bg-white/10");
+  }
 }
 
 /**

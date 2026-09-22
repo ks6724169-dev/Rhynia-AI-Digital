@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 
 from services.rhynia_saas.backend.config import settings
 from services.rhynia_saas.backend.database import init_db
-from services.rhynia_saas.backend.routers import auth, chat, files, profile, sessions
+from services.rhynia_saas.backend.routers import auth, chat, feedback, files, profile, sessions
 
 
 @asynccontextmanager
@@ -58,6 +58,7 @@ app.include_router(chat.router)
 app.include_router(sessions.router)
 app.include_router(files.router)
 app.include_router(profile.router)
+app.include_router(feedback.router)
 
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles

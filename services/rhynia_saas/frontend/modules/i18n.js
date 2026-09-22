@@ -110,7 +110,22 @@ const RHYNIA_TRANSLATIONS = {
     search_language: "Search 42 languages...",
     all_tab: "All (42)",
     indian_tab: "🇮🇳 Indian (22)",
-    global_tab: "🌍 Global (20)"
+    global_tab: "🌍 Global (20)",
+    feedback_like_title: "What did you like? (Optional)",
+    feedback_dislike_title: "What didn't you like? (Optional)",
+    feedback_tag_incorrect: "Incorrect",
+    feedback_tag_unsafe: "Offensive or unsafe",
+    feedback_tag_not_working: "Not working",
+    feedback_tag_not_helpful: "Not helpful",
+    feedback_tag_saved_time: "Saved time",
+    feedback_tag_clear: "Accurate & clear",
+    feedback_tag_helpful: "Helpful",
+    feedback_tag_great: "Great response",
+    feedback_tag_other: "Other",
+    feedback_comment_placeholder: "Share some details...",
+    feedback_chat_copy_notice: "A copy of this chat will be included.",
+    feedback_submit: "Submit",
+    feedback_submitted_toast: "Thank you! Your feedback has been recorded."
   },
 
   // 1. Hindi (हिन्दी)
@@ -169,7 +184,22 @@ const RHYNIA_TRANSLATIONS = {
     search_language: "42 भाषाएं खोजें...",
     all_tab: "सभी (42)",
     indian_tab: "🇮🇳 भारतीय भाषाएं (22)",
-    global_tab: "🌍 विश्व भाषाएं (20)"
+    global_tab: "🌍 विश्व भाषाएं (20)",
+    feedback_like_title: "आपको क्या पसंद आया? (ज़रूरी नहीं)",
+    feedback_dislike_title: "आपको क्या पसंद नहीं आया? (ज़रूरी नहीं)",
+    feedback_tag_incorrect: "गलत",
+    feedback_tag_unsafe: "आपत्तिजनक या असुरक्षित",
+    feedback_tag_not_working: "काम नहीं कर रहा है",
+    feedback_tag_not_helpful: "काम की नहीं थी",
+    feedback_tag_saved_time: "समय की बचत हुई",
+    feedback_tag_clear: "सटीक और स्पष्ट",
+    feedback_tag_helpful: "मददगार",
+    feedback_tag_great: "बेहतरीन",
+    feedback_tag_other: "अन्य",
+    feedback_comment_placeholder: "कुछ जानकारी शेयर करें...",
+    feedback_chat_copy_notice: "इस चैट की एक कॉपी शामिल की जाएगी।",
+    feedback_submit: "सबमिट करें",
+    feedback_submitted_toast: "धन्यवाद! आपका फ़ीडबैक सबमिट हो गया है।"
   },
 
   // 2. Bengali (বাংলা)

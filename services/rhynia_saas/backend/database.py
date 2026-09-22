@@ -96,6 +96,7 @@ class User(Base):
     sessions = relationship("ChatSession", back_populates="user", cascade="all, delete-orphan")
     messages = relationship("ChatMessage", back_populates="user", cascade="all, delete-orphan")
     files = relationship("UserFile", back_populates="user", cascade="all, delete-orphan")
+    feedbacks = relationship("MessageFeedback", back_populates="user", cascade="all, delete-orphan")
 
 
 # ==========================================
@@ -185,6 +186,31 @@ class UserFile(Base):
 
     # Relationships
     user = relationship("User", back_populates="files")
+
+
+# ==========================================
+# 6. MESSAGE FEEDBACK MODEL (Like / Dislike)
+# ==========================================
+class MessageFeedback(Base):
+    __tablename__ = "message_feedbacks"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid, index=True)
+    user_id = Column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    session_id = Column(
+        String(36), ForeignKey("chat_sessions.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    message_id = Column(String(100), nullable=True, index=True)
+    rating = Column(String(20), nullable=False)  # "like" or "dislike"
+    tags = Column(Text, nullable=True)  # JSON-encoded array of selected tags
+    comment = Column(Text, nullable=True)
+    chat_snippet = Column(Text, nullable=True)
+
+    created_at = Column(DateTime(timezone=True), default=get_utc_now, nullable=False)
+
+    # Relationships
+    user = relationship("User", back_populates="feedbacks")
 
 
 # ==========================================

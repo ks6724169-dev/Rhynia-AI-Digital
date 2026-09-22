@@ -698,4 +698,56 @@ html.light #btn-send-message.btn-send-disabled {
   opacity: 0.45 !important;
 }
 
+/* ========================================== */
+/* SCREENSHOT MATCH: FEEDBACK MODAL (LIKE/DISLIKE) */
+/* ========================================== */
+.fluent-feedback-card {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.feedback-chip {
+  user-select: none;
+}
+
+html.light #feedback-modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+html.light .fluent-feedback-card {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light #feedback-modal-title {
+  color: #111827 !important;
+}
+
+html.light .feedback-chip {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+  border-color: #e5e7eb !important;
+}
+
+html.light .feedback-chip:hover {
+  background-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+html.light .fluent-feedback-textarea {
+  background-color: #f9fafb !important;
+  border-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+html.light .fluent-feedback-textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+html.light #feedback-modal-notice {
+  color: #6b7280 !important;
+}
+
+
 
