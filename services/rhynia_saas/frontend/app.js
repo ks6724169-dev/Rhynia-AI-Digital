@@ -350,8 +350,8 @@ function renderMarkdown(rawText) {
           const headers = splitTableRow(headerLine);
           const bodyLines = tableLines.slice(separatorIdx + 1);
 
-          let tableHtml = `<div class="markdown-table-wrapper my-4 rounded-xl border border-white/10 bg-[#161616] overflow-hidden shadow-lg">`;
-          tableHtml += `<div class="flex items-center justify-between px-3.5 py-1.5 bg-[#202020] border-b border-white/5 text-xs text-neutral-400">`;
+          let tableHtml = `<div class="markdown-table-wrapper my-4 rounded-xl border border-white/10 bg-[#121417] overflow-hidden shadow-lg">`;
+          tableHtml += `<div class="flex items-center justify-between px-3.5 py-1.5 bg-[#1c2128] border-b border-white/10 text-xs text-neutral-400">`;
           tableHtml += `<span class="font-mono text-[11px] uppercase tracking-wider flex items-center gap-1.5 text-neutral-300">`;
           tableHtml += `<span class="material-symbols-outlined text-[15px] text-[#0078D4]">table_chart</span>`;
           tableHtml += `<span>Data Table</span>`;
@@ -363,18 +363,24 @@ function renderMarkdown(rawText) {
           tableHtml += `</div>`;
           tableHtml += `<div class="overflow-x-auto">`;
           tableHtml += `<table class="w-full text-left text-xs sm:text-sm border-collapse">`;
-          tableHtml += `<thead><tr class="bg-[#242424] text-white border-b border-white/10">`;
-          headers.forEach(h => {
-            tableHtml += `<th class="px-3.5 py-2.5 font-semibold text-neutral-200 tracking-tight">${renderInlineMarkdown(escapeHtml(h))}</th>`;
+          tableHtml += `<thead><tr class="bg-[#1c2128]">`;
+          headers.forEach((h, hIdx) => {
+            const isLast = hIdx === headers.length - 1;
+            const borderR = isLast ? "" : "border-r border-white/10";
+            tableHtml += `<th class="px-4 py-2.5 font-semibold text-[#58a6ff] tracking-tight ${borderR}">${renderInlineMarkdown(escapeHtml(h))}</th>`;
           });
           tableHtml += `</tr></thead>`;
-          tableHtml += `<tbody class="divide-y divide-white/5">`;
-          bodyLines.forEach(bl => {
+          tableHtml += `<tbody>`;
+          bodyLines.forEach((bl, rowIdx) => {
             const cells = splitTableRow(bl);
-            tableHtml += `<tr class="hover:bg-white/[0.03] transition-colors">`;
+            const isLastRow = rowIdx === bodyLines.length - 1;
+            const borderB = isLastRow ? "" : "border-b border-white/10";
+            tableHtml += `<tr class="bg-[#121417] hover:bg-[#191c22] transition-colors ${borderB}">`;
             for (let c = 0; c < headers.length; c++) {
               const cellVal = cells[c] || "";
-              tableHtml += `<td class="px-3.5 py-2 text-neutral-300">${renderInlineMarkdown(escapeHtml(cellVal))}</td>`;
+              const isLastCol = c === headers.length - 1;
+              const borderR = isLastCol ? "" : "border-r border-white/10";
+              tableHtml += `<td class="px-4 py-2 text-neutral-200 ${borderR}">${renderInlineMarkdown(escapeHtml(cellVal))}</td>`;
             }
             tableHtml += `</tr>`;
           });
