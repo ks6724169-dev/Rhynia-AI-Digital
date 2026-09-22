@@ -6,6 +6,7 @@ import asyncio
 import json
 import logging
 import os
+from datetime import datetime, timezone, timedelta
 from typing import AsyncGenerator, Dict, List, Optional, Tuple
 import httpx
 
@@ -107,8 +108,26 @@ class CascadeLLMEngine:
     def _build_payload_messages(
         self, messages: List[Dict[str, str]], system_prompt: Optional[str] = None
     ) -> List[Dict[str, str]]:
-        """Construct full message payload with Rhynia system prompt at the root."""
-        sys_content = system_prompt or RHYNIA_SYSTEM_PROMPT
+        """Construct full message payload with Rhynia system prompt and live IST time at the root."""
+        base_prompt = system_prompt or RHYNIA_SYSTEM_PROMPT
+
+        # Inject real-time Indian Standard Time (IST - UTC+05:30)
+        try:
+            ist_tz = timezone(timedelta(hours=5, minutes=30))
+            now_ist = datetime.now(ist_tz)
+            formatted_datetime = now_ist.strftime("%A, %d %B %Y, %I:%M:%S %p IST")
+            time_context = (
+                f"\n\nREAL-TIME TEMPORAL CONTEXT (सटीक वर्तमान समय और दिनांक):\n"
+                f"- Current Date & Time: {formatted_datetime}\n"
+                f"- Day of the Week: {now_ist.strftime('%A')}\n"
+                f"- Current Date: {now_ist.day} {now_ist.strftime('%B')} {now_ist.year}\n"
+                f"- Timezone: Indian Standard Time (IST, UTC+05:30)\n"
+                f"- CRITICAL INSTRUCTION: Always use this exact real-time system clock whenever the user asks for the current date, time, year, month, or day."
+            )
+        except Exception:
+            time_context = ""
+
+        sys_content = base_prompt + time_context
         formatted = [{"role": "system", "content": sys_content}]
         for m in messages:
             role = m.get("role", "user")
