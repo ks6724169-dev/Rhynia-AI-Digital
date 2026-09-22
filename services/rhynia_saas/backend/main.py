@@ -59,6 +59,14 @@ app.include_router(sessions.router)
 app.include_router(files.router)
 app.include_router(profile.router)
 
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+
+# Mount Frontend Web Application
+frontend_dir = Path(__file__).resolve().parent.parent / "frontend"
+if frontend_dir.exists():
+    app.mount("/app", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
+
 
 @app.get("/", tags=["General"])
 async def root():
