@@ -7,6 +7,22 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<!-- Early Theme Detection (Zero FOUC) -->
+<script>
+  (function() {
+    try {
+      var savedTheme = localStorage.getItem("rhynia_theme");
+      if (savedTheme === "light") {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.classList.add("light");
+      } else {
+        document.documentElement.classList.add("dark");
+        document.documentElement.classList.remove("light");
+      }
+    } catch(e) {}
+  })();
+</script>
+<link rel="stylesheet" href="../style.css"/>
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
@@ -131,16 +147,24 @@
 </div>
 <div class="space-y-2">
 <!-- Appearance -->
-<div class="fluent-sub-card flex items-center justify-between p-3 rounded-fluent transition-colors">
+<div onclick="toggleAppearanceTheme()" class="fluent-sub-card flex items-center justify-between p-3 rounded-fluent transition-colors cursor-pointer select-none" title="Click to toggle Light / Dark Mode">
 <div class="flex items-center gap-3">
 <div class="w-8 h-8 rounded-fluent bg-white/[0.04] flex items-center justify-center text-[#0078d4]">
-<span class="material-symbols-outlined text-[18px]">dark_mode</span>
+<span id="settings-theme-icon" class="material-symbols-outlined text-[18px]">dark_mode</span>
 </div>
+<div>
 <p class="text-sm font-normal text-white">Appearance</p>
+<p id="settings-theme-label" class="text-xs text-[#8a919e]">Dark Horizon</p>
 </div>
-<button aria-label="Appearance options" class="p-1.5 rounded-[4px] text-[#8a919e] hover:text-white hover:bg-white/[0.06] transition-colors">
-<span class="material-symbols-outlined text-[18px]">more_vert</span>
-</button>
+</div>
+<div class="flex items-center gap-2.5 pointer-events-none">
+<button type="button" id="settings-theme-btn-text" class="px-2.5 py-1 rounded bg-[#353535] hover:bg-[#404040] text-xs font-medium text-white transition-colors border border-white/10">Switch to Light</button>
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input id="settings-theme-checkbox" class="sr-only peer" type="checkbox">
+<div class="w-10 h-5 bg-[#353535] rounded-full transition-colors duration-200 peer-checked:bg-[#0078d4] border border-white/[0.1]"></div>
+<div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-5 shadow-sm"></div>
+</label>
+</div>
 </div>
 <!-- Accent Color -->
 <div class="fluent-sub-card flex items-center justify-between p-3 rounded-fluent transition-colors">
@@ -230,4 +254,33 @@
 </div>
 
 
+<script>
+  function applyTheme(theme) {
+    const isLight = (theme === "light");
+    if (isLight) {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
+    } else {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    }
+    localStorage.setItem("rhynia_theme", isLight ? "light" : "dark");
+    const label = document.getElementById("settings-theme-label");
+    if (label) label.textContent = isLight ? "Light Mode" : "Dark Horizon";
+    const icon = document.getElementById("settings-theme-icon");
+    if (icon) icon.textContent = isLight ? "light_mode" : "dark_mode";
+    const btn = document.getElementById("settings-theme-btn-text");
+    if (btn) btn.textContent = isLight ? "Switch to Dark" : "Switch to Light";
+    const chk = document.getElementById("settings-theme-checkbox");
+    if (chk) chk.checked = isLight;
+  }
+  function toggleAppearanceTheme() {
+    const isDark = document.documentElement.classList.contains("dark");
+    applyTheme(isDark ? "light" : "dark");
+  }
+  document.addEventListener("DOMContentLoaded", () => {
+    const saved = localStorage.getItem("rhynia_theme") || "dark";
+    applyTheme(saved);
+  });
+</script>
 </body></html>

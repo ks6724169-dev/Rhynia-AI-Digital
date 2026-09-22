@@ -249,20 +249,22 @@ async function handleAvatarFileSelected(event) {
  * Toggle Appearance Theme (Dark Horizon vs Light Mode)
  */
 async function toggleAppearanceTheme() {
-  const currentTheme = document.documentElement.classList.contains("dark") ? "dark" : "light";
-  const newTheme = (currentTheme === "dark") ? "light" : "dark";
+  const isDark = document.documentElement.classList.contains("dark");
+  const newTheme = isDark ? "light" : "dark";
 
   applyTheme(newTheme);
 
   try {
-    await fetch(`${CONFIG.API_BASE}/profile`, {
-      method: "PATCH",
-      headers: {
-        "Authorization": `Bearer ${AppState.token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ theme: newTheme })
-    });
+    if (AppState.token) {
+      await fetch(`${CONFIG.API_BASE}/profile`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${AppState.token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ theme: newTheme })
+      });
+    }
     showToast(`Switched to ${newTheme === 'dark' ? 'Dark Horizon' : 'Light Mode'}`, "success");
   } catch (e) {
     // Non-fatal, local theme still applied
@@ -270,15 +272,34 @@ async function toggleAppearanceTheme() {
 }
 
 function applyTheme(theme) {
-  if (theme === "light") {
+  const isLight = (theme === "light");
+  if (isLight) {
     document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
   } else {
     document.documentElement.classList.add("dark");
+    document.documentElement.classList.remove("light");
   }
-  localStorage.setItem(CONFIG.THEME_KEY, theme);
+  localStorage.setItem(CONFIG.THEME_KEY, isLight ? "light" : "dark");
+
   const themeLabel = document.getElementById("settings-theme-label");
   if (themeLabel) {
-    themeLabel.textContent = theme === "light" ? "Light Mode" : "Dark Horizon";
+    themeLabel.textContent = isLight ? "Light Mode" : "Dark Horizon";
+  }
+
+  const themeIcon = document.getElementById("settings-theme-icon");
+  if (themeIcon) {
+    themeIcon.textContent = isLight ? "light_mode" : "dark_mode";
+  }
+
+  const themeCheckbox = document.getElementById("settings-theme-checkbox");
+  if (themeCheckbox) {
+    themeCheckbox.checked = isLight;
+  }
+
+  const themeBtnText = document.getElementById("settings-theme-btn-text");
+  if (themeBtnText) {
+    themeBtnText.textContent = isLight ? "Switch to Dark" : "Switch to Light";
   }
 }
 

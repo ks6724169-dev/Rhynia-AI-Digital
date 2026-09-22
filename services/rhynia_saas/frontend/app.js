@@ -158,9 +158,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const savedTheme = localStorage.getItem(CONFIG.THEME_KEY) || "dark";
   applyTheme(savedTheme);
 
-  // 2. Strict Login-First Route Gate
+  // 2. Direct Hash Route or Strict Login Gateway
   if (!AppState.token) {
-    switchView("view-login");
+    if (window.location.hash) {
+      handleHashRoute();
+    } else {
+      switchView("view-login");
+    }
     return;
   }
 
