@@ -638,38 +638,55 @@ async function loadSessions() {
   }
 }
 
-function renderSessionsList() {
+function toggleDrawerSearch() {
+  const row = document.getElementById("drawer-search-row");
+  const input = document.getElementById("drawer-search-input");
+  if (!row) return;
+  if (row.classList.contains("hidden")) {
+    row.classList.remove("hidden");
+    if (input) input.focus();
+  } else {
+    row.classList.add("hidden");
+    if (input) {
+      input.value = "";
+      filterSessions("");
+    }
+  }
+}
+
+function filterSessions(query) {
+  const q = (query || "").toLowerCase().trim();
   const pinnedList = document.getElementById("pinned-sessions-list");
   const recentList = document.getElementById("recent-sessions-list");
-
   if (!pinnedList || !recentList) return;
 
-  pinnedList.innerHTML = "";
-  recentList.innerHTML = "";
+  const filtered = q
+    ? AppState.sessions.filter(s => (s.title || "").toLowerCase().includes(q))
+    : AppState.sessions;
 
-  const pinned = AppState.sessions.filter(s => s.is_pinned);
-  const recent = AppState.sessions.filter(s => !s.is_pinned);
+  const pinned = filtered.filter(s => s.is_pinned);
+  const recent = filtered.filter(s => !s.is_pinned);
 
-  // Render Pinned Sessions
-  if (pinned.length === 0) {
-    pinnedList.innerHTML = `<div class="text-xs text-neutral-500 py-1 px-3">No pinned chats</div>`;
-  } else {
-    pinned.forEach(s => pinnedList.appendChild(createSessionItem(s)));
-  }
+  pinnedList.innerHTML = pinned.length === 0
+    ? `<div class="text-xs text-neutral-500 py-1 px-2.5">${q ? "No matches" : "No pinned chats"}</div>`
+    : "";
+  pinned.forEach(s => pinnedList.appendChild(createSessionItem(s)));
 
-  // Render Recent Sessions
-  if (recent.length === 0) {
-    recentList.innerHTML = `<div class="text-xs text-neutral-500 py-1 px-3">No chat history</div>`;
-  } else {
-    recent.forEach(s => recentList.appendChild(createSessionItem(s)));
-  }
+  recentList.innerHTML = recent.length === 0
+    ? `<div class="text-xs text-neutral-500 py-1 px-2.5">${q ? "No matches" : "No chat history"}</div>`
+    : "";
+  recent.forEach(s => recentList.appendChild(createSessionItem(s)));
+}
+
+function renderSessionsList() {
+  filterSessions("");
 }
 
 function createSessionItem(session) {
   const isActive = AppState.activeSessionId === session.id;
   const item = document.createElement("div");
-  item.className = `group flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all cursor-pointer ${
-    isActive ? "bg-[#0078d4]/20 text-white font-medium border border-[#0078d4]/30" : "text-neutral-300 hover:bg-white/5 hover:text-white"
+  item.className = `relative group flex items-center justify-between px-2.5 py-2 rounded-md text-xs transition-colors cursor-pointer ${
+    isActive ? "bg-[#303030] text-white font-medium shadow-sm" : "text-[#c0c7d4] hover:text-white hover:bg-[#2a2a2a]"
   }`;
 
   item.onclick = (e) => {
@@ -679,15 +696,17 @@ function createSessionItem(session) {
   };
 
   item.innerHTML = `
-    <div class="flex items-center gap-2.5 truncate">
-      <span class="material-symbols-outlined text-[18px] ${isActive ? "text-[#0078d4]" : "text-neutral-400"}">
+    ${isActive ? `<div class="absolute left-0 top-1.5 bottom-1.5 w-1 bg-[#0078D4] rounded-r-full"></div>` : ""}
+    <div class="flex items-center gap-2.5 pl-1 overflow-hidden truncate flex-1">
+      <span class="material-symbols-outlined text-[16px] flex-shrink-0 ${isActive ? "text-[#0078D4]" : "text-[#8a919e]"}">
         ${session.is_pinned ? "keep" : "chat_bubble_outline"}
       </span>
-      <span class="truncate text-xs">${escapeHtml(session.title || "New Chat")}</span>
+      <span class="truncate">${escapeHtml(session.title || "New Chat")}</span>
     </div>
-    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-      <button class="session-actions-trigger p-1 text-neutral-400 hover:text-white rounded hover:bg-white/10" onclick="openSessionActionsModal('${session.id}', event)">
-        <span class="material-symbols-outlined text-[16px]">more_horiz</span>
+    <div class="flex items-center gap-1.5 flex-shrink-0">
+      ${isActive ? `<span class="w-1.5 h-1.5 rounded-full bg-[#0078D4] flex-shrink-0"></span>` : ""}
+      <button class="session-actions-trigger p-1 text-neutral-400 hover:text-white rounded hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" onclick="openSessionActionsModal('${session.id}', event)" title="Chat options">
+        <span class="material-symbols-outlined text-[14px]">more_horiz</span>
       </button>
     </div>
   `;
