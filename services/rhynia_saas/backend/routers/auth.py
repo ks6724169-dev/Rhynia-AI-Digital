@@ -37,7 +37,8 @@ class UserRegisterRequest(BaseModel):
 
 
 class UserLoginRequest(BaseModel):
-    identifier: str  # email or username
+    identifier: Optional[str] = None  # email or username
+    email: Optional[str] = None
     password: str
 
 
@@ -137,7 +138,13 @@ def register(req: UserRegisterRequest, db: Session = Depends(get_db)):
 @router.post("/login", response_model=AuthResponse)
 def login(req: UserLoginRequest, db: Session = Depends(get_db)):
     """Authenticate with email/username and password."""
-    identifier = req.identifier.strip().lower()
+    raw_id = req.identifier or req.email
+    if not raw_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email or username is required."
+        )
+    identifier = raw_id.strip().lower()
 
     user = (
         db.query(User)
