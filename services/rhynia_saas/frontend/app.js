@@ -154,9 +154,12 @@ function renderMarkdown(rawText) {
 // APPLICATION INITIALIZATION & ROUTE GUARD
 // ==========================================
 document.addEventListener("DOMContentLoaded", async () => {
-  // 1. Check Theme preference from storage
+  // 1. Check Theme & Accent preference from storage
   const savedTheme = localStorage.getItem(CONFIG.THEME_KEY) || "dark";
   applyTheme(savedTheme);
+
+  const savedAccent = localStorage.getItem(CONFIG.ACCENT_KEY) || "#0078D4";
+  applyAccentColor(savedAccent, false);
 
   // 2. Direct Hash Route or Strict Login Gateway
   if (!AppState.token) {

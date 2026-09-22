@@ -167,16 +167,30 @@
 </div>
 </div>
 <!-- Accent Color -->
-<div class="fluent-sub-card flex items-center justify-between p-3 rounded-fluent transition-colors">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-fluent bg-white/[0.04] flex items-center justify-center text-[#0078d4]">
-<span class="material-symbols-outlined text-[18px]">palette</span>
-</div>
-<p class="text-sm font-normal text-white">Accent Color</p>
-</div>
-<button aria-label="Accent color options" class="p-1.5 rounded-[4px] text-[#8a919e] hover:text-white hover:bg-white/[0.06] transition-colors">
-<span class="material-symbols-outlined text-[18px]">more_vert</span>
-</button>
+<div class="relative flex flex-col p-3 rounded-fluent bg-[#282828] border border-white/5 transition-colors">
+  <div onclick="toggleAccentColorPicker()" class="flex items-center justify-between cursor-pointer select-none">
+    <div class="flex items-center gap-3">
+      <div id="settings-accent-preview" class="w-8 h-8 rounded-fluent bg-[#0078d4] flex items-center justify-center text-white shadow-sm transition-colors">
+        <span class="material-symbols-outlined text-[18px]">palette</span>
+      </div>
+      <div>
+        <p class="text-sm font-normal text-white">Accent Color</p>
+        <p class="text-xs text-[#8a919e]">Theme highlights & glow</p>
+      </div>
+    </div>
+    <button aria-label="Accent color options" class="p-1.5 rounded-[4px] text-[#8a919e] hover:text-white hover:bg-white/[0.06] transition-colors pointer-events-none">
+      <span class="material-symbols-outlined text-[18px]">expand_more</span>
+    </button>
+  </div>
+
+  <!-- Accent Color Palette Swatches -->
+  <div id="accent-color-picker-flyout" class="hidden mt-3 pt-3 border-t border-white/10 flex items-center gap-3 justify-center">
+    <button type="button" onclick="selectAccentColor('#0078D4')" class="w-7 h-7 rounded-full bg-[#0078D4] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Azure Blue"></button>
+    <button type="button" onclick="selectAccentColor('#7C5CFF')" class="w-7 h-7 rounded-full bg-[#7C5CFF] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Purple Luminescence"></button>
+    <button type="button" onclick="selectAccentColor('#107C41')" class="w-7 h-7 rounded-full bg-[#107C41] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Emerald Green"></button>
+    <button type="button" onclick="selectAccentColor('#FFB900')" class="w-7 h-7 rounded-full bg-[#FFB900] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Amber Horizon"></button>
+    <button type="button" onclick="selectAccentColor('#D93025')" class="w-7 h-7 rounded-full bg-[#D93025] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Ruby Energy"></button>
+  </div>
 </div>
 <!-- Language -->
 <div class="fluent-sub-card flex items-center justify-between p-3 rounded-fluent transition-colors">
@@ -278,9 +292,39 @@
     const isDark = document.documentElement.classList.contains("dark");
     applyTheme(isDark ? "light" : "dark");
   }
+  function toggleAccentColorPicker() {
+    const picker = document.getElementById("accent-color-picker-flyout");
+    if (picker) picker.classList.toggle("hidden");
+  }
+  function selectAccentColor(hexCode) {
+    applyAccentColor(hexCode);
+    toggleAccentColorPicker();
+  }
+  function applyAccentColor(hexCode) {
+    if (!hexCode) return;
+    localStorage.setItem("rhynia_accent_color", hexCode);
+    document.documentElement.style.setProperty("--primary", hexCode);
+    document.documentElement.style.setProperty("--fluent-azure", hexCode);
+
+    let styleEl = document.getElementById("dynamic-accent-style");
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = "dynamic-accent-style";
+      document.head.appendChild(styleEl);
+    }
+    styleEl.textContent = `
+      .bg-\\[\\#0078D4\\], .bg-\\[\\#0078d4\\], .bg-primary, .peer\\:checked ~ .peer-checked\\:bg-\\[\\#0078D4\\], .peer\\:checked ~ .peer-checked\\:bg-\\[\\#0078d4\\], #settings-accent-preview { background-color: ${hexCode} !important; }
+      .text-\\[\\#0078D4\\], .text-\\[\\#0078d4\\], .text-primary { color: ${hexCode} !important; }
+      .border-\\[\\#0078D4\\], .border-\\[\\#0078d4\\], .border-primary { border-color: ${hexCode} !important; }
+    `;
+    const preview = document.getElementById("settings-accent-preview");
+    if (preview) preview.style.backgroundColor = hexCode;
+  }
   document.addEventListener("DOMContentLoaded", () => {
     const saved = localStorage.getItem("rhynia_theme") || "dark";
     applyTheme(saved);
+    const savedAccent = localStorage.getItem("rhynia_accent_color") || "#0078D4";
+    applyAccentColor(savedAccent);
   });
 </script>
 </body></html>

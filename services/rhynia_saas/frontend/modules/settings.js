@@ -320,14 +320,16 @@ async function selectAccentColor(hexCode) {
   toggleAccentColorPicker();
 
   try {
-    await fetch(`${CONFIG.API_BASE}/profile`, {
-      method: "PATCH",
-      headers: {
-        "Authorization": `Bearer ${AppState.token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ accent_color: hexCode })
-    });
+    if (AppState.token) {
+      await fetch(`${CONFIG.API_BASE}/profile`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${AppState.token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ accent_color: hexCode })
+      });
+    }
     showToast("Accent color updated!", "success");
   } catch (e) {
     // Local color already applied
@@ -336,14 +338,72 @@ async function selectAccentColor(hexCode) {
 
 function applyAccentColor(hexCode, persist) {
   if (!hexCode) return;
+  localStorage.setItem(CONFIG.ACCENT_KEY, hexCode);
   document.documentElement.style.setProperty("--primary", hexCode);
   document.documentElement.style.setProperty("--fluent-azure", hexCode);
+
+  let styleEl = document.getElementById("dynamic-accent-style");
+  if (!styleEl) {
+    styleEl = document.createElement("style");
+    styleEl.id = "dynamic-accent-style";
+    document.head.appendChild(styleEl);
+  }
+
+  styleEl.textContent = `
+    .bg-\\[\\#0078D4\\],
+    .bg-\\[\\#0078d4\\],
+    .bg-primary,
+    .bg-primary-container,
+    .peer:checked ~ .peer-checked\\:bg-\\[\\#0078D4\\],
+    .peer:checked ~ .peer-checked\\:bg-\\[\\#0078d4\\],
+    .peer:checked ~ .w-10.h-5.bg-\\[\\#353535\\],
+    #btn-send-message,
+    #login-submit-btn,
+    #register-submit-btn,
+    #btn-verify-sms-otp,
+    #btn-verify-email-otp,
+    #btn-send-reset-otp,
+    #storage-bar-threads,
+    .user-avatar-initial-container,
+    #settings-accent-preview,
+    .accent-bg {
+      background-color: ${hexCode} !important;
+    }
+
+    .text-\\[\\#0078D4\\],
+    .text-\\[\\#0078d4\\],
+    .text-primary,
+    .text-\\[\\#4cc2ff\\],
+    .text-\\[\\#8ecdff\\],
+    .accent-text {
+      color: ${hexCode} !important;
+    }
+
+    .border-\\[\\#0078D4\\],
+    .border-\\[\\#0078d4\\],
+    .border-primary,
+    .hover\\:border-\\[\\#0078D4\\]:hover,
+    .focus\\:border-\\[\\#0078D4\\]:focus {
+      border-color: ${hexCode} !important;
+    }
+
+    .shadow-\\[\\#0078D4\\]\\/20,
+    .shadow-\\[\\#0078D4\\]\\/30 {
+      --tw-shadow-color: ${hexCode}40 !important;
+    }
+
+    #settings-storage-badge {
+      background-color: ${hexCode}20 !important;
+      border-color: ${hexCode}40 !important;
+      color: ${hexCode} !important;
+    }
+  `;
 
   const preview = document.getElementById("settings-accent-preview");
   if (preview) preview.style.backgroundColor = hexCode;
 
-  if (persist) {
-    if (AppState.user) AppState.user.accent_color = hexCode;
+  if (persist && AppState.user) {
+    AppState.user.accent_color = hexCode;
   }
 }
 
