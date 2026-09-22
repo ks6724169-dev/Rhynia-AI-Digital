@@ -29,6 +29,7 @@ async function openSettingsPanel() {
   // Load latest live telemetry
   await loadUserProfile();
   await loadStorage();
+  await loadNotificationSettings();
 }
 
 /**
@@ -445,26 +446,203 @@ function selectLanguage(langCode, langName) {
 }
 
 /**
- * Toggle Notifications (Push Alerts)
+ * Toggle Notification Settings Expandable Section
  */
-async function toggleNotifications(checkboxEl) {
-  if (checkboxEl.checked) {
-    if ("Notification" in window) {
-      const permission = await Notification.requestPermission();
-      if (permission === "granted") {
-        showToast("Notifications enabled!", "success");
-      } else {
-        showToast("Notification permission was denied in your browser", "info");
-        checkboxEl.checked = false;
-      }
-    } else {
-      showToast("Browser does not support notifications", "info");
-      checkboxEl.checked = false;
-    }
+function toggleNotificationSettingsSection() {
+  const panel = document.getElementById("notification-settings-panel");
+  const chevron = document.getElementById("notif-chevron-icon");
+  if (!panel) return;
+
+  const isHidden = panel.classList.contains("hidden");
+  if (isHidden) {
+    panel.classList.remove("hidden");
+    if (chevron) chevron.style.transform = "rotate(180deg)";
+    loadNotificationSettings();
   } else {
-    showToast("Notifications disabled", "info");
+    panel.classList.add("hidden");
+    if (chevron) chevron.style.transform = "rotate(0deg)";
   }
 }
+
+/**
+ * Sync Notification Master State across Child Switches & Status Badge
+ */
+function syncNotificationMasterState(isEnabled) {
+  const masterSwitch = document.getElementById("notif-master-switch");
+  if (masterSwitch) masterSwitch.checked = isEnabled;
+
+  const childrenGroup = document.getElementById("notif-children-group");
+  const childInputs = document.querySelectorAll(".child-notif-input");
+  const statusBadge = document.getElementById("notif-status-badge");
+
+  if (!isEnabled) {
+    if (childrenGroup) {
+      childrenGroup.classList.add("opacity-40", "pointer-events-none");
+    }
+    childInputs.forEach(input => {
+      input.disabled = true;
+    });
+    if (statusBadge) {
+      statusBadge.textContent = "Muted";
+      statusBadge.className = "text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20";
+    }
+  } else {
+    if (childrenGroup) {
+      childrenGroup.classList.remove("opacity-40", "pointer-events-none");
+    }
+    childInputs.forEach(input => {
+      input.disabled = false;
+    });
+    if (statusBadge) {
+      statusBadge.textContent = "Active";
+      statusBadge.className = "text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-[#0078D4]/15 text-[#8ecdff] border border-[#0078D4]/30";
+    }
+  }
+}
+
+/**
+ * Load Notification Settings from REST API (GET /api/v1/notifications/settings)
+ */
+async function loadNotificationSettings() {
+  // Fast local storage cache load
+  let cached = null;
+  try {
+    const raw = localStorage.getItem("rhynia_notification_settings");
+    if (raw) cached = JSON.parse(raw);
+  } catch (e) {}
+
+  if (cached) {
+    applyNotificationSettingsToDOM(cached);
+  }
+
+  if (!AppState.token) return;
+
+  try {
+    const res = await fetch(`${CONFIG.API_BASE}/notifications/settings`, {
+      headers: { "Authorization": `Bearer ${AppState.token}` }
+    });
+    if (!res.ok) return;
+
+    const data = await res.json();
+    localStorage.setItem("rhynia_notification_settings", JSON.stringify(data));
+    applyNotificationSettingsToDOM(data);
+  } catch (err) {
+    console.error("Failed to load notification settings:", err);
+  }
+}
+
+function applyNotificationSettingsToDOM(data) {
+  if (!data) return;
+
+  const masterEl = document.getElementById("notif-master-switch");
+  if (masterEl) masterEl.checked = data.enabled_all !== false;
+
+  const taskEl = document.getElementById("notif-task-complete-switch");
+  if (taskEl) taskEl.checked = data.task_complete !== false;
+
+  const prodEl = document.getElementById("notif-product-updates-switch");
+  if (prodEl) prodEl.checked = data.product_updates !== false;
+
+  const pushEl = document.getElementById("notif-push-switch");
+  if (pushEl) pushEl.checked = data.push_notifications !== false;
+
+  const emailEl = document.getElementById("notif-email-switch");
+  if (emailEl) emailEl.checked = data.email_notifications === true;
+
+  syncNotificationMasterState(data.enabled_all !== false);
+}
+
+/**
+ * Handle Master Switch Toggle (Enable All Notifications)
+ */
+async function handleMasterNotificationToggle(checkboxEl) {
+  const isEnabled = checkboxEl.checked;
+  syncNotificationMasterState(isEnabled);
+
+  // Update local storage cache
+  try {
+    const raw = localStorage.getItem("rhynia_notification_settings");
+    const current = raw ? JSON.parse(raw) : {};
+    current.enabled_all = isEnabled;
+    localStorage.setItem("rhynia_notification_settings", JSON.stringify(current));
+  } catch (e) {}
+
+  if (isEnabled) {
+    showToast("Notifications enabled", "success");
+  } else {
+    showToast("All notifications muted", "info");
+  }
+
+  if (!AppState.token) return;
+
+  try {
+    await fetch(`${CONFIG.API_BASE}/notifications/settings`, {
+      method: "PATCH",
+      headers: {
+        "Authorization": `Bearer ${AppState.token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ enabled_all: isEnabled })
+    });
+  } catch (err) {
+    console.error("Failed to save master notification setting:", err);
+  }
+}
+
+/**
+ * Handle Child Switch Toggle (Task complete, Product updates, Push, Email)
+ */
+async function handleChildNotificationToggle(key, checkboxEl) {
+  const isChecked = checkboxEl.checked;
+
+  // Browser Push Permission Check
+  if (key === "push_notifications" && isChecked) {
+    if ("Notification" in window) {
+      if (Notification.permission === "default") {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          checkboxEl.checked = false;
+          showToast("Browser notification permission denied", "info");
+          return;
+        }
+      } else if (Notification.permission === "denied") {
+        checkboxEl.checked = false;
+        showToast("Please enable notifications in your browser permissions", "info");
+        return;
+      }
+    } else {
+      checkboxEl.checked = false;
+      showToast("Your browser does not support notifications", "info");
+      return;
+    }
+  }
+
+  // Update local storage cache
+  try {
+    const raw = localStorage.getItem("rhynia_notification_settings");
+    const current = raw ? JSON.parse(raw) : {};
+    current[key] = isChecked;
+    localStorage.setItem("rhynia_notification_settings", JSON.stringify(current));
+  } catch (e) {}
+
+  showToast("Preference saved", "success");
+
+  if (!AppState.token) return;
+
+  try {
+    await fetch(`${CONFIG.API_BASE}/notifications/settings`, {
+      method: "PATCH",
+      headers: {
+        "Authorization": `Bearer ${AppState.token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ [key]: isChecked })
+    });
+  } catch (err) {
+    console.error(`Failed to update ${key}:`, err);
+  }
+}
+
 
 /**
  * Load Live Dynamic Storage Metrics (GET /api/v1/profile/storage)
@@ -556,7 +734,10 @@ window.closeSettingsPanel = closeSettingsPanel;
 window.toggleAccentColorPicker = toggleAccentColorPicker;
 window.selectAccentColor = selectAccentColor;
 window.toggleLanguageSelector = toggleLanguageSelector;
-window.toggleNotifications = toggleNotifications;
+window.toggleNotificationSettingsSection = toggleNotificationSettingsSection;
+window.handleMasterNotificationToggle = handleMasterNotificationToggle;
+window.handleChildNotificationToggle = handleChildNotificationToggle;
+window.loadNotificationSettings = loadNotificationSettings;
 window.logoutUser = logoutUser;
 window.triggerAvatarUpload = triggerAvatarUpload;
 window.handleAvatarFileSelected = handleAvatarFileSelected;

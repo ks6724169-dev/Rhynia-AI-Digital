@@ -97,6 +97,9 @@ class User(Base):
     messages = relationship("ChatMessage", back_populates="user", cascade="all, delete-orphan")
     files = relationship("UserFile", back_populates="user", cascade="all, delete-orphan")
     feedbacks = relationship("MessageFeedback", back_populates="user", cascade="all, delete-orphan")
+    notification_preferences = relationship(
+        "UserNotificationPreference", back_populates="user", uselist=False, cascade="all, delete-orphan"
+    )
 
 
 # ==========================================
@@ -211,6 +214,29 @@ class MessageFeedback(Base):
 
     # Relationships
     user = relationship("User", back_populates="feedbacks")
+
+
+# ==========================================
+# 7. USER NOTIFICATION PREFERENCES MODEL
+# ==========================================
+class UserNotificationPreference(Base):
+    __tablename__ = "user_notification_preferences"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False, index=True
+    )
+    enabled_all = Column(Boolean, default=True, nullable=False)
+    task_complete = Column(Boolean, default=True, nullable=False)
+    product_updates = Column(Boolean, default=True, nullable=False)
+    push_notifications = Column(Boolean, default=True, nullable=False)
+    email_notifications = Column(Boolean, default=False, nullable=False)
+    updated_at = Column(
+        DateTime(timezone=True), default=get_utc_now, onupdate=get_utc_now, nullable=False
+    )
+
+    # Relationships
+    user = relationship("User", back_populates="notification_preferences")
 
 
 # ==========================================

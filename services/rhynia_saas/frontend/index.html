@@ -782,22 +782,124 @@
               </div>
             </div>
 
-            <!-- Notifications Switch -->
-            <div class="flex items-center justify-between p-3 rounded-lg bg-[#282828] border border-white/5 transition-colors">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[#0078D4]">
-                  <span class="material-symbols-outlined text-[18px]">notifications</span>
+            <!-- Notifications Settings Expandable Card -->
+            <div class="relative flex flex-col p-3 rounded-lg bg-[#282828] border border-white/5 transition-colors">
+              <div onclick="toggleNotificationSettingsSection()" class="flex items-center justify-between cursor-pointer select-none">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[#0078D4]">
+                    <span class="material-symbols-outlined text-[18px]">notifications</span>
+                  </div>
+                  <div>
+                    <p data-i18n="notif_settings" class="text-sm font-medium text-white">Notification Settings</p>
+                    <p data-i18n="notif_settings_desc" class="text-xs text-neutral-400">Alerts, task updates and channels</p>
+                  </div>
                 </div>
-                <div>
-                  <p data-i18n="notifications" class="text-sm font-medium text-white">Notifications</p>
-                  <p data-i18n="notifications_desc" class="text-xs text-neutral-400">Push alerts for updates</p>
+                <div class="flex items-center gap-2">
+                  <span id="notif-status-badge" class="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-white/5 text-neutral-300 border border-white/10">Active</span>
+                  <button type="button" class="p-1 rounded text-neutral-400 hover:text-white transition-colors pointer-events-none" title="Expand Notification Settings">
+                    <span id="notif-chevron-icon" class="material-symbols-outlined text-[18px] transition-transform duration-200">expand_more</span>
+                  </button>
                 </div>
               </div>
-              <label class="relative inline-flex items-center cursor-pointer select-none">
-                <input type="checkbox" class="sr-only peer" onchange="toggleNotifications(this)"/>
-                <div class="w-10 h-5 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
-                <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
-              </label>
+
+              <!-- Expandable Notification Controls Container -->
+              <div id="notification-settings-panel" class="hidden mt-3 pt-3 border-t border-white/10 space-y-3">
+                
+                <!-- 1. Master Switch: Enable All Notifications -->
+                <div class="flex items-center justify-between p-2.5 rounded-lg bg-[#202020] border border-white/5 transition-colors">
+                  <div class="flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-[18px] text-[#0078D4]">notifications_active</span>
+                    <div>
+                      <p data-i18n="enable_all_notif" class="text-xs sm:text-sm font-semibold text-white">Enable All Notifications</p>
+                      <p data-i18n="enable_all_notif_desc" class="text-[11px] text-neutral-400">Master switch for all alerts and messages</p>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer select-none shrink-0 ml-3">
+                    <input id="notif-master-switch" type="checkbox" checked class="sr-only peer" onchange="handleMasterNotificationToggle(this)"/>
+                    <div class="w-10 h-5 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
+                    <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
+                  </label>
+                </div>
+
+                <!-- Child Toggles Container (Automatically dimmed & disabled when master is OFF) -->
+                <div id="notif-children-group" class="space-y-2.5 transition-all duration-200">
+                  
+                  <!-- Section 1: Alert Triggers -->
+                  <div class="space-y-1.5 pt-1">
+                    <span class="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold pl-1">ALERT TRIGGERS</span>
+                    
+                    <!-- AI Task Complete Alert -->
+                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-[#202020]/70 border border-white/5 transition-colors">
+                      <div class="flex items-center gap-2.5">
+                        <span class="material-symbols-outlined text-[17px] text-[#4cc2ff]">task_alt</span>
+                        <div>
+                          <p data-i18n="notif_task_complete" class="text-xs font-medium text-white">Notify when AI task is complete</p>
+                          <p data-i18n="notif_task_complete_desc" class="text-[11px] text-neutral-400">Alerts for long tasks, deep reasoning or image generation</p>
+                        </div>
+                      </div>
+                      <label class="relative inline-flex items-center cursor-pointer select-none shrink-0 ml-3">
+                        <input id="notif-task-complete-switch" type="checkbox" checked class="sr-only peer child-notif-input" onchange="handleChildNotificationToggle('task_complete', this)"/>
+                        <div class="w-10 h-5 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
+                        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
+                      </label>
+                    </div>
+
+                    <!-- Product Updates & New Models -->
+                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-[#202020]/70 border border-white/5 transition-colors">
+                      <div class="flex items-center gap-2.5">
+                        <span class="material-symbols-outlined text-[17px] text-[#a855f7]">auto_awesome</span>
+                        <div>
+                          <p data-i18n="notif_product_updates" class="text-xs font-medium text-white">Product updates & New AI models</p>
+                          <p data-i18n="notif_product_updates_desc" class="text-[11px] text-neutral-400">New capabilities, models, and platform updates</p>
+                        </div>
+                      </div>
+                      <label class="relative inline-flex items-center cursor-pointer select-none shrink-0 ml-3">
+                        <input id="notif-product-updates-switch" type="checkbox" checked class="sr-only peer child-notif-input" onchange="handleChildNotificationToggle('product_updates', this)"/>
+                        <div class="w-10 h-5 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
+                        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Section 2: Channel Preferences -->
+                  <div class="space-y-1.5 pt-1">
+                    <span data-i18n="notif_channels_title" class="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold pl-1">CHANNEL PREFERENCES</span>
+                    
+                    <!-- Push Notifications -->
+                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-[#202020]/70 border border-white/5 transition-colors">
+                      <div class="flex items-center gap-2.5">
+                        <span class="material-symbols-outlined text-[17px] text-[#0078D4]">devices</span>
+                        <div>
+                          <p data-i18n="notif_push" class="text-xs font-medium text-white">Push Notifications</p>
+                          <p data-i18n="notif_push_desc" class="text-[11px] text-neutral-400">Instant popups on your browser or device screen</p>
+                        </div>
+                      </div>
+                      <label class="relative inline-flex items-center cursor-pointer select-none shrink-0 ml-3">
+                        <input id="notif-push-switch" type="checkbox" checked class="sr-only peer child-notif-input" onchange="handleChildNotificationToggle('push_notifications', this)"/>
+                        <div class="w-10 h-5 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
+                        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
+                      </label>
+                    </div>
+
+                    <!-- Email Notifications -->
+                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-[#202020]/70 border border-white/5 transition-colors">
+                      <div class="flex items-center gap-2.5">
+                        <span class="material-symbols-outlined text-[17px] text-[#107c41]">mail</span>
+                        <div>
+                          <p data-i18n="notif_email" class="text-xs font-medium text-white">Email Notifications</p>
+                          <p data-i18n="notif_email_desc" class="text-[11px] text-neutral-400">Periodic digests and task alerts sent to your inbox</p>
+                        </div>
+                      </div>
+                      <label class="relative inline-flex items-center cursor-pointer select-none shrink-0 ml-3">
+                        <input id="notif-email-switch" type="checkbox" class="sr-only peer child-notif-input" onchange="handleChildNotificationToggle('email_notifications', this)"/>
+                        <div class="w-10 h-5 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
+                        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
+                      </label>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
             </div>
           </div>
         </section>

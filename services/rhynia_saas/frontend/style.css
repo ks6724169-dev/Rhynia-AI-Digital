@@ -1000,6 +1000,43 @@ html.light #edit-profile-modal input:focus {
   background-color: #ffffff !important;
 }
 
+/* ========================================================= */
+/* NOTIFICATION SETTINGS EXPANDABLE PANEL & CONTROLS         */
+/* ========================================================= */
+
+#notification-settings-panel {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#notif-children-group.opacity-40 * {
+  cursor: not-allowed !important;
+}
+
+/* Light Mode Overrides for Notification Panel */
+html.light #notification-settings-panel .bg-\[\#202020\],
+html.light #notification-settings-panel .bg-\[\#202020\]\/70 {
+  background-color: #f3f4f6 !important;
+  border-color: #e5e7eb !important;
+}
+
+html.light #notification-settings-panel .text-white {
+  color: #111827 !important;
+}
+
+html.light #notification-settings-panel .text-neutral-400 {
+  color: #6b7280 !important;
+}
+
+html.light #notification-settings-panel .w-10.h-5.bg-\[\#353535\] {
+  background-color: #d1d5db !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light #notification-settings-panel .peer:checked ~ .w-10.h-5 {
+  background-color: #0078D4 !important;
+}
+
+
 
 
 
