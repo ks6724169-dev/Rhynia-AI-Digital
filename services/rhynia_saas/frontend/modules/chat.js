@@ -455,7 +455,8 @@ async function exportActiveSession(format = "text") {
  */
 async function shareActiveSession() {
   toggle3DotsMenu(false);
-  const title = document.getElementById("active-thread-title")?.textContent || "Conversation";
+  const activeSession = AppState.sessions ? AppState.sessions.find(s => s.id === AppState.activeSessionId) : null;
+  const title = activeSession?.title || "Conversation";
   const shareData = {
     title: `Rhynia - ${title}`,
     text: `Read conversation "${title}" on Rhynia Intelligence`,

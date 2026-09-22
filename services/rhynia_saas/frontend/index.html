@@ -416,34 +416,24 @@
 
     <!-- Top Navigation Header (Screen 01 & 02) -->
     <header class="sticky top-0 z-30 h-14 border-b border-[#2d2d2d] bg-[#1a1a1a]/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between">
-      <!-- Left: Hamburger Drawer Menu Button & Title -->
-      <div class="flex items-center gap-3">
+      <!-- Left: Hamburger Drawer Menu Button -->
+      <div class="flex items-center">
         <button id="btn-hamburger-menu" type="button" onclick="toggleSidebarDrawer(true)" class="p-2 -ml-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="Open Drawer">
           <span class="material-symbols-outlined text-xl">menu</span>
         </button>
-        <div class="flex flex-col">
-          <span class="text-sm font-semibold text-white flex items-center gap-1.5">
-            <span id="active-thread-title">Rhynia</span>
-            <span id="active-thread-pin-icon" class="material-symbols-outlined text-xs text-[#0078D4]" style="display: none; font-variation-settings: 'FILL' 1;">keep</span>
-          </span>
-          <span class="text-[11px] text-neutral-400">Active • Rhynia</span>
-        </div>
       </div>
 
-      <!-- Right: Action Buttons (Share, 3-Dots More Options) -->
+      <!-- Right: Action Buttons (New Chat with edit_square, and 3-Dots More Options) -->
       <div class="flex items-center gap-1 relative">
         <button type="button" onclick="startNewChat()" class="p-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="New Chat">
-          <span class="material-symbols-outlined text-xl">add</span>
-        </button>
-        <button type="button" onclick="shareActiveSession()" class="p-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="Share Session">
-          <span class="material-symbols-outlined text-xl">share</span>
+          <span class="material-symbols-outlined text-xl">edit_square</span>
         </button>
         <button id="btn-three-dots-trigger" type="button" onclick="toggle3DotsMenu()" class="p-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="More Options">
           <span class="material-symbols-outlined text-xl">more_vert</span>
         </button>
 
-        <!-- Screen 03: 3-Dots Flyout Menu (Fluent 2 Dark Context Menu) -->
-        <div id="three-dots-menu" class="hidden absolute top-12 right-0 w-64 fluent-flyout rounded-xl p-1.5 shadow-2xl z-50 divide-y divide-white/5 border border-white/10 bg-[#252525]">
+        <!-- Screen 03: 3-Dots Flyout Menu (Fluent 2 Dark Context Menu: Only Share, Pin, Delete) -->
+        <div id="three-dots-menu" class="hidden absolute top-12 right-0 w-60 fluent-flyout rounded-xl p-1.5 shadow-2xl z-50 divide-y divide-white/5 border border-white/10 bg-[#252525]">
           <div class="py-1">
             <button type="button" onclick="shareActiveSession()" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-neutral-200 hover:bg-white/10 transition-colors text-xs font-medium">
               <div class="flex items-center gap-2.5">
@@ -459,35 +449,12 @@
               </div>
               <span class="material-symbols-outlined text-xs text-neutral-500">chevron_right</span>
             </button>
-            <button type="button" onclick="renameActiveSession()" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-neutral-200 hover:bg-white/10 transition-colors text-xs font-medium">
-              <div class="flex items-center gap-2.5">
-                <span class="material-symbols-outlined text-base text-neutral-400">edit</span>
-                <span>Rename Chat</span>
-              </div>
-              <span class="material-symbols-outlined text-xs text-neutral-500">chevron_right</span>
-            </button>
-          </div>
-          <div class="py-1">
-            <button type="button" onclick="exportActiveSession('text')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-neutral-200 hover:bg-white/10 transition-colors text-xs font-medium">
-              <div class="flex items-center gap-2.5">
-                <span class="material-symbols-outlined text-base text-neutral-400">download</span>
-                <span>Export as Markdown</span>
-              </div>
-              <span class="material-symbols-outlined text-xs text-neutral-500">chevron_right</span>
-            </button>
-            <button type="button" onclick="exportActiveSession('slides')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-neutral-200 hover:bg-white/10 transition-colors text-xs font-medium">
-              <div class="flex items-center gap-2.5">
-                <span class="material-symbols-outlined text-base text-neutral-400">slideshow</span>
-                <span>Export Presentation (Pro)</span>
-              </div>
-              <span class="material-symbols-outlined text-xs text-neutral-500">chevron_right</span>
-            </button>
           </div>
           <div class="py-1">
             <button type="button" onclick="deleteActiveSession()" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-[#ff7b7b] hover:bg-[#93000a]/20 transition-colors text-xs font-medium">
               <div class="flex items-center gap-2.5">
                 <span class="material-symbols-outlined text-base text-[#ff7b7b]">delete</span>
-                <span>Delete Conversation</span>
+                <span>Delete Chat</span>
               </div>
               <span class="material-symbols-outlined text-xs text-[#ff7b7b]">chevron_right</span>
             </button>
