@@ -109,6 +109,7 @@ function addAttachmentChipUI(fileObj) {
   }
 
   container.appendChild(chip);
+  updateSendButtonState();
 }
 
 /**
@@ -117,6 +118,7 @@ function addAttachmentChipUI(fileObj) {
 function removeAttachmentFile(fileId) {
   AppState.pendingFiles = AppState.pendingFiles.filter(f => f.id !== fileId);
   removeAttachmentChipUI(fileId);
+  updateSendButtonState();
 }
 
 function removeAttachmentChipUI(fileId) {
@@ -128,6 +130,7 @@ function removeAttachmentChipUI(fileId) {
     container.classList.add("hidden");
     container.classList.remove("flex");
   }
+  updateSendButtonState();
 }
 
 /**
@@ -179,6 +182,7 @@ function toggleVoiceInput() {
       transcript += event.results[i][0].transcript;
     }
     input.value = (input.value ? input.value + " " : "") + transcript;
+    updateSendButtonState();
   };
 
   speechRecognizer.onerror = (event) => {
@@ -219,4 +223,59 @@ function triggerFileManager() {
   if (fileInput) fileInput.click();
   toggleAttachmentMenu(false);
 }
+
+/**
+ * Update Send Button State (Colorless when empty, Colorful when user types input)
+ */
+function updateSendButtonState() {
+  const inputEl = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("btn-send-message");
+  if (!sendBtn) return;
+
+  const hasText = inputEl && inputEl.value && inputEl.value.trim().length > 0;
+  const hasFiles = window.AppState && window.AppState.pendingFiles && window.AppState.pendingFiles.length > 0;
+  const isStreaming = window.AppState && window.AppState.isStreaming;
+
+  if ((hasText || hasFiles) && !isStreaming) {
+    sendBtn.classList.remove("btn-send-disabled");
+    sendBtn.removeAttribute("disabled");
+  } else {
+    sendBtn.classList.add("btn-send-disabled");
+    sendBtn.setAttribute("disabled", "true");
+  }
+}
+
+/**
+ * Handle Enter Key in Chat Input (Sends message if text is present)
+ */
+function handleChatInputKeyDown(event) {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    const inputEl = document.getElementById("chat-input");
+    const hasText = inputEl && inputEl.value && inputEl.value.trim().length > 0;
+    const hasFiles = window.AppState && window.AppState.pendingFiles && window.AppState.pendingFiles.length > 0;
+    const isStreaming = window.AppState && window.AppState.isStreaming;
+
+    if ((hasText || hasFiles) && !isStreaming) {
+      if (typeof sendChatMessage === "function") {
+        sendChatMessage();
+      }
+    }
+  }
+}
+
+// Attach listener to chat input once DOM is ready (guard against duplicate attachment)
+document.addEventListener("DOMContentLoaded", () => {
+  const inputEl = document.getElementById("chat-input");
+  if (inputEl) {
+    if (!inputEl.getAttribute("oninput")) {
+      inputEl.addEventListener("input", updateSendButtonState);
+    }
+    if (!inputEl.getAttribute("onkeydown")) {
+      inputEl.addEventListener("keydown", handleChatInputKeyDown);
+    }
+  }
+  updateSendButtonState();
+});
+
 

@@ -64,6 +64,9 @@ async function sendChatMessage() {
     chipsContainer.innerHTML = "";
     chipsContainer.classList.add("hidden");
   }
+  if (typeof updateSendButtonState === "function") {
+    updateSendButtonState();
+  }
 
   showActiveChatScreen();
 
@@ -158,6 +161,9 @@ async function sendChatMessage() {
   } finally {
     AppState.isStreaming = false;
     updateComposerSendState(false);
+    if (typeof updateSendButtonState === "function") {
+      updateSendButtonState();
+    }
   }
 }
 
@@ -531,8 +537,13 @@ function updateComposerSendState(isStreaming) {
 
   if (isStreaming) {
     sendBtn.innerHTML = `<span class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span>`;
+    sendBtn.classList.remove("btn-send-disabled");
+    sendBtn.removeAttribute("disabled");
   } else {
     sendBtn.innerHTML = `<span class="material-symbols-outlined text-[20px] transform -rotate-45 ml-0.5">near_me</span>`;
+    if (typeof updateSendButtonState === "function") {
+      updateSendButtonState();
+    }
   }
 }
 

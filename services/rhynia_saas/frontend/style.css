@@ -498,6 +498,25 @@ html.light .bg-error-container\/20 {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 
+/* Colorless Muted Send Button when input is empty */
+#btn-send-message.btn-send-disabled,
+button.btn-send-disabled {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #71717a !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  opacity: 0.45 !important;
+}
+
+html.light #btn-send-message.btn-send-disabled,
+html.light button.btn-send-disabled {
+  background-color: #e5e7eb !important;
+  color: #9ca3af !important;
+  opacity: 0.5 !important;
+}
+
 html.light #btn-logout:hover,
 html.light button[onclick*="logoutUser"]:hover,
 html.light .bg-\[\#93000a\]\/20:hover,
@@ -659,4 +678,24 @@ html.light .fluent-input input {
 html.light #view-login .bg-\[\#1b1c1c\]:hover {
   background-color: #f3f4f6 !important;
 }
+
+/* Dynamic Send Button Disabled/Colorless State */
+#btn-send-message.btn-send-disabled {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #71717a !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  opacity: 0.45 !important;
+}
+
+html.light #btn-send-message.btn-send-disabled {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  color: #9ca3af !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  opacity: 0.45 !important;
+}
+
 

@@ -254,15 +254,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // 5. Attach Chat Input "Enter" Key Listener
-  const chatInput = document.getElementById("chat-input");
-  if (chatInput) {
-    chatInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendChatMessage();
-      }
-    });
+  // 5. Initialize Send Button State
+  if (typeof updateSendButtonState === "function") {
+    updateSendButtonState();
   }
 
   // 6. Handle URL Hash Navigation for Direct Links

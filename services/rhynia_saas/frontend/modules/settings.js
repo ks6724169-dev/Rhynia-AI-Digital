@@ -357,7 +357,7 @@ function applyAccentColor(hexCode, persist) {
     .peer:checked ~ .peer-checked\\:bg-\\[\\#0078D4\\],
     .peer:checked ~ .peer-checked\\:bg-\\[\\#0078d4\\],
     .peer:checked ~ .w-10.h-5.bg-\\[\\#353535\\],
-    #btn-send-message,
+    #btn-send-message:not(.btn-send-disabled),
     #login-submit-btn,
     #register-submit-btn,
     #btn-verify-sms-otp,
