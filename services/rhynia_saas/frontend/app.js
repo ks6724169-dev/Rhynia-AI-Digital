@@ -230,6 +230,10 @@ function initMermaid() {
         theme: isLight ? "default" : "dark",
         securityLevel: "loose",
         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+        flowchart: {
+          htmlLabels: false,
+          useMaxWidth: true
+        },
         themeVariables: isLight ? {
           darkMode: false,
           background: "#ffffff",

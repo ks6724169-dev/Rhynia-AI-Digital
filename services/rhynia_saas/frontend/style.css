@@ -1193,12 +1193,12 @@ html.light .markdown-table-wrapper tbody td:not(:last-child) {
 
 .mermaid-diagram-box {
   background-color: #0e1013;
-  padding: 1.5rem 1rem;
+  padding: 1.25rem 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow-x: auto;
-  min-height: 180px;
+  min-height: 120px;
 }
 
 .mermaid-diagram-box svg,
@@ -1233,18 +1233,35 @@ html.light .mermaid-diagram-box {
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.25));
 }
 
-/* Suppress Mermaid error banners from polluting page body */
-body > [id^="dmermaid"],
-body > [id^="d"],
-body > div[class*="error-icon"],
-body > div:has(> .error-icon) {
+/* Suppress Mermaid error banners from polluting page body without hiding the measuring sandbox */
+body > div:has(svg.error-icon),
+body > div:has(.error-text),
+svg[aria-roledescription="error"] {
   display: none !important;
   visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
 }
 
-/* Mermaid Mindmap and Node Contrast Enhancement */
+/* Mermaid Typography and Fluent Polish */
+.mermaid-diagram-box .node rect,
+.mermaid-diagram-box .node polygon,
+.mermaid-diagram-box .node circle,
+.mermaid-diagram-box .node ellipse {
+  fill: #181d24 !important;
+  stroke: #0078D4 !important;
+  stroke-width: 1.5px !important;
+}
+
+.mermaid-diagram-box .edgePath .path,
+.mermaid-diagram-box .flowchart-link {
+  stroke: #0078D4 !important;
+  stroke-width: 2px !important;
+}
+
+.mermaid-diagram-box .marker {
+  fill: #0078D4 !important;
+  stroke: #0078D4 !important;
+}
+
 .mermaid-diagram-box .mindmap-node text,
 .mermaid-diagram-box .mindmap-node span,
 .mermaid-diagram-box .node text,
@@ -1252,6 +1269,26 @@ body > div:has(> .error-icon) {
   fill: #ffffff !important;
   color: #ffffff !important;
   font-weight: 500;
+  font-size: 14px;
+}
+
+html.light .mermaid-diagram-box .node rect,
+html.light .mermaid-diagram-box .node polygon,
+html.light .mermaid-diagram-box .node circle,
+html.light .mermaid-diagram-box .node ellipse {
+  fill: #f0f6ff !important;
+  stroke: #0078D4 !important;
+  stroke-width: 1.5px !important;
+}
+
+html.light .mermaid-diagram-box .mindmap-node text,
+html.light .mermaid-diagram-box .mindmap-node span,
+html.light .mermaid-diagram-box .node text,
+html.light .mermaid-diagram-box .label text {
+  fill: #0f172a !important;
+  color: #0f172a !important;
+  font-weight: 500;
+  font-size: 14px;
 }
 
 
