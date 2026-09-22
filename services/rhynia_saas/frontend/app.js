@@ -609,23 +609,37 @@ function renderMarkdown(rawText) {
   // 5. Inline text styles (bold, italic, inline code)
   text = renderInlineMarkdown(text);
 
-  // 6. Lists
-  text = text.replace(/(?:^|\n)[*-]\s+(.+)/g, `\n<li class="ml-4 list-disc text-neutral-300 leading-relaxed">$1</li>`);
-  text = text.replace(/(?:^|\n)\d+\.\s+(.+)/g, `\n<li class="ml-4 list-decimal text-neutral-300 leading-relaxed">$1</li>`);
+  // 6. Convert any Markdown Headings to Word-Style Headings (stripping raw ###)
+  text = text.replace(/(?:^|\n)#{4,}\s*(.+)/g, '\n<h4 class="ms-heading ms-heading-4"><span class="ms-bullet ms-bullet-arrow">➤</span><span>$1</span></h4>');
+  text = text.replace(/(?:^|\n)#{3}\s*(.+)/g, '\n<h3 class="ms-heading ms-heading-3"><span class="ms-bullet ms-bullet-square">■</span><span>$1</span></h3>');
+  text = text.replace(/(?:^|\n)#{2}\s*(.+)/g, '\n<h2 class="ms-heading ms-heading-2"><span class="ms-bullet ms-bullet-diamond">❖</span><span>$1</span></h2>');
+  text = text.replace(/(?:^|\n)#{1}\s*(.+)/g, '\n<h1 class="ms-heading ms-heading-1"><span class="ms-bullet ms-bullet-diamond">❖</span><span>$1</span></h1>');
 
-  // 7. Paragraphs & Line Breaks
-  text = text.replace(/\n\n+/g, `<div class="h-2"></div>`);
+  // 7. Microsoft Word Bullet Library List Items
+  text = text.replace(/(?:^|\n)(❖)\s*(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-diamond">❖</span><div class="flex-1">$2</div></div>');
+  text = text.replace(/(?:^|\n)(➤|➢|➔)\s*(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-arrow">$1</span><div class="flex-1">$2</div></div>');
+  text = text.replace(/(?:^|\n)(✔|☑)\s*(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-check">$1</span><div class="flex-1">$2</div></div>');
+  text = text.replace(/(?:^|\n)(■|▪)\s*(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-square">$1</span><div class="flex-1">$2</div></div>');
+  text = text.replace(/(?:^|\n)(●|•)\s*(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-circle">•</span><div class="flex-1">$2</div></div>');
+  text = text.replace(/(?:^|\n)(○|◦)\s*(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-open-circle">○</span><div class="flex-1">$2</div></div>');
+
+  // 8. Standard Lists (*, -, and numbered 1.)
+  text = text.replace(/(?:^|\n)[*-]\s+(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-circle">•</span><div class="flex-1">$1</div></div>');
+  text = text.replace(/(?:^|\n)(\d+)\.\s+(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-num-bullet font-semibold text-[#0078D4] min-w-[1.25rem]">$1.</span><div class="flex-1">$2</div></div>');
+
+  // 9. Paragraphs & Line Breaks
+  text = text.replace(/\n\n+/g, `<div class="h-2.5"></div>`);
   text = text.replace(/\n/g, `<br/>`);
 
-  // 8. Restore Code & Table Blocks
+  // 10. Restore Code & Table Blocks
   blocks.forEach((blockHtml, idx) => {
     const placeholder = `__RHYNIA_BLOCK_${idx}__`;
     text = text.split(placeholder).join(blockHtml);
   });
 
-  // 9. Clean up stray <br/> adjacent to block elements
-  text = text.replace(/(?:<br\/>|\s)*(<div class="(?:markdown-table-wrapper|code-block-container|mermaid-block-container))/g, '$1');
-  text = text.replace(/(<\/div>)(?:<br\/>|\s)*/g, '$1');
+  // 11. Clean up stray <br/> adjacent to block elements and headings
+  text = text.replace(/(?:<br\/>|\s)*(<div class="(?:markdown-table-wrapper|code-block-container|mermaid-block-container|ms-bullet-item))/g, '$1');
+  text = text.replace(/(<\/div>|<\/h[1-4]>)(?:<br\/>|\s)*/g, '$1');
 
   return text;
 }

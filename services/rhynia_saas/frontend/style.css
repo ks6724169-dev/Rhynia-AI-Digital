@@ -1291,6 +1291,117 @@ html.light .mermaid-diagram-box .label text {
   font-size: 14px;
 }
 
+/* ========================================================= */
+/* MICROSOFT WORD BULLET LIBRARY & EXECUTIVE HEADINGS        */
+/* ========================================================= */
+.ms-heading {
+  margin-top: 1.15rem;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.4;
+}
+
+.ms-heading-1 {
+  font-size: 1.25rem;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.35rem;
+}
+
+.ms-heading-2 {
+  font-size: 1.125rem;
+  color: #ffffff;
+}
+
+.ms-heading-3 {
+  font-size: 1rem;
+  color: #f1f5f9;
+}
+
+.ms-heading-4 {
+  font-size: 0.925rem;
+  color: #e2e8f0;
+}
+
+.ms-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin: 0.35rem 0;
+  line-height: 1.625;
+  font-size: 0.935rem;
+  color: #d1d5db;
+}
+
+.ms-bullet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  user-select: none;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+.ms-bullet-diamond {
+  color: #0078D4; /* Microsoft Azure */
+  font-size: 1.05rem;
+}
+
+.ms-bullet-arrow {
+  color: #00b4d8; /* Microsoft Fluent Cyan */
+  font-size: 1.1rem;
+}
+
+.ms-bullet-check {
+  color: #10b981; /* Fluent Emerald */
+  font-weight: bold;
+  font-size: 1.05rem;
+}
+
+.ms-bullet-square {
+  color: #818cf8; /* Fluent Indigo */
+  font-size: 0.85rem;
+}
+
+.ms-bullet-circle {
+  color: #38bdf8; /* Fluent Sky */
+  font-size: 0.9rem;
+}
+
+.ms-bullet-open-circle {
+  color: #94a3b8; /* Slate */
+  font-size: 0.9rem;
+}
+
+.ms-num-bullet {
+  color: #0078D4;
+  font-weight: 600;
+  font-size: 0.935rem;
+  flex-shrink: 0;
+  line-height: 1.625;
+}
+
+/* Light Mode support for MS Word Bullets */
+html.light .ms-heading-1,
+html.light .ms-heading-2,
+html.light .ms-heading-3,
+html.light .ms-heading-4 {
+  color: #0f172a;
+}
+
+html.light .ms-bullet-item {
+  color: #334155;
+}
+
+html.light .ms-heading-1 {
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
 
 
 
