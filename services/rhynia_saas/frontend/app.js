@@ -161,14 +161,36 @@ document.addEventListener("DOMContentLoaded", async () => {
   const savedAccent = localStorage.getItem(CONFIG.ACCENT_KEY) || "#0078D4";
   applyAccentColor(savedAccent, false);
 
-  // 2. Direct Hash Route or Strict Login Gateway
+  // 2. Direct Hash Route or Seamless Chat Gateway
   if (!AppState.token) {
-    if (window.location.hash) {
-      handleHashRoute();
-    } else {
-      switchView("view-login");
+    const hash = window.location.hash.toLowerCase().replace("#", "").trim();
+    if (hash === "chat" || hash === "empty-chat" || hash === "settings" || !hash) {
+      try {
+        const guestRes = await fetch(`${CONFIG.API_BASE}/auth/google`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ credential: "guest_user@rhynia.com" })
+        });
+        if (guestRes.ok) {
+          const authData = await guestRes.json();
+          AppState.token = authData.access_token;
+          localStorage.setItem(CONFIG.TOKEN_KEY, authData.access_token);
+          AppState.user = authData.user;
+          localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(authData.user));
+        }
+      } catch (e) {
+        console.warn("Guest auto-auth fallback", e);
+      }
     }
-    return;
+
+    if (!AppState.token) {
+      if (window.location.hash) {
+        handleHashRoute();
+      } else {
+        switchView("view-login");
+      }
+      return;
+    }
   }
 
   // 3. Validate Token & Load Authenticated User
