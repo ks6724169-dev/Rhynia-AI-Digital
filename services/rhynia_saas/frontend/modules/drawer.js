@@ -253,6 +253,9 @@ async function openSession(sessionId) {
       if (typeof renderAllMermaidDiagrams === "function") {
         renderAllMermaidDiagrams(container);
       }
+      if (typeof renderAllRhyniaCharts === "function") {
+        renderAllRhyniaCharts(container);
+      }
       scrollChatToBottom();
     } else {
       if (container) {

@@ -286,6 +286,11 @@ function applyTheme(theme) {
   }
   localStorage.setItem(CONFIG.THEME_KEY, isLight ? "light" : "dark");
 
+  if (typeof renderAllRhyniaCharts === "function") {
+    document.querySelectorAll(".rhynia-chart-card[data-rendered='true']").forEach(card => card.removeAttribute("data-rendered"));
+    renderAllRhyniaCharts(document);
+  }
+
   const themeLabel = document.getElementById("settings-theme-label");
   if (themeLabel) {
     themeLabel.setAttribute("data-i18n", isLight ? "light_mode" : "dark_mode");

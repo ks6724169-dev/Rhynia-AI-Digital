@@ -1402,6 +1402,132 @@ html.light .ms-heading-1 {
   border-bottom-color: rgba(0, 0, 0, 0.08);
 }
 
+/* ========================================================= */
+/* RHYNIA MICROSOFT OFFICE VISUAL CHART ENGINE               */
+/* ========================================================= */
+
+.rhynia-chart-card {
+  position: relative;
+  border-radius: 0.875rem;
+  overflow: hidden;
+  margin: 1.25rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #121417;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.rhynia-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 1rem;
+  background-color: #1a1e24;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rhynia-chart-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  background: rgba(0, 120, 212, 0.15);
+  color: #4cc2ff;
+  border: 1px solid rgba(0, 120, 212, 0.3);
+}
+
+.chart-canvas-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  padding: 1.25rem;
+  background-color: #101215;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-canvas-container canvas {
+  max-width: 100% !important;
+  max-height: 380px !important;
+  display: block;
+}
+
+.chart-data-box {
+  padding: 1rem;
+  background-color: #101215;
+  overflow-x: auto;
+  max-height: 380px;
+}
+
+.chart-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  font-family: var(--font-mono, monospace);
+  color: #e2e8f0;
+}
+
+.chart-data-table th {
+  background-color: #1c2128;
+  color: #60a5fa;
+  padding: 0.5rem 0.875rem;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chart-data-table td {
+  padding: 0.45rem 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.chart-data-table tr:nth-child(even) td {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Light Mode Support for Charts */
+html.light .rhynia-chart-card {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+html.light .rhynia-chart-header {
+  background-color: #f8fafc;
+  border-bottom-color: #e2e8f0;
+}
+
+html.light .chart-canvas-container,
+html.light .chart-data-box {
+  background-color: #ffffff;
+}
+
+html.light .chart-data-table {
+  color: #1e293b;
+}
+
+html.light .chart-data-table th {
+  background-color: #f1f5f9;
+  color: #0078d4;
+  border-color: #e2e8f0;
+}
+
+html.light .chart-data-table td {
+  border-color: #f1f5f9;
+}
+
+html.light .chart-data-table tr:nth-child(even) td {
+  background-color: #f8fafc;
+}
+
+
 
 
 

@@ -163,6 +163,11 @@ async function sendChatMessage() {
       renderAllMermaidDiagrams(textContainer);
     }
 
+    // Render Microsoft Office Visual Charts if present
+    if (typeof renderAllRhyniaCharts === "function") {
+      renderAllRhyniaCharts(textContainer);
+    }
+
     // Refresh storage telemetry
     loadStorage();
 

@@ -430,6 +430,398 @@ function renderInlineMarkdown(str) {
     .replace(/\*([^*]+)\*/g, `<em class="italic">$1</em>`);
 }
 
+// =========================================================
+// RHYNIA MICROSOFT OFFICE VISUAL CHART ENGINE
+// =========================================================
+const OFFICE_PALETTE = [
+  "#0078D4", // Office Blue
+  "#ED7D31", // Office Coral / Orange
+  "#A5A5A5", // Slate Gray
+  "#FFC000", // Warm Gold
+  "#4472C4", // Deep Blue
+  "#70AD47", // Excel Green
+  "#264478", // Deep Navy
+  "#9E480E", // Rust Brown
+  "#636363", // Charcoal
+  "#997300", // Dark Mustard
+  "#255E91", // Sky Blue
+  "#43682B"  // Forest Green
+];
+
+const CHART_TYPE_META = {
+  column: { icon: "bar_chart", label: "Column Chart" },
+  clustered_column: { icon: "bar_chart", label: "Clustered Column" },
+  stacked_column: { icon: "bar_chart", label: "Stacked Column" },
+  bar: { icon: "align_horizontal_left", label: "Bar Chart" },
+  clustered_bar: { icon: "align_horizontal_left", label: "Clustered Bar" },
+  stacked_bar: { icon: "align_horizontal_left", label: "Stacked Bar" },
+  line: { icon: "show_chart", label: "Line Chart" },
+  spline: { icon: "show_chart", label: "Smooth Line" },
+  area: { icon: "area_chart", label: "Area Chart" },
+  stacked_area: { icon: "area_chart", label: "Stacked Area" },
+  pie: { icon: "pie_chart", label: "Pie Chart" },
+  pie3d: { icon: "pie_chart", label: "3D Pie Chart" },
+  doughnut: { icon: "donut_small", label: "Doughnut Chart" },
+  donut: { icon: "donut_small", label: "Doughnut Chart" },
+  radar: { icon: "radar", label: "Radar Chart" },
+  spider: { icon: "radar", label: "Spider Chart" },
+  scatter: { icon: "scatter_plot", label: "XY Scatter" },
+  xy: { icon: "scatter_plot", label: "XY Scatter" },
+  bubble: { icon: "bubble_chart", label: "Bubble Chart" },
+  stock: { icon: "candlestick_chart", label: "Stock Chart" },
+  candlestick: { icon: "candlestick_chart", label: "Candlestick Chart" },
+  surface: { icon: "view_in_ar", label: "Surface 3D" }
+};
+
+function hexToRgba(hex, alpha = 0.6) {
+  if (!hex || typeof hex !== "string" || !hex.startsWith("#")) {
+    return `rgba(0, 120, 212, ${alpha})`;
+  }
+  let c = hex.substring(1);
+  if (c.length === 3) {
+    c = c.split("").map(ch => ch + ch).join("");
+  }
+  const num = parseInt(c, 16);
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function buildChartDataTable(labels, datasets) {
+  if (!labels || !labels.length) return "";
+  const dss = datasets || [];
+  
+  let html = `<table class="chart-data-table"><thead><tr>`;
+  html += `<th>Category / Label</th>`;
+  dss.forEach(ds => {
+    html += `<th>${escapeHtml(ds.label || "Value")}</th>`;
+  });
+  html += `</tr></thead><tbody>`;
+
+  labels.forEach((label, idx) => {
+    html += `<tr><td class="font-medium text-white">${escapeHtml(String(label))}</td>`;
+    dss.forEach(ds => {
+      let val = (ds.data && ds.data[idx] !== undefined) ? ds.data[idx] : "-";
+      if (typeof val === "object" && val !== null) {
+        val = JSON.stringify(val);
+      }
+      html += `<td>${escapeHtml(String(val))}</td>`;
+    });
+    html += `</tr>`;
+  });
+
+  html += `</tbody></table>`;
+  return html;
+}
+
+function toggleChartView(buttonEl) {
+  const card = buttonEl.closest(".rhynia-chart-card");
+  if (!card) return;
+  const canvasBox = card.querySelector(".chart-canvas-container");
+  const dataBox = card.querySelector(".chart-data-box");
+  const icon = buttonEl.querySelector(".material-symbols-outlined");
+  const text = buttonEl.querySelector(".btn-label");
+
+  if (!canvasBox || !dataBox) return;
+
+  const isDataHidden = dataBox.classList.contains("hidden");
+  if (isDataHidden) {
+    dataBox.classList.remove("hidden");
+    canvasBox.classList.add("hidden");
+    if (icon) icon.textContent = "bar_chart";
+    if (text) text.textContent = "Chart";
+  } else {
+    dataBox.classList.add("hidden");
+    canvasBox.classList.remove("hidden");
+    if (icon) icon.textContent = "table_chart";
+    if (text) text.textContent = "Data";
+  }
+}
+
+function downloadChartAsPng(buttonEl) {
+  const card = buttonEl.closest(".rhynia-chart-card");
+  if (!card) return;
+  const canvas = card.querySelector("canvas");
+  if (!canvas) {
+    showToast("Chart canvas not found.", "error");
+    return;
+  }
+
+  try {
+    let dataUrl;
+    if (canvas._chartInstance) {
+      dataUrl = canvas._chartInstance.toBase64Image("image/png", 1);
+    } else {
+      dataUrl = canvas.toDataURL("image/png");
+    }
+
+    const a = document.createElement("a");
+    a.href = dataUrl;
+    const title = card.getAttribute("data-chart-title") || "rhynia_chart";
+    const cleanTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, "_").slice(0, 24);
+    a.download = `${cleanTitle}_${Date.now().toString().slice(-6)}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    showToast("Office Chart downloaded as .png!", "success");
+  } catch (err) {
+    console.error("Export chart error:", err);
+    showToast("Failed to export chart image", "error");
+  }
+}
+
+function copyChartSpec(buttonEl) {
+  const card = buttonEl.closest(".rhynia-chart-card");
+  if (!card) return;
+  const rawEncoded = card.getAttribute("data-chart-spec");
+  if (!rawEncoded) return;
+  try {
+    const raw = decodeURIComponent(rawEncoded);
+    navigator.clipboard.writeText(raw);
+    showToast("Chart specification copied!", "success");
+    const icon = buttonEl.querySelector(".material-symbols-outlined");
+    if (icon) {
+      icon.textContent = "check";
+      setTimeout(() => (icon.textContent = "content_copy"), 2000);
+    }
+  } catch (e) {
+    showToast("Failed to copy specification", "error");
+  }
+}
+
+async function renderAllRhyniaCharts(rootEl) {
+  const container = rootEl || document;
+  const cards = container.querySelectorAll(".rhynia-chart-card:not([data-rendered='true'])");
+  if (!cards.length) return;
+
+  if (typeof Chart === "undefined") {
+    console.warn("Chart.js is not loaded yet.");
+    return;
+  }
+
+  const isLight = document.documentElement.classList.contains("light");
+  const textColor = isLight ? "#1e293b" : "#e2e8f0";
+  const gridColor = isLight ? "rgba(0, 0, 0, 0.06)" : "rgba(255, 255, 255, 0.08)";
+
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    const canvas = card.querySelector("canvas");
+    const rawEncoded = card.getAttribute("data-chart-spec");
+    if (!canvas || !rawEncoded) continue;
+
+    let spec;
+    try {
+      const rawJson = decodeURIComponent(rawEncoded).trim();
+      spec = JSON.parse(rawJson);
+    } catch (e) {
+      try {
+        const rawJson = decodeURIComponent(rawEncoded).trim();
+        const fixedJson = rawJson.replace(/,\s*([\]}])/g, "$1");
+        spec = JSON.parse(fixedJson);
+      } catch (e2) {
+        console.warn("Invalid chart JSON:", e2);
+        card.setAttribute("data-rendered", "error");
+        continue;
+      }
+    }
+
+    const rawType = (spec.type || "column").toLowerCase().trim();
+    let chartJsType = "bar";
+    let isHorizontal = false;
+    let isStacked = spec.stacked || false;
+    let isArea = false;
+
+    if (rawType === "column" || rawType === "clustered_column") {
+      chartJsType = "bar";
+      isHorizontal = false;
+    } else if (rawType === "stacked_column") {
+      chartJsType = "bar";
+      isStacked = true;
+    } else if (rawType === "bar" || rawType === "horizontal_bar") {
+      chartJsType = "bar";
+      isHorizontal = true;
+    } else if (rawType === "stacked_bar") {
+      chartJsType = "bar";
+      isHorizontal = true;
+      isStacked = true;
+    } else if (rawType === "line" || rawType === "spline") {
+      chartJsType = "line";
+    } else if (rawType === "area" || rawType === "stacked_area") {
+      chartJsType = "line";
+      isArea = true;
+      if (rawType === "stacked_area") isStacked = true;
+    } else if (rawType === "pie" || rawType === "pie3d") {
+      chartJsType = "pie";
+    } else if (rawType === "doughnut" || rawType === "donut") {
+      chartJsType = "doughnut";
+    } else if (rawType === "radar" || rawType === "spider") {
+      chartJsType = "radar";
+    } else if (rawType === "polararea" || rawType === "polar") {
+      chartJsType = "polarArea";
+    } else if (rawType === "scatter" || rawType === "xy") {
+      chartJsType = "scatter";
+    } else if (rawType === "bubble") {
+      chartJsType = "bubble";
+    } else if (rawType === "stock" || rawType === "candlestick") {
+      chartJsType = "bar";
+    } else if (rawType === "surface") {
+      chartJsType = "radar";
+    }
+
+    const labels = spec.labels || spec.data?.labels || [];
+    let datasets = spec.datasets || spec.data?.datasets || [];
+    const isPieLike = ["pie", "doughnut", "polarArea"].includes(chartJsType);
+
+    datasets = datasets.map((ds, dsIdx) => {
+      const paletteColor = OFFICE_PALETTE[dsIdx % OFFICE_PALETTE.length];
+      let bg = ds.backgroundColor;
+      let border = ds.borderColor;
+
+      if (isPieLike) {
+        if (!bg) {
+          bg = labels.map((_, lIdx) => OFFICE_PALETTE[lIdx % OFFICE_PALETTE.length]);
+        }
+        if (!border) {
+          border = isLight ? "#ffffff" : "#121417";
+        }
+      } else if (isArea) {
+        if (!bg) bg = hexToRgba(paletteColor, 0.25);
+        if (!border) border = paletteColor;
+      } else if (chartJsType === "line") {
+        if (!border) border = paletteColor;
+        if (!bg) bg = hexToRgba(paletteColor, 0.1);
+      } else if (chartJsType === "bar") {
+        if (!bg) bg = hexToRgba(paletteColor, 0.85);
+        if (!border) border = paletteColor;
+      } else if (chartJsType === "radar") {
+        if (!bg) bg = hexToRgba(paletteColor, 0.25);
+        if (!border) border = paletteColor;
+      }
+
+      return {
+        ...ds,
+        backgroundColor: bg,
+        borderColor: border,
+        borderWidth: ds.borderWidth || (chartJsType === "line" || chartJsType === "radar" ? 2.5 : 1),
+        tension: ds.tension !== undefined ? ds.tension : 0.35,
+        fill: isArea ? (isStacked ? true : "origin") : ds.fill || false,
+        pointRadius: chartJsType === "line" || chartJsType === "radar" ? 4.5 : undefined,
+        pointHoverRadius: chartJsType === "line" || chartJsType === "radar" ? 7 : undefined,
+        pointBackgroundColor: chartJsType === "line" || chartJsType === "radar" ? border : undefined,
+        borderRadius: chartJsType === "bar" && !isStacked ? 4 : 0
+      };
+    });
+
+    const chartConfig = {
+      type: chartJsType,
+      data: {
+        labels: labels,
+        datasets: datasets
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: isHorizontal ? "y" : "x",
+        animation: {
+          duration: 500
+        },
+        plugins: {
+          legend: {
+            display: isPieLike || datasets.length > 1,
+            position: isPieLike ? "right" : "top",
+            labels: {
+              color: textColor,
+              font: {
+                family: 'Segoe UI, Inter, sans-serif',
+                size: 11.5,
+                weight: 500
+              },
+              padding: 12,
+              usePointStyle: true,
+              pointStyle: "circle"
+            }
+          },
+          tooltip: {
+            backgroundColor: isLight ? "#ffffff" : "#1c2128",
+            titleColor: isLight ? "#0f172a" : "#ffffff",
+            bodyColor: isLight ? "#334155" : "#cbd5e1",
+            borderColor: "rgba(0, 120, 212, 0.35)",
+            borderWidth: 1,
+            cornerRadius: 8,
+            padding: 10,
+            boxPadding: 4,
+            callbacks: isPieLike ? {
+              label: function(context) {
+                const val = context.raw || 0;
+                const total = context.dataset.data.reduce((a, b) => a + Number(b), 0);
+                const pct = total > 0 ? ((Number(val) / total) * 100).toFixed(1) : 0;
+                return ` ${context.label}: ${val} (${pct}%)`;
+              }
+            } : undefined
+          }
+        }
+      }
+    };
+
+    if (!["pie", "doughnut", "polarArea", "radar"].includes(chartJsType)) {
+      chartConfig.options.scales = {
+        x: {
+          stacked: isStacked,
+          ticks: {
+            color: textColor,
+            font: { family: 'Segoe UI, Inter, sans-serif', size: 11 }
+          },
+          grid: {
+            color: gridColor,
+            drawBorder: false
+          }
+        },
+        y: {
+          stacked: isStacked,
+          ticks: {
+            color: textColor,
+            font: { family: 'Segoe UI, Inter, sans-serif', size: 11 }
+          },
+          grid: {
+            color: gridColor,
+            drawBorder: false
+          }
+        }
+      };
+    } else if (chartJsType === "radar") {
+      chartConfig.options.scales = {
+        r: {
+          ticks: {
+            color: textColor,
+            backdropColor: "transparent",
+            font: { size: 10 }
+          },
+          grid: { color: gridColor },
+          angleLines: { color: gridColor },
+          pointLabels: {
+            color: textColor,
+            font: { family: 'Segoe UI, Inter, sans-serif', size: 11, weight: 600 }
+          }
+        }
+      };
+    }
+
+    try {
+      if (canvas._chartInstance) {
+        canvas._chartInstance.destroy();
+      }
+      const newChart = new Chart(canvas, chartConfig);
+      canvas._chartInstance = newChart;
+      card.setAttribute("data-rendered", "true");
+    } catch (renderErr) {
+      console.error("Failed to render Chart.js chart:", renderErr);
+      card.setAttribute("data-rendered", "error");
+    }
+  }
+}
+
 function renderMarkdown(rawText) {
   if (!rawText) return "";
 
@@ -489,7 +881,67 @@ function renderMarkdown(rawText) {
       return storeBlock(blockHtml);
     }
 
-    // 2B. Standard Code / SVG Blocks
+    // 2B. Microsoft Office Visual Chart Blocks
+    if (cleanLang === "chart" || cleanLang === "chartjs" || cleanLang === "office-chart" || cleanLang.startsWith("chart-") || cleanLang.startsWith("chart:")) {
+      let spec = null;
+      try {
+        spec = JSON.parse(code.trim());
+      } catch (e) {
+        try {
+          const fixed = code.trim().replace(/,\s*([\]}])/g, "$1");
+          spec = JSON.parse(fixed);
+        } catch (e2) {
+          spec = null;
+        }
+      }
+
+      if (spec) {
+        const rawType = (spec.type || cleanLang.replace(/^(?:chart[-:]?|office-chart[-:]?)/, "") || "column").toLowerCase().trim();
+        spec.type = rawType;
+        const meta = CHART_TYPE_META[rawType] || { icon: "bar_chart", label: "Office Chart" };
+        const title = spec.title || "Visual Data Chart";
+        const encodedSpec = encodeURIComponent(JSON.stringify(spec));
+        const labels = spec.labels || spec.data?.labels || [];
+        const datasets = spec.datasets || spec.data?.datasets || [];
+        const dataTableHtml = buildChartDataTable(labels, datasets);
+
+        const blockHtml = `
+          <div class="rhynia-chart-card my-4" data-chart-spec="${encodedSpec}" data-chart-title="${escapeHtml(title)}">
+            <div class="rhynia-chart-header">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px] text-[#0078D4]">${meta.icon}</span>
+                <span class="font-semibold text-xs sm:text-sm text-white">${escapeHtml(title)}</span>
+                <span class="rhynia-chart-badge">${escapeHtml(meta.label)}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="toggleChartView(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Toggle Visual Chart / Data Table">
+                  <span class="material-symbols-outlined text-[14px] text-[#4cc2ff]">table_chart</span>
+                  <span class="btn-label">Data</span>
+                </button>
+                <button type="button" onclick="downloadChartAsPng(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Export as High-Resolution PNG">
+                  <span class="material-symbols-outlined text-[14px] text-[#107c41]">file_download</span>
+                  <span>Export .png</span>
+                </button>
+                <button type="button" onclick="copyChartSpec(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Copy Chart JSON">
+                  <span class="material-symbols-outlined text-[14px]">content_copy</span>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+            <div class="chart-canvas-container">
+              <canvas></canvas>
+            </div>
+            <div class="chart-data-box hidden">
+              ${dataTableHtml}
+            </div>
+          </div>
+        `.trim();
+
+        return storeBlock(blockHtml);
+      }
+    }
+
+    // 2C. Standard Code / SVG Blocks
     const config = EXTENSION_MAP[cleanLang] || { ext: cleanLang || "txt", label: cleanLang ? cleanLang.toUpperCase() : "CODE" };
     const isSvg = cleanLang === "svg" || code.includes("<svg");
     const escapedCode = escapeHtml(code);
@@ -638,7 +1090,7 @@ function renderMarkdown(rawText) {
   });
 
   // 11. Clean up stray <br/> adjacent to block elements and headings
-  text = text.replace(/(?:<br\/>|\s)*(<div class="(?:markdown-table-wrapper|code-block-container|mermaid-block-container|ms-bullet-item))/g, '$1');
+  text = text.replace(/(?:<br\/>|\s)*(<div class="(?:markdown-table-wrapper|code-block-container|mermaid-block-container|rhynia-chart-card|ms-bullet-item))/g, '$1');
   text = text.replace(/(<\/div>|<\/h[1-4]>)(?:<br\/>|\s)*/g, '$1');
 
   return text;
@@ -653,6 +1105,10 @@ window.downloadTableAsCSV = downloadTableAsCSV;
 window.toggleMermaidView = toggleMermaidView;
 window.downloadMermaidAsSvg = downloadMermaidAsSvg;
 window.renderAllMermaidDiagrams = renderAllMermaidDiagrams;
+window.renderAllRhyniaCharts = renderAllRhyniaCharts;
+window.toggleChartView = toggleChartView;
+window.downloadChartAsPng = downloadChartAsPng;
+window.copyChartSpec = copyChartSpec;
 
 
 // ==========================================
