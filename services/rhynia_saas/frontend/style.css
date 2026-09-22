@@ -1233,6 +1233,28 @@ html.light .mermaid-diagram-box {
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.25));
 }
 
+/* Suppress Mermaid error banners from polluting page body */
+body > [id^="dmermaid"],
+body > [id^="d"],
+body > div[class*="error-icon"],
+body > div:has(> .error-icon) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Mermaid Mindmap and Node Contrast Enhancement */
+.mermaid-diagram-box .mindmap-node text,
+.mermaid-diagram-box .mindmap-node span,
+.mermaid-diagram-box .node text,
+.mermaid-diagram-box .label text {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+
 
 
 

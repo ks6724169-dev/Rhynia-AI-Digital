@@ -198,12 +198,35 @@ function downloadCodeBlock(buttonEl, lang) {
   showToast(`Downloaded ${fileName}!`, "success");
 }
 
+function normalizeMermaidCode(code) {
+  if (!code) return "";
+  let s = code.trim();
+  // 1. Normalize diagram keywords to case-sensitive Mermaid standard
+  s = s.replace(/^(flowchart|graph|mindmap|timeline|quadrantchart|sequencediagram|statediagram(?:-v2)?)/im, (m) => {
+    const l = m.toLowerCase();
+    if (l === "statediagram") return "stateDiagram-v2";
+    if (l === "quadrantchart") return "quadrantChart";
+    if (l === "sequencediagram") return "sequenceDiagram";
+    return l;
+  });
+  // 2. Auto-wrap unquoted node brackets with spaces into quotes
+  s = s.replace(/([a-zA-Z0-9_\-]+)\[([^\]\n\"]+)\]/g, (m, id, text) => {
+    const t = text.trim();
+    if (!t.startsWith('"') && !t.endsWith('"')) {
+      return `${id}["${t.replace(/"/g, "'")}"]`;
+    }
+    return m;
+  });
+  return s;
+}
+
 function initMermaid() {
   if (typeof mermaid !== "undefined") {
     try {
       const isLight = document.documentElement.classList.contains("light");
       mermaid.initialize({
         startOnLoad: false,
+        suppressErrorRendering: true,
         theme: isLight ? "default" : "dark",
         securityLevel: "loose",
         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
@@ -227,6 +250,9 @@ function initMermaid() {
           tertiaryColor: "#121417"
         }
       });
+      mermaid.parseError = function(err, hash) {
+        console.warn("Suppressed Mermaid syntax error:", err);
+      };
     } catch (e) {
       console.warn("Mermaid init error:", e);
     }
@@ -296,7 +322,8 @@ async function renderAllMermaidDiagrams(rootEl) {
     const rawEncoded = box.getAttribute("data-mermaid-code");
     if (!rawEncoded) continue;
 
-    const code = decodeURIComponent(rawEncoded).trim();
+    const rawCode = decodeURIComponent(rawEncoded).trim();
+    const code = normalizeMermaidCode(rawCode);
     const uniqueId = `mermaid_diag_${Date.now()}_${Math.floor(Math.random() * 100000)}_${i}`;
 
     try {
@@ -311,6 +338,13 @@ async function renderAllMermaidDiagrams(rootEl) {
       }
     } catch (err) {
       console.warn("Mermaid render error:", err);
+      // Suppress and clean any stray error banners injected onto document.body by Mermaid
+      document.querySelectorAll("body > [id^='dmermaid'], body > [id^='d'], body > .error-icon").forEach(el => {
+        if (el.innerText && (el.innerText.includes("Syntax error") || el.innerText.includes("mermaid version"))) {
+          el.remove();
+        }
+      });
+
       box.setAttribute("data-rendered", "error");
       box.innerHTML = `
         <div class="text-xs text-amber-400/90 flex items-center gap-1.5 p-3">
@@ -508,7 +542,7 @@ function renderMarkdown(rawText) {
         const separatorIdx = tableLines.findIndex((tl, idx) => {
           if (idx === 0) return false;
           const s = tl.trim();
-          return /^\|?(\s*:?-+:?\s*\|)+\s*:?-+:?\s*\|?$/.test(s);
+          return s.includes("|") && /^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$/.test(s);
         });
 
         if (separatorIdx > 0) {
