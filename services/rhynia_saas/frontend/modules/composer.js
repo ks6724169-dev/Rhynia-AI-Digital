@@ -264,6 +264,32 @@ function handleChatInputKeyDown(event) {
   }
 }
 
+/**
+ * Toggle Live Web Search Grounding
+ */
+function toggleWebSearch(force) {
+  if (!window.AppState) return;
+  const btn = document.getElementById("btnWebSearch");
+  const willEnable = (typeof force === "boolean") ? force : !window.AppState.webSearchEnabled;
+  window.AppState.webSearchEnabled = willEnable;
+
+  if (btn) {
+    if (willEnable) {
+      btn.classList.add("bg-[#0078D4]/25", "text-[#4cc2ff]", "border", "border-[#0078D4]/50");
+      btn.classList.remove("text-neutral-400");
+      btn.setAttribute("title", "Live Web Search: Active (Click to disable)");
+      showToast("Live Web Search enabled!", "info");
+    } else {
+      btn.classList.remove("bg-[#0078D4]/25", "text-[#4cc2ff]", "border", "border-[#0078D4]/50");
+      btn.classList.add("text-neutral-400");
+      btn.setAttribute("title", "Toggle Live Web Search");
+      showToast("Web Search disabled", "info");
+    }
+  }
+}
+
+window.toggleWebSearch = toggleWebSearch;
+
 // Attach listener to chat input once DOM is ready (guard against duplicate attachment)
 document.addEventListener("DOMContentLoaded", () => {
   const inputEl = document.getElementById("chat-input");
@@ -277,5 +303,3 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   updateSendButtonState();
 });
-
-

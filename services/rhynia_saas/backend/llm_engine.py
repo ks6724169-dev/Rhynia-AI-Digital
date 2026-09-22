@@ -86,7 +86,15 @@ RHYNIA_SYSTEM_PROMPT = (
     "  * For Concept Maps & Relations: ```mermaid mindmap```\n"
     "  * For Pyramids & Layered Models: Standalone ```svg ... ```\n"
     "  * CRITICAL MERMAID RULES: Diagram keywords must be lowercase (`flowchart LR`, `flowchart TD`, `mindmap`). Node IDs must be simple alphanumeric (`A`, `B`, `step1`). All node labels MUST be enclosed in double quotes inside brackets: e.g. `step1[\"प्रकाश ऊर्जा का अवशोषण\"] --> step2[\"रासायनिक ऊर्जा में रूपांतरण\"]`.\n\n"
-    "- Code Blocks: Only generate source code blocks when the question explicitly pertains to programming, scripting, or web development."
+    "- Code Blocks: Only generate source code blocks when the question explicitly pertains to programming, scripting, or web development.\n\n"
+    "4. REAL-TIME WEB SEARCH & LIVE INTERNET CAPABILITIES (लाइव इंटरनेट और सर्च क्षमता):\n"
+    "   - Rhynia is equipped with native real-time Live Web Search Grounding.\n"
+    "   - When the user asks whether you can search the live internet, Google, YouTube, Twitter/X, Facebook, Instagram, or asks for current events/news:\n"
+    "     * Confidently affirm that Rhynia can search the live web and retrieve real-time data.\n"
+    "     * Clearly explain the scope using Microsoft Word Bullet styling (❖, ✔, •):\n"
+    "       ✔ **सर्च क्षमता (Public Web):** Google वेब सर्च, लाइव न्यूज़, ताज़ा रिपोर्ट्स, विकिपीडिया, पब्लिक यूट्यूब वीडियो विवरण/चैनल और ट्विटर (X) के पब्लिक ट्रेंड्स व पोस्ट्स को रियल-टाइम में सर्च किया जा सकता है।\n"
+    "       • **स्वाभाविक प्राइवेसी सीमा (Private Accounts):** व्यक्तिगत सोशल मीडिया प्रोफ़ाइल (जैसे इंस्टाग्राम के प्राइवेट अकाउंट/DMs, फ़ेसबुक की प्राइवेट फ़ीड/चैट) प्राइवेसी और लॉगिन-प्रोटेक्शन के कारण सुरक्षित रहते हैं और उन पर सर्च नहीं किया जाता।\n"
+    "     * Always synthesize clear, structured answers with MS Word bullet formatting (❖, ➤, ✔, •) and citations when live web results are used."
 )
 
 
@@ -154,6 +162,7 @@ class CascadeLLMEngine:
         messages: List[Dict[str, str]],
         system_prompt: Optional[str] = None,
         tier: int = 1,
+        web_search: bool = False,
     ) -> AsyncGenerator[str, None]:
         """
         Stream response tokens through the cascade router.
@@ -184,7 +193,7 @@ class CascadeLLMEngine:
         else:
             models_to_try = settings.CASCADE_TIER_2_MODELS
 
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=35.0) as client:
             for model_id in models_to_try:
                 try:
                     payload = {
@@ -193,6 +202,9 @@ class CascadeLLMEngine:
                         "stream": True,
                         "temperature": 0.7,
                     }
+                    # Enable live internet web search grounding if requested
+                    if web_search:
+                        payload["plugins"] = [{"id": "web"}]
 
                     async with client.stream("POST", self.openrouter_url, headers=headers, json=payload) as response:
                         if response.status_code == 429:
@@ -230,12 +242,13 @@ class CascadeLLMEngine:
         self,
         messages: List[Dict[str, str]],
         system_prompt: Optional[str] = None,
+        web_search: bool = False,
     ) -> Tuple[str, str, int]:
         """
         Generate complete text response and return (content, model_tier, token_count).
         """
         chunks = []
-        async for token in self.generate_stream(messages, system_prompt):
+        async for token in self.generate_stream(messages, system_prompt, web_search=web_search):
             chunks.append(token)
         full_content = "".join(chunks)
         # Approximate token count

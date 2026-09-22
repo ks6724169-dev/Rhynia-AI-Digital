@@ -123,12 +123,26 @@ async def send_chat_message(
         db.refresh(session)
         session_id = session.id
 
-    # 4. Web Search Grounding if enabled
+    # 4. Web Search Intent Detection & Grounding
+    search_keywords = [
+        "search", "सर्च", "खोज", "latest", "ताजा", "ताज़ा", "खबर", "news",
+        "today", "aaj", "current", "weather", "मौसम", "score", "match",
+        "youtube", "twitter", "tweet", "internet", "इंटरनेट", "गूगल", "google", "live", "लाइव", "online", "ऑनलाइन"
+    ]
+    is_search_intent = any(kw in clean_message.lower() for kw in search_keywords)
+    use_web_search = req.web_search or is_search_intent
+
     system_prompt = RHYNIA_SYSTEM_PROMPT
-    if req.web_search:
-        search_results = await search_service.search(clean_message)
-        search_context = search_service.format_search_context(search_results)
-        system_prompt = f"{RHYNIA_SYSTEM_PROMPT}\n\n{search_context}"
+    if use_web_search:
+        system_prompt = (
+            f"{RHYNIA_SYSTEM_PROMPT}\n\n"
+            f"LIVE INTERNET WEB SEARCH GROUNDING ACTIVE:\n"
+            f"- Real-time live web search is enabled for this inquiry.\n"
+            f"- Search the live web to retrieve the latest, up-to-date facts, news, and verifiable data.\n"
+            f"- When referencing web sources, include clean markdown links and citations.\n"
+            f"- You CAN search the public web, live news, public YouTube videos/channels, and public Twitter/X trends.\n"
+            f"- Remind users politely that private/login-protected social media accounts (personal Instagram DMs, private Facebook profiles) cannot be accessed due to platform privacy barriers."
+        )
 
     # 5. Persist User Message
     user_msg = ChatMessage(
@@ -154,7 +168,7 @@ async def send_chat_message(
     # 7. Non-Streaming JSON Fallback
     if not req.stream:
         reply_content, model_used, tokens_used = await llm_engine.generate_response(
-            messages_payload, system_prompt=system_prompt
+            messages_payload, system_prompt=system_prompt, web_search=use_web_search
         )
 
         # Persist Rhynia reply
@@ -192,7 +206,9 @@ async def send_chat_message(
             yield f"data: {init_event}\n\n"
 
             # Stream tokens
-            async for token in llm_engine.generate_stream(messages_payload, system_prompt=system_prompt):
+            async for token in llm_engine.generate_stream(
+                messages_payload, system_prompt=system_prompt, web_search=use_web_search
+            ):
                 collected_reply.append(token)
                 token_event = json.dumps({"type": "token", "content": token})
                 yield f"data: {token_event}\n\n"

@@ -90,7 +90,8 @@ async function sendChatMessage() {
       body: JSON.stringify({
         message: content,
         session_id: AppState.activeSessionId,
-        files: files.map(f => f.id)
+        files: files.map(f => f.id),
+        web_search: !!(window.AppState && window.AppState.webSearchEnabled)
       })
     });
 

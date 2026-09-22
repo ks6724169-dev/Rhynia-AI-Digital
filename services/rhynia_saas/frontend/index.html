@@ -552,6 +552,11 @@
             <!-- Text Input Field -->
             <input id="chat-input" type="text" autocomplete="off" oninput="updateSendButtonState()" onkeydown="handleChatInputKeyDown(event)" placeholder="Ask anything or start a project..." data-i18n-placeholder="ask_placeholder" class="flex-1 bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none px-2"/>
 
+            <!-- Web Search Toggle Button -->
+            <button id="btnWebSearch" type="button" onclick="toggleWebSearch()" aria-label="Web search" title="Toggle Live Web Search" class="w-9 h-9 rounded-full flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all shrink-0">
+              <span class="material-symbols-outlined text-[19px]">public</span>
+            </button>
+
             <!-- Mic Voice Dictation Button -->
             <button id="micBtn" type="button" onclick="toggleVoiceInput()" aria-label="Voice input" data-i18n-aria="voice_input" class="w-9 h-9 rounded-full flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all shrink-0">
               <span class="material-symbols-outlined text-[20px]">mic</span>
