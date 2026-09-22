@@ -139,7 +139,8 @@ async def send_chat_message(
             f"LIVE INTERNET WEB SEARCH GROUNDING ACTIVE:\n"
             f"- Real-time live web search is enabled for this inquiry.\n"
             f"- Search the live web to retrieve the latest, up-to-date facts, news, and verifiable data.\n"
-            f"- When referencing web sources, include clean markdown links and citations.\n"
+            f"- COMPACT SOURCE LINKS: ALWAYS provide clean markdown links `[Source Name](url)` or `[domain.com](url)` (e.g. `[timesofindia.com](https://...)`, `[NDTV](https://...)`, `[Wikipedia](https://...)`). Embed them inline or list them cleanly under '❖ **स्रोतः**' with `✔ [Source Name](url)`.\n"
+            f"- Keep link labels short so the UI renders them as compact blue source pills.\n"
             f"- You CAN search the public web, live news, public YouTube videos/channels, and public Twitter/X trends.\n"
             f"- Remind users politely that private/login-protected social media accounts (personal Instagram DMs, private Facebook profiles) cannot be accessed due to platform privacy barriers."
         )

@@ -422,13 +422,59 @@ function splitTableRow(rowText) {
   return s.split("|").map(cell => cell.trim());
 }
 
+function extractCleanDomain(url) {
+  try {
+    const cleanUrl = String(url).replace(/&amp;/g, "&");
+    const u = new URL(cleanUrl);
+    let host = u.hostname.replace(/^www\./i, "");
+    return host;
+  } catch (e) {
+    return String(url).replace(/^https?:\/\/(?:www\.)?/i, "").split(/[\/\?#]/)[0] || "source";
+  }
+}
+
 function renderInlineMarkdown(str) {
   if (!str) return "";
-  return str
-    .replace(/`([^`]+)`/g, `<code class="px-1.5 py-0.5 rounded bg-white/10 font-mono text-[13px] text-white">$1</code>`)
-    .replace(/\*\*([^*]+)\*\*/g, `<strong class="text-white font-semibold">$1</strong>`)
-    .replace(/\*([^*]+)\*/g, `<em class="italic">$1</em>`);
+  let out = str;
+
+  // 1. Inline code: `code`
+  out = out.replace(/`([^`]+)`/g, `<code class="px-1.5 py-0.5 rounded bg-white/10 font-mono text-[13px] text-white">$1</code>`);
+
+  // 2. Bold: **text**
+  out = out.replace(/\*\*([^*]+)\*\*/g, `<strong class="text-white font-semibold">$1</strong>`);
+
+  // 3. Italic: *text*
+  out = out.replace(/\*([^*]+)\*/g, `<em class="italic">$1</em>`);
+
+  // 4. Markdown Links: [Anchor Text](URL) -> Compact Blue Source Link Pills
+  out = out.replace(/\[([^\]]+)\]\((https?:\/\/[^\s\)\"\'<>]+)\)/gi, (match, label, url) => {
+    const cleanLabel = (label || "").trim();
+    // Numeric citation badges like [1], [2]
+    if (/^\d+$/.test(cleanLabel)) {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="rhynia-citation-pill">[${cleanLabel}]</a>`;
+    }
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="rhynia-source-link"><span class="material-symbols-outlined source-icon">public</span><span class="source-text">${cleanLabel}</span><span class="material-symbols-outlined external-icon">open_in_new</span></a>`;
+  });
+
+  // 5. Standalone numeric citation brackets: [1], [2] (not already linked in markdown)
+  out = out.replace(/(?:^|\s)\[(\d{1,2})\](?!\()/g, (match, num) => {
+    return ` <span class="rhynia-citation-pill">[${num}]</span>`;
+  });
+
+  // 6. Bare HTTP/HTTPS URLs (only in text nodes outside HTML tags!)
+  const parts = out.split(/(<[^>]+>)/g);
+  for (let i = 0; i < parts.length; i += 2) {
+    parts[i] = parts[i].replace(/(^|[\s(])(https?:\/\/[^\s\)\"\'<>]+)(?=[)\s.,;:]|$)/gi, (match, prefix, url) => {
+      if (url.includes("__RHYNIA_BLOCK_")) return match;
+      const domain = extractCleanDomain(url);
+      return `${prefix}<a href="${url}" target="_blank" rel="noopener noreferrer" class="rhynia-source-link"><span class="material-symbols-outlined source-icon">public</span><span class="source-text">${domain}</span><span class="material-symbols-outlined external-icon">open_in_new</span></a>`;
+    });
+  }
+  out = parts.join("");
+
+  return out;
 }
+
 
 // =========================================================
 // RHYNIA MICROSOFT OFFICE VISUAL CHART ENGINE
