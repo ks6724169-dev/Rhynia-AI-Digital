@@ -267,95 +267,99 @@ TOTAL ESTIMATED EFFORT: ~108 hours  |  TARGET: Web App Live in ~15 Working Days
 
 ### Current Board Status:
 ```
-SPRINT 0 — Foundation
+SPRINT 0 — Foundation (Completed)
   [x] Folder structure बनाना
   [x] requirements.txt
   [x] config.py
   [x] .env template
   [x] README.md
 
-SPRINT 1 — Database + Auth Backend
-  [ ] database.py — 5 models
-  [ ] auth.py — BCrypt functions
-  [ ] auth.py — JWT functions
-  [ ] POST /auth/register
-  [ ] POST /auth/login
-  [ ] POST /auth/google
-  [ ] POST /auth/phone/send-otp
-  [ ] POST /auth/phone/verify-otp
-  [ ] POST /auth/forgot-password
-  [ ] POST /auth/reset-password
-  [ ] GET /auth/me
-  [ ] GET /health
-  [ ] Thunder Client tests ✓
+SPRINT 1 — Database + Auth Backend (Completed)
+  [x] database.py — 5 models
+  [x] auth.py — BCrypt functions
+  [x] auth.py — JWT functions
+  [x] POST /auth/register
+  [x] POST /auth/login
+  [x] POST /auth/google
+  [x] POST /auth/phone/send-otp
+  [x] POST /auth/phone/verify-otp
+  [x] POST /auth/forgot-password
+  [x] POST /auth/reset-password
+  [x] GET /auth/me
+  [x] GET /health
+  [x] Thunder Client tests ✓
 
-SPRINT 2 — Core Intelligence Backend (OpenRouter Cascade + Search + Export)
+SPRINT 2 — Core Intelligence Backend (OpenRouter Cascade + Search + Export) (Completed)
   --- 2A: LLM Engine ---
-  [ ] llm_engine.py — ModelEngine abstract interface
-  [ ] llm_engine.py — Tier 1: Free models (Chat/Vision/Code via OpenRouter)
-  [ ] llm_engine.py — Tier 2: Paid fallback on HTTP 429 (Chat/Vision/Code)
-  [ ] llm_engine.py — Tier 3: Safety reserve (Groq + HuggingFace)
-  [ ] llm_engine.py — Streaming SSE support
-  [ ] System Prompt injection (Zero Identity Leakage)
+  [x] llm_engine.py — ModelEngine abstract interface
+  [x] llm_engine.py — Tier 1: Free models (Chat/Vision/Code via OpenRouter)
+  [x] llm_engine.py — Tier 2: Paid fallback on HTTP 429 (Chat/Vision/Code)
+  [x] llm_engine.py — Tier 3: Safety reserve (Groq + HuggingFace)
+  [x] llm_engine.py — Streaming SSE support
+  [x] System Prompt injection (Zero Identity Leakage)
   --- 2B: Session & Chat ---
-  [ ] GET /sessions
-  [ ] POST /sessions
-  [ ] PATCH /sessions/{pid}
-  [ ] DELETE /sessions/{pid}
-  [ ] DELETE /sessions (all)
-  [ ] GET /sessions/{pid}/messages
-  [ ] POST /chat (cascade + plan limit check)
-  [ ] PATCH /messages/{id}/rating
+  [x] GET /sessions
+  [x] POST /sessions
+  [x] PATCH /sessions/{pid}
+  [x] DELETE /sessions/{pid}
+  [x] DELETE /sessions (all)
+  [x] GET /sessions/{pid}/messages
+  [x] POST /chat (cascade + plan limit check)
+  [x] PATCH /messages/{id}/rating
   --- 2C: Plan Limits ---
-  [ ] plan_limits.py — FREE/PRO/ULTRA PRO config
-  [ ] Daily counter reset (midnight IST)
-  [ ] HTTP 429 on limit exceeded
-  [ ] ₹10 Daily Pass 24hr timer logic
+  [x] plan_limits.py — FREE/PRO/ULTRA PRO config
+  [x] Daily counter reset (midnight IST)
+  [x] HTTP 429 on limit exceeded
+  [x] ₹10 Daily Pass 24hr timer logic
   --- 2D: Search Service ---
-  [ ] search_service.py — DuckDuckGo web search
-  [ ] search_service.py — Google Maps/Places
-  [ ] search_service.py — YouTube AI summary
-  [ ] search_service.py — Social trends (Insta/FB)
-  [ ] POST /search endpoint
+  [x] search_service.py — DuckDuckGo web search
+  [x] search_service.py — Google Maps/Places
+  [x] search_service.py — YouTube AI summary
+  [x] search_service.py — Social trends (Insta/FB)
+  [x] POST /search endpoint
   --- 2E: Export Service ---
-  [ ] export_service.py — PDF (reportlab)
-  [ ] export_service.py — PPT (python-pptx)
-  [ ] POST /export/pdf
-  [ ] POST /export/ppt
-  [ ] FREE user gate (HTTP 403)
+  [x] export_service.py — PDF (reportlab)
+  [x] export_service.py — PPT (python-pptx)
+  [x] POST /export/pdf
+  [x] POST /export/ppt
+  [x] FREE user gate (HTTP 403)
   --- 2F: QA ---
-  [ ] Thunder Client full endpoint tests
-  [ ] Cascade fallback simulation test
-  [ ] Plan limit enforcement test
+  [x] Thunder Client full endpoint tests
+  [x] Cascade fallback simulation test
+  [x] Plan limit enforcement test
 
-SPRINT 3 — File Upload + Profile
-  [ ] POST /files/upload (500MB quota)
-  [ ] storage_used_bytes update
-  [ ] HTTP 413 enforcement
-  [ ] PATCH /profile
-  [ ] POST /profile/avatar
+SPRINT 3 — File Upload + Profile (Completed)
+  [x] POST /files/upload (500MB quota)
+  [x] storage_used_bytes update
+  [x] HTTP 413 enforcement
+  [x] PATCH /profile
+  [x] POST /profile/avatar
 
-SPRINT 4 — Frontend Web
-  [ ] config.js
-  [ ] style.css (Design Tokens)
-  [ ] style.css (Light/Dark themes)
-  [ ] index.html (Chat Screen)
-  [ ] index.html (Sidebar)
-  [ ] index.html (Settings Panel)
-  [ ] Auth Flow Screens (07_Sign In, 08_Sign Up, 09_SMS OTP, 10_Email OTP, 11_Forgot Password)
-  [ ] app.js (AppState)
-  [ ] app.js (API module)
-  [ ] app.js (Auth module)
-  [ ] app.js (Chat module)
-  [ ] app.js (Action Buttons)
-  [ ] app.js (Sidebar module)
-  [ ] app.js (3-Dot Menu)
-  [ ] app.js ((+) Attachments)
-  [ ] app.js (Settings module)
-  [ ] Responsive tests
-  [ ] Banned word audit
+SPRINT 4 — Frontend Web (Completed)
+  [x] config.js
+  [x] style.css (Design Tokens)
+  [x] style.css (Light/Dark themes)
+  [x] index.html (Chat Screen)
+  [x] index.html (Sidebar)
+  [x] index.html (Settings Panel)
+  [x] Auth Flow Screens (07_Sign In, 08_Sign Up, 09_SMS OTP, 10_Email OTP, 11_Forgot Password)
+  [x] app.js (AppState)
+  [x] app.js (API module)
+  [x] app.js (Auth module)
+  [x] app.js (Chat module)
+  [x] app.js (Action Buttons)
+  [x] app.js (Sidebar module)
+  [x] app.js (3-Dot Menu)
+  [x] app.js ((+) Attachments)
+  [x] app.js (Settings module)
+  [x] Like / Dislike interactive bottom sheet feedback modal with 3-dots privacy info
+  [x] Full-stack Notification Settings (Master switch, AI alerts, channels)
+  [x] 42 Languages Multi-Language Engine
+  [x] 15-Accent Color Picker
+  [x] Responsive tests
+  [x] Banned word audit
 
-SPRINT 5 — Integration + Launch
+SPRINT 5 — Integration + Launch (Up Next / Pending)
   [ ] E2E: Landing on Login Screen → Auth → Chat
   [ ] E2E: Email Register + Chat
   [ ] E2E: Google OAuth
