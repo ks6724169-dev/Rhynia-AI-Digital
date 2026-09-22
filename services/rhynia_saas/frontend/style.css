@@ -787,6 +787,220 @@ html.light #feedback-info-title {
   animation: slideUpBottomSheet 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* ========================================================= */
+/* COMPREHENSIVE FLUENT LIGHT CANVAS THEME OVERRIDES         */
+/* ========================================================= */
+
+/* Main App Workspace in Light Mode */
+html.light #view-app {
+  background-color: #f8f9fa !important;
+}
+
+html.light #view-app header {
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light #view-app header button {
+  color: #4b5563 !important;
+}
+
+html.light #view-app header button:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  color: #111827 !important;
+}
+
+/* 3-Dots Flyout Context Menu in Light Mode */
+html.light #three-dots-menu,
+html.light .fluent-flyout {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light #three-dots-menu button {
+  color: #374151 !important;
+}
+
+html.light #three-dots-menu button:hover {
+  background-color: #f3f4f6 !important;
+}
+
+/* Empty State in Light Mode */
+html.light #screen-empty-state h2 {
+  color: #111827 !important;
+}
+
+html.light #screen-empty-state p {
+  color: #6b7280 !important;
+}
+
+/* Chat Message Stream & Actions in Light Mode */
+html.light #chat-messages-container > div {
+  border-bottom-color: #e5e7eb !important;
+}
+
+html.light #chat-messages-container .text-white {
+  color: #111827 !important;
+}
+
+html.light .ai-text-body {
+  color: #1f2937 !important;
+}
+
+html.light .ai-actions-bar {
+  color: #6b7280 !important;
+}
+
+html.light .ai-actions-bar button {
+  color: #6b7280 !important;
+}
+
+html.light .ai-actions-bar button:hover {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  color: #111827 !important;
+}
+
+/* Persistent Docked Composer Pill in Light Mode */
+html.light .fluent-composer-pill,
+html.light .bg-\[\#1e1e1e\]\/95,
+html.light .bg-\[\#1e1e1e\] {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light #chat-input {
+  color: #111827 !important;
+}
+
+html.light #chat-input::placeholder {
+  color: #9ca3af !important;
+}
+
+html.light #plusToggle,
+html.light #micBtn {
+  color: #4b5563 !important;
+}
+
+html.light #plusToggle:hover,
+html.light #micBtn:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  color: #111827 !important;
+}
+
+/* Attachment Menu Context in Light Mode */
+html.light #attachmentMenu {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light #attachmentMenu button {
+  color: #1f2937 !important;
+}
+
+html.light #attachmentMenu button:hover {
+  background-color: #f3f4f6 !important;
+}
+
+html.light #attachmentMenu button div {
+  background-color: #f3f4f6 !important;
+  border-color: #e5e7eb !important;
+}
+
+/* Navigation Drawer in Light Mode */
+html.light #navigation-drawer {
+  background-color: #ffffff !important;
+  border-right: 1px solid #e5e7eb !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Settings & Profile Full Screen (Screen 05) in Light Mode */
+html.light #screen-settings-panel {
+  background-color: #f8f9fa !important;
+  color: #111827 !important;
+}
+
+html.light #screen-settings-panel .fluent-mica-card {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+}
+
+html.light #screen-settings-panel h2,
+html.light #screen-settings-panel h3,
+html.light #screen-settings-panel .text-white {
+  color: #111827 !important;
+}
+
+html.light #screen-settings-panel .text-neutral-400 {
+  color: #6b7280 !important;
+}
+
+html.light #screen-settings-panel .text-neutral-300 {
+  color: #4b5563 !important;
+}
+
+html.light #screen-settings-panel .bg-\[\#1f1f1f\],
+html.light #screen-settings-panel .bg-\[\#202020\],
+html.light #screen-settings-panel .bg-\[\#282828\] {
+  background-color: #f9fafb !important;
+  border-color: #e5e7eb !important;
+}
+
+html.light #screen-settings-panel button[onclick="closeSettingsPanel()"] {
+  color: #374151 !important;
+}
+
+html.light #screen-settings-panel button[onclick="closeSettingsPanel()"]:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light #screen-settings-panel button.bg-\[\#353535\] {
+  background-color: #e5e7eb !important;
+  color: #111827 !important;
+  border-color: #d1d5db !important;
+}
+
+html.light #screen-settings-panel button.bg-\[\#353535\]:hover {
+  background-color: #d1d5db !important;
+}
+
+html.light #screen-settings-panel .w-10.h-5.bg-\[\#353535\] {
+  background-color: #d1d5db !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light #screen-settings-panel .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light #screen-settings-panel .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Edit Profile Modal in Light Mode */
+html.light #edit-profile-modal > div,
+html.light .bg-\[\#242424\] {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+html.light #edit-profile-modal input {
+  background-color: #f9fafb !important;
+  border-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+html.light #edit-profile-modal input:focus {
+  border-color: #0078D4 !important;
+  background-color: #ffffff !important;
+}
+
+
 
 
 

@@ -265,7 +265,10 @@ async function toggleAppearanceTheme() {
         body: JSON.stringify({ theme: newTheme })
       });
     }
-    showToast(`Switched to ${newTheme === 'dark' ? 'Dark Horizon' : 'Light Mode'}`, "success");
+    const themeName = newTheme === "dark" 
+      ? (typeof t === "function" ? t("dark_mode") : "Dark Horizon") 
+      : (typeof t === "function" ? t("light_mode") : "Light Canvas");
+    showToast(`Theme: ${themeName}`, "success");
   } catch (e) {
     // Non-fatal, local theme still applied
   }
@@ -284,7 +287,10 @@ function applyTheme(theme) {
 
   const themeLabel = document.getElementById("settings-theme-label");
   if (themeLabel) {
-    themeLabel.textContent = isLight ? "Light Mode" : "Dark Horizon";
+    themeLabel.setAttribute("data-i18n", isLight ? "light_mode" : "dark_mode");
+    themeLabel.textContent = (typeof t === "function" && t(isLight ? "light_mode" : "dark_mode")) 
+      ? t(isLight ? "light_mode" : "dark_mode") 
+      : (isLight ? "Light Canvas" : "Dark Horizon");
   }
 
   const themeIcon = document.getElementById("settings-theme-icon");
@@ -299,7 +305,10 @@ function applyTheme(theme) {
 
   const themeBtnText = document.getElementById("settings-theme-btn-text");
   if (themeBtnText) {
-    themeBtnText.textContent = isLight ? "Switch to Dark" : "Switch to Light";
+    themeBtnText.setAttribute("data-i18n", isLight ? "switch_to_dark" : "switch_to_light");
+    themeBtnText.textContent = (typeof t === "function" && t(isLight ? "switch_to_dark" : "switch_to_light")) 
+      ? t(isLight ? "switch_to_dark" : "switch_to_light") 
+      : (isLight ? "Switch to Dark" : "Switch to Light");
   }
 }
 
@@ -537,3 +546,20 @@ function logoutUser() {
   // Show Sign In Screen (Screen 07)
   switchView("view-login");
 }
+
+// Expose settings & theme functions globally
+window.toggleAppearanceTheme = toggleAppearanceTheme;
+window.toggleThemeMode = toggleAppearanceTheme;
+window.applyTheme = applyTheme;
+window.openSettingsPanel = openSettingsPanel;
+window.closeSettingsPanel = closeSettingsPanel;
+window.toggleAccentColorPicker = toggleAccentColorPicker;
+window.selectAccentColor = selectAccentColor;
+window.toggleLanguageSelector = toggleLanguageSelector;
+window.toggleNotifications = toggleNotifications;
+window.logoutUser = logoutUser;
+window.triggerAvatarUpload = triggerAvatarUpload;
+window.handleAvatarFileSelected = handleAvatarFileSelected;
+window.toggleEditProfileModal = toggleEditProfileModal;
+window.saveProfileChanges = saveProfileChanges;
+
