@@ -235,4 +235,47 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   }
+
+  // 6. Handle URL Hash Navigation for Direct Links
+  if (window.location.hash) {
+    handleHashRoute();
+  }
 });
+
+// ==========================================
+// URL HASH ROUTING FOR DIRECT VIEW LINKS
+// ==========================================
+function handleHashRoute() {
+  const hash = window.location.hash.toLowerCase().replace("#", "").trim();
+  if (!hash) return;
+
+  if (hash === "login" || hash === "signin") {
+    switchView("view-login");
+  } else if (hash === "register" || hash === "signup") {
+    switchView("view-register");
+  } else if (hash === "sms-otp") {
+    switchView("view-sms-otp");
+  } else if (hash === "email-otp") {
+    switchView("view-email-otp");
+  } else if (hash === "forgot-password" || hash === "reset-password") {
+    switchView("view-forgot-password");
+  } else if (hash === "settings") {
+    switchView("view-app");
+    openSettingsPanel();
+  } else if (hash === "edit-profile") {
+    switchView("view-app");
+    openSettingsPanel();
+    toggleEditProfileModal(true);
+  } else if (hash === "drawer") {
+    switchView("view-app");
+    closeSettingsPanel();
+    toggleSidebarDrawer(true);
+  } else if (hash === "chat" || hash === "empty-chat") {
+    switchView("view-app");
+    closeSettingsPanel();
+    toggleSidebarDrawer(false);
+  }
+}
+
+window.addEventListener("hashchange", handleHashRoute);
+
