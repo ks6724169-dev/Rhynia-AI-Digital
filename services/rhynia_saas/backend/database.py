@@ -25,6 +25,14 @@ from services.rhynia_saas.backend.config import settings
 connect_args = {}
 if settings.DATABASE_URL.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
+    # Ensure database folder exists
+    import re
+    from pathlib import Path
+    db_match = re.search(r"sqlite:///(.*)", settings.DATABASE_URL)
+    if db_match:
+        db_path = Path(db_match.group(1))
+        if db_path.parent and not db_path.parent.exists():
+            db_path.parent.mkdir(parents=True, exist_ok=True)
 else:
     connect_args = {"connect_timeout": 15}
 

@@ -5,6 +5,7 @@ Rhynia Intelligence SaaS — 3-Tier AI Model Cascade Engine
 import asyncio
 import json
 import logging
+import os
 from typing import AsyncGenerator, Dict, List, Optional, Tuple
 import httpx
 
@@ -74,14 +75,17 @@ class CascadeLLMEngine:
         full_messages = self._build_payload_messages(messages, system_prompt)
         last_user_query = messages[-1]["content"] if messages else "Hello"
 
-        # If no API key configured, use intelligent mock streaming in development
-        if not self.api_key:
+        # Dynamically resolve API key from instance, settings or environment
+        api_key = self.api_key or settings.OPENROUTER_API_KEY or os.environ.get("OPENROUTER_API_KEY")
+
+        # If no API key configured, use fallback streaming in development
+        if not api_key:
             async for token in self._mock_stream(last_user_query):
                 yield token
             return
 
         headers = {
-            "Authorization": f"Bearer {self.api_key}",
+            "Authorization": f"Bearer {api_key}",
             "HTTP-Referer": "https://rhynia.com",
             "X-Title": "Rhynia Intelligence",
             "Content-Type": "application/json",

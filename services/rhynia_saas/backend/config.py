@@ -62,15 +62,15 @@ class Settings(BaseSettings):
 
     # Cascade Tiers (Configured dynamically via env)
     CASCADE_TIER_1_MODELS: list[str] = [
-        "tier1_chat_model",
-        "tier1_vision_model",
-        "tier1_code_model",
+        "deepseek/deepseek-chat",
+        "meta-llama/llama-3.3-70b-instruct",
+        "mistralai/mistral-small-24b-instruct-2501",
     ]
     CASCADE_TIER_2_MODELS: list[str] = [
-        "tier2_fast_chat",
-        "tier2_fast_vision",
+        "deepseek/deepseek-chat",
+        "meta-llama/llama-3.3-70b-instruct",
     ]
-    TIER_3_BACKUP_MODEL: str = "safety_backup_model"
+    TIER_3_BACKUP_MODEL: str = "meta-llama/llama-3.3-70b-instruct"
 
     # Plan Limits & Quotas (PRICING_FEATURES_LOCKED.md)
     FREE_TIER_DAILY_MESSAGE_LIMIT: int = 20
