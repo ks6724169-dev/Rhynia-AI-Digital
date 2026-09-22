@@ -1,0 +1,42 @@
+{
+  "project_name": "Rhynia Intelligence SaaS v1.0",
+  "version": "1.0.0",
+  "brand_rule": "Strictly Rhynia. Zero external vendor leakage.",
+  "agents": [
+    {
+      "agent_id": "agent_lead",
+      "name": "Nova (Lead PM)",
+      "role": "Product & Sprint Lead",
+      "system_prompt_file": "prompts/agent_lead.md",
+      "allowed_tools": ["file_read", "file_write", "git_branch"]
+    },
+    {
+      "agent_id": "agent_architect",
+      "name": "Apex (System Architect)",
+      "role": "Database & API Schema Architect",
+      "system_prompt_file": "prompts/agent_architect.md",
+      "allowed_tools": ["file_read", "file_write"]
+    },
+    {
+      "agent_id": "agent_frontend",
+      "name": "Pixel (Frontend Designer)",
+      "role": "UI/UX & 11 Interactive Screens Specialist",
+      "system_prompt_file": "prompts/agent_frontend.md",
+      "allowed_tools": ["file_read", "file_write", "linter"]
+    },
+    {
+      "agent_id": "agent_backend",
+      "name": "Cipher (Backend Engineer)",
+      "role": "FastAPI, 3-Tier Cascade & Cloud Database Engineer",
+      "system_prompt_file": "prompts/agent_backend.md",
+      "allowed_tools": ["file_read", "file_write", "terminal_exec"]
+    },
+    {
+      "agent_id": "agent_qa_security",
+      "name": "Aegis (QA & Security Auditor)",
+      "role": "Quality Gatekeeper & Brand Compliance Auditor",
+      "system_prompt_file": "prompts/agent_qa_security.md",
+      "allowed_tools": ["file_read", "terminal_exec", "run_tests", "linter"]
+    }
+  ]
+}

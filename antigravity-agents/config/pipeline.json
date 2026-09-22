@@ -1,0 +1,21 @@
+{
+  "pipeline_name": "Rhynia 16-Step Autonomous Development Lifecycle",
+  "steps": [
+    {"step": 1, "name": "Idea Lock & Scope Boundary", "owner": "agent_lead"},
+    {"step": 2, "name": "Product Requirements Document (PRD)", "owner": "agent_lead"},
+    {"step": 3, "name": "Autonomous Team Formation & RACI", "owner": "agent_lead"},
+    {"step": 4, "name": "Design System & UI/UX Standards", "owner": "agent_frontend"},
+    {"step": 5, "name": "System Architecture & Data Modeling", "owner": "agent_architect"},
+    {"step": 6, "name": "Tech Stack & Environment Setup", "owner": "agent_architect"},
+    {"step": 7, "name": "Granular Sprint Breakdown", "owner": "agent_lead"},
+    {"step": 8, "name": "Coding Workflow & Feature Branching", "owner": "agent_backend"},
+    {"step": 9, "name": "Automated Unit & Integration Testing", "owner": "agent_qa_security"},
+    {"step": 10, "name": "Zero-Leakage Brand & Security Audit", "owner": "agent_qa_security"},
+    {"step": 11, "name": "Code Review & Quality Gate Validation", "owner": "agent_qa_security"},
+    {"step": 12, "name": "Pre-Release Verification Check", "owner": "agent_qa_security"},
+    {"step": 13, "name": "Deployment & Infrastructure Sync", "owner": "agent_backend"},
+    {"step": 14, "name": "Post-Deployment Smoke Testing", "owner": "agent_qa_security"},
+    {"step": 15, "name": "Documentation & Knowledge Base Lock", "owner": "agent_lead"},
+    {"step": 16, "name": "Production Handover & Next Milestone", "owner": "agent_lead"}
+  ]
+}
