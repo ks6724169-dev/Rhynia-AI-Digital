@@ -1,7 +1,7 @@
 /**
  * Rhynia Intelligence SaaS — Feedback Module (Screenshots Exact Match)
- * Handles Like (thumb_up) and Dislike (thumb_down) Interactive Feedback Modal
- * Automatically localizes titles, tags, and notices to user's selected app language
+ * Handles Like (thumb_up) and Dislike (thumb_down) Interactive Bottom Sheet Modal
+ * Automatically localizes titles, tags, notices, and privacy info to user's selected language
  * Brand Compliance: 100% Rhynia Clean
  */
 
@@ -21,7 +21,12 @@ const FEEDBACK_I18N_FALLBACK = {
     feedback_comment_placeholder: "कुछ जानकारी शेयर करें...",
     feedback_chat_copy_notice: "इस चैट की एक कॉपी शामिल की जाएगी।",
     feedback_submit: "सबमिट करें",
-    feedback_submitted_toast: "धन्यवाद! आपका फ़ीडबैक सबमिट हो गया है।"
+    feedback_submitted_toast: "धन्यवाद! आपका फ़ीडबैक सबमिट हो गया है।",
+    feedback_info_title: "फ़ीडबैक और डेटा सुरक्षा",
+    feedback_info_usage_head: "🎯 फ़ीडबैक का क्या उपयोग होगा?",
+    feedback_info_usage_text: "आपके द्वारा दिए गए फ़ीडबैक का उपयोग Rhynia AI के मॉडल को और अधिक सटीक, मददगार और बेहतर बनाने के लिए किया जाता है।",
+    feedback_info_privacy_head: "🔒 डेटा प्राइवेसी और सुरक्षा:",
+    feedback_info_privacy_text: "आपकी प्राइवेसी 100% सुरक्षित और एन्क्रिप्टेड है। यह डेटा कभी किसी तीसरे पक्ष (third-party) को नहीं बेचा या साझा नहीं किया जाता।"
   },
   en: {
     feedback_like_title: "What did you like? (Optional)",
@@ -38,7 +43,12 @@ const FEEDBACK_I18N_FALLBACK = {
     feedback_comment_placeholder: "Share some details...",
     feedback_chat_copy_notice: "A copy of this chat will be included.",
     feedback_submit: "Submit",
-    feedback_submitted_toast: "Thank you! Your feedback has been recorded."
+    feedback_submitted_toast: "Thank you! Your feedback has been recorded.",
+    feedback_info_title: "Feedback & Data Privacy",
+    feedback_info_usage_head: "🎯 How is feedback used?",
+    feedback_info_usage_text: "Your feedback is used directly to improve Rhynia AI's model accuracy, speed, and response quality.",
+    feedback_info_privacy_head: "🔒 Privacy & Security:",
+    feedback_info_privacy_text: "Your privacy is 100% protected and encrypted. Your data is never sold or shared with any third party."
   }
 };
 
@@ -71,13 +81,16 @@ let activeFeedbackState = {
 };
 
 /**
- * Open Feedback Modal (invoked from Like/Dislike action icons in chat)
+ * Open Feedback Bottom Sheet Modal (invoked from Like/Dislike action icons in chat)
  */
 function openFeedbackModal(buttonEl, isPositive) {
   const rating = isPositive ? "like" : "dislike";
   activeFeedbackState.rating = rating;
   activeFeedbackState.originButtonEl = buttonEl;
   activeFeedbackState.selectedTags.clear();
+
+  // Hide 3-dots info flyout if previously open
+  toggleFeedbackInfoFlyout(null, false);
 
   // Find parent message container
   const msgContainer = buttonEl.closest("[id^='ai-msg-']");
@@ -120,7 +133,7 @@ function openFeedbackModal(buttonEl, isPositive) {
     submitBtn.removeAttribute("disabled");
   }
 
-  // 5. Reveal Modal Backdrop
+  // 5. Reveal Bottom Sheet Modal
   const modal = document.getElementById("feedback-modal-backdrop");
   if (modal) {
     modal.classList.remove("hidden");
@@ -185,6 +198,42 @@ function toggleFeedbackTagChip(buttonEl, tagId, tagLabel) {
 }
 
 /**
+ * Toggle Contextual Privacy & Data Security Information Flyout (3-Dots button)
+ */
+function toggleFeedbackInfoFlyout(event, forceState) {
+  if (event) {
+    event.stopPropagation();
+  }
+
+  const flyout = document.getElementById("feedback-info-flyout");
+  if (!flyout) return;
+
+  const isHidden = (typeof forceState === "boolean") ? !forceState : !flyout.classList.contains("hidden");
+
+  if (!isHidden) {
+    // Populate dynamic localized texts
+    const titleEl = document.getElementById("feedback-info-title");
+    if (titleEl) titleEl.textContent = resolveFeedbackString("feedback_info_title", "फ़ीडबैक और डेटा सुरक्षा");
+
+    const usageHeadEl = document.getElementById("feedback-info-usage-head");
+    if (usageHeadEl) usageHeadEl.textContent = resolveFeedbackString("feedback_info_usage_head", "🎯 फ़ीडबैक का क्या उपयोग होगा?");
+
+    const usageTextEl = document.getElementById("feedback-info-usage-text");
+    if (usageTextEl) usageTextEl.textContent = resolveFeedbackString("feedback_info_usage_text", "आपके द्वारा दिए गए फ़ीडबैक का उपयोग Rhynia AI के मॉडल को और अधिक सटीक, मददगार और बेहतर बनाने के लिए किया जाता है।");
+
+    const privacyHeadEl = document.getElementById("feedback-info-privacy-head");
+    if (privacyHeadEl) privacyHeadEl.textContent = resolveFeedbackString("feedback_info_privacy_head", "🔒 डेटा प्राइवेसी और सुरक्षा:");
+
+    const privacyTextEl = document.getElementById("feedback-info-privacy-text");
+    if (privacyTextEl) privacyTextEl.textContent = resolveFeedbackString("feedback_info_privacy_text", "आपकी प्राइवेसी 100% सुरक्षित और एन्क्रिप्टेड है। यह डेटा कभी किसी तीसरे पक्ष (third-party) को नहीं बेचा या साझा नहीं किया जाता।");
+
+    flyout.classList.remove("hidden");
+  } else {
+    flyout.classList.add("hidden");
+  }
+}
+
+/**
  * Close Feedback Modal
  */
 function closeFeedbackModal() {
@@ -192,7 +241,17 @@ function closeFeedbackModal() {
   if (modal) {
     modal.classList.add("hidden");
   }
+  toggleFeedbackInfoFlyout(null, false);
   activeFeedbackState.selectedTags.clear();
+}
+
+/**
+ * Handle backdrop outside click
+ */
+function handleFeedbackBackdropClick(event) {
+  if (event && event.target && event.target.id === "feedback-modal-backdrop") {
+    closeFeedbackModal();
+  }
 }
 
 /**

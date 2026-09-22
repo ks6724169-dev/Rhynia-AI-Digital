@@ -698,26 +698,33 @@ html.light #btn-send-message.btn-send-disabled {
   opacity: 0.45 !important;
 }
 
-/* ========================================== */
-/* SCREENSHOT MATCH: FEEDBACK MODAL (LIKE/DISLIKE) */
-/* ========================================== */
+#feedback-modal-backdrop {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: rgba(0, 0, 0, 0.45) !important;
+}
+
 .fluent-feedback-card {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .feedback-chip {
   user-select: none;
 }
 
+#feedback-info-flyout {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
 html.light #feedback-modal-backdrop {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.25) !important;
 }
 
 html.light .fluent-feedback-card {
   background-color: #ffffff !important;
   color: #111827 !important;
   border-color: #e5e7eb !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06) !important;
 }
 
 html.light #feedback-modal-title {
@@ -748,6 +755,39 @@ html.light .fluent-feedback-textarea::placeholder {
 html.light #feedback-modal-notice {
   color: #6b7280 !important;
 }
+
+html.light #feedback-info-flyout {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light #feedback-info-flyout p {
+  color: #4b5563 !important;
+}
+
+html.light #feedback-info-flyout .font-medium,
+html.light #feedback-info-title {
+  color: #111827 !important;
+}
+
+@keyframes slideUpBottomSheet {
+  from {
+    transform: translateY(100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUpBottomSheet 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+
 
 
 

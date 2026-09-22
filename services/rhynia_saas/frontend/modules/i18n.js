@@ -125,7 +125,12 @@ const RHYNIA_TRANSLATIONS = {
     feedback_comment_placeholder: "Share some details...",
     feedback_chat_copy_notice: "A copy of this chat will be included.",
     feedback_submit: "Submit",
-    feedback_submitted_toast: "Thank you! Your feedback has been recorded."
+    feedback_submitted_toast: "Thank you! Your feedback has been recorded.",
+    feedback_info_title: "Feedback & Data Privacy",
+    feedback_info_usage_head: "🎯 How is feedback used?",
+    feedback_info_usage_text: "Your feedback is used directly to improve Rhynia AI's model accuracy, speed, and response quality.",
+    feedback_info_privacy_head: "🔒 Privacy & Security:",
+    feedback_info_privacy_text: "Your privacy is 100% protected and encrypted. Your data is never sold or shared with any third party."
   },
 
   // 1. Hindi (हिन्दी)
@@ -199,7 +204,12 @@ const RHYNIA_TRANSLATIONS = {
     feedback_comment_placeholder: "कुछ जानकारी शेयर करें...",
     feedback_chat_copy_notice: "इस चैट की एक कॉपी शामिल की जाएगी।",
     feedback_submit: "सबमिट करें",
-    feedback_submitted_toast: "धन्यवाद! आपका फ़ीडबैक सबमिट हो गया है।"
+    feedback_submitted_toast: "धन्यवाद! आपका फ़ीडबैक सबमिट हो गया है।",
+    feedback_info_title: "फ़ीडबैक और डेटा सुरक्षा",
+    feedback_info_usage_head: "🎯 फ़ीडबैक का क्या उपयोग होगा?",
+    feedback_info_usage_text: "आपके द्वारा दिए गए फ़ीडबैक का उपयोग Rhynia AI के मॉडल को और अधिक सटीक, मददगार और बेहतर बनाने के लिए किया जाता है।",
+    feedback_info_privacy_head: "🔒 डेटा प्राइवेसी और सुरक्षा:",
+    feedback_info_privacy_text: "आपकी प्राइवेसी 100% सुरक्षित और एन्क्रिप्टेड है। यह डेटा कभी किसी तीसरे पक्ष (third-party) को नहीं बेचा या साझा नहीं किया जाता।"
   },
 
   // 2. Bengali (বাংলা)
