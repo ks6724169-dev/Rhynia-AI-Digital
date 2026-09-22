@@ -250,6 +250,9 @@ async function openSession(sessionId) {
           actionsContainer.classList.add("flex");
         }
       });
+      if (typeof renderAllMermaidDiagrams === "function") {
+        renderAllMermaidDiagrams(container);
+      }
       scrollChatToBottom();
     } else {
       if (container) {

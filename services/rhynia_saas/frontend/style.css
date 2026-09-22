@@ -1179,6 +1179,61 @@ html.light .markdown-table-wrapper tbody td:not(:last-child) {
   border-right: 1px solid #e1e4e8 !important; /* Light Mode: Vertical column line */
 }
 
+/* ========================================================= */
+/* SMARTART & MERMAID DIAGRAM STYLES                         */
+/* ========================================================= */
+.mermaid-block-container {
+  border-radius: 12px;
+  background-color: #121417;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  margin: 1.25rem 0;
+  overflow: hidden;
+}
+
+.mermaid-diagram-box {
+  background-color: #0e1013;
+  padding: 1.5rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+  min-height: 180px;
+}
+
+.mermaid-diagram-box svg,
+.fluent-mermaid-svg {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Crisp rendering of SVG SmartArt in light mode */
+html.light .mermaid-block-container {
+  background-color: #ffffff;
+  border-color: #d0d7de;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+html.light .mermaid-block-container .bg-\[\#1c2128\] {
+  background-color: #f6f8fa !important;
+  border-color: #d0d7de !important;
+}
+
+html.light .mermaid-diagram-box {
+  background-color: #fcfcfc !important;
+}
+
+/* Standalone SVG SmartArt Container styling */
+.svg-preview-box svg {
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 8px;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.25));
+}
+
+
 
 
 

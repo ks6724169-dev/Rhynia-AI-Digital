@@ -198,6 +198,130 @@ function downloadCodeBlock(buttonEl, lang) {
   showToast(`Downloaded ${fileName}!`, "success");
 }
 
+function initMermaid() {
+  if (typeof mermaid !== "undefined") {
+    try {
+      const isLight = document.documentElement.classList.contains("light");
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: isLight ? "default" : "dark",
+        securityLevel: "loose",
+        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+        themeVariables: isLight ? {
+          darkMode: false,
+          background: "#ffffff",
+          primaryColor: "#0078D4",
+          primaryTextColor: "#0e0e0e",
+          primaryBorderColor: "#0078D4",
+          lineColor: "#0078D4",
+          secondaryColor: "#f3f4f6",
+          tertiaryColor: "#e5e7eb"
+        } : {
+          darkMode: true,
+          background: "#141619",
+          primaryColor: "#0078D4",
+          primaryTextColor: "#ffffff",
+          primaryBorderColor: "#0078D4",
+          lineColor: "#58a6ff",
+          secondaryColor: "#1c2128",
+          tertiaryColor: "#121417"
+        }
+      });
+    } catch (e) {
+      console.warn("Mermaid init error:", e);
+    }
+  }
+}
+
+function toggleMermaidView(buttonEl) {
+  const container = buttonEl.closest(".mermaid-block-container");
+  if (!container) return;
+  const diagramBox = container.querySelector(".mermaid-diagram-box");
+  const codeBox = container.querySelector(".code-raw-box");
+  const icon = buttonEl.querySelector(".material-symbols-outlined");
+  const text = buttonEl.querySelector(".btn-label");
+
+  if (!diagramBox || !codeBox) return;
+
+  const isCodeHidden = codeBox.classList.contains("hidden");
+  if (isCodeHidden) {
+    codeBox.classList.remove("hidden");
+    diagramBox.classList.add("hidden");
+    if (icon) icon.textContent = "visibility";
+    if (text) text.textContent = "Preview";
+  } else {
+    codeBox.classList.add("hidden");
+    diagramBox.classList.remove("hidden");
+    if (icon) icon.textContent = "code";
+    if (text) text.textContent = "Code";
+  }
+}
+
+function downloadMermaidAsSvg(buttonEl) {
+  const container = buttonEl.closest(".mermaid-block-container");
+  if (!container) return;
+  const svgEl = container.querySelector(".mermaid-diagram-box svg");
+  if (!svgEl) {
+    showToast("Diagram is still rendering or invalid.", "error");
+    return;
+  }
+
+  const svgData = new XMLSerializer().serializeToString(svgEl);
+  const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `rhynia_diagram_${Date.now().toString().slice(-6)}.svg`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast("SmartArt Diagram downloaded as .svg!", "success");
+}
+
+async function renderAllMermaidDiagrams(rootEl) {
+  const container = rootEl || document;
+  const boxes = container.querySelectorAll(".mermaid-diagram-box:not([data-rendered='true'])");
+  if (!boxes.length) return;
+
+  if (typeof mermaid === "undefined") {
+    return;
+  }
+
+  initMermaid();
+
+  for (let i = 0; i < boxes.length; i++) {
+    const box = boxes[i];
+    const rawEncoded = box.getAttribute("data-mermaid-code");
+    if (!rawEncoded) continue;
+
+    const code = decodeURIComponent(rawEncoded).trim();
+    const uniqueId = `mermaid_diag_${Date.now()}_${Math.floor(Math.random() * 100000)}_${i}`;
+
+    try {
+      const { svg } = await mermaid.render(uniqueId, code);
+      box.innerHTML = svg;
+      box.setAttribute("data-rendered", "true");
+      const svgEl = box.querySelector("svg");
+      if (svgEl) {
+        svgEl.style.maxWidth = "100%";
+        svgEl.style.height = "auto";
+        svgEl.classList.add("fluent-mermaid-svg");
+      }
+    } catch (err) {
+      console.warn("Mermaid render error:", err);
+      box.setAttribute("data-rendered", "error");
+      box.innerHTML = `
+        <div class="text-xs text-amber-400/90 flex items-center gap-1.5 p-3">
+          <span class="material-symbols-outlined text-[18px]">warning</span>
+          <span>Diagram rendering in progress or syntax error. Click 'Code' to view.</span>
+        </div>
+      `;
+    }
+  }
+}
+
 function toggleSvgPreview(buttonEl) {
   const container = buttonEl.closest(".code-block-container");
   if (!container) return;
@@ -208,19 +332,17 @@ function toggleSvgPreview(buttonEl) {
 
   if (!previewBox || !codeBox) return;
 
-  const isPreviewHidden = previewBox.classList.contains("hidden");
-  if (isPreviewHidden) {
-    const rawSvg = container.querySelector("code").innerText;
-    previewBox.innerHTML = rawSvg;
-    previewBox.classList.remove("hidden");
-    codeBox.classList.add("hidden");
-    if (icon) icon.textContent = "code";
-    if (text) text.textContent = "Code";
-  } else {
-    previewBox.classList.add("hidden");
+  const isCodeHidden = codeBox.classList.contains("hidden");
+  if (isCodeHidden) {
     codeBox.classList.remove("hidden");
+    previewBox.classList.add("hidden");
     if (icon) icon.textContent = "visibility";
     if (text) text.textContent = "Preview";
+  } else {
+    codeBox.classList.add("hidden");
+    previewBox.classList.remove("hidden");
+    if (icon) icon.textContent = "code";
+    if (text) text.textContent = "Code";
   }
 }
 
@@ -286,6 +408,50 @@ function renderMarkdown(rawText) {
   // 2. Triple-backtick code blocks
   text = text.replace(/```([a-zA-Z0-9_\-\.]*)[ \t]*\n([\s\S]*?)```/g, (match, lang, code) => {
     const cleanLang = (lang || "").toLowerCase().trim();
+
+    // 2A. Mermaid SmartArt Diagram Blocks
+    if (cleanLang === "mermaid") {
+      const escapedCode = escapeHtml(code);
+      const encodedCode = encodeURIComponent(code);
+
+      const blockHtml = `
+        <div class="mermaid-block-container relative rounded-xl overflow-hidden my-4 border border-white/10 bg-[#121417] shadow-lg">
+          <div class="flex items-center justify-between px-3.5 py-2 bg-[#1c2128] border-b border-white/10 text-xs text-neutral-400">
+            <span class="font-mono text-[11px] uppercase tracking-wider flex items-center gap-1.5 text-neutral-300">
+              <span class="material-symbols-outlined text-[16px] text-[#0078D4]">account_tree</span>
+              <span class="font-semibold text-white">SmartArt Diagram</span>
+            </span>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="toggleMermaidView(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Toggle Code / Diagram View">
+                <span class="material-symbols-outlined text-[14px] text-[#4cc2ff]">code</span>
+                <span class="btn-label">Code</span>
+              </button>
+              <button type="button" onclick="downloadMermaidAsSvg(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Download Diagram as Vector SVG">
+                <span class="material-symbols-outlined text-[14px] text-[#107c41]">file_download</span>
+                <span>Export .svg</span>
+              </button>
+              <button type="button" onclick="copyCodeBlock(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Copy Mermaid Definition">
+                <span class="material-symbols-outlined text-[14px]">content_copy</span>
+                <span>Copy</span>
+              </button>
+            </div>
+          </div>
+          <div class="mermaid-diagram-box p-4 flex items-center justify-center bg-[#101214] overflow-x-auto min-h-[150px]" data-mermaid-code="${encodedCode}">
+            <div class="text-xs text-neutral-400 flex items-center gap-2">
+              <span class="inline-block w-3.5 h-3.5 border-2 border-[#0078D4] border-t-transparent rounded-full animate-spin"></span>
+              <span>Rendering diagram...</span>
+            </div>
+          </div>
+          <div class="code-raw-box hidden">
+            <pre class="p-3.5 text-xs sm:text-sm font-mono text-neutral-200 overflow-x-auto leading-relaxed"><code>${escapedCode}</code></pre>
+          </div>
+        </div>
+      `.trim();
+
+      return storeBlock(blockHtml);
+    }
+
+    // 2B. Standard Code / SVG Blocks
     const config = EXTENSION_MAP[cleanLang] || { ext: cleanLang || "txt", label: cleanLang ? cleanLang.toUpperCase() : "CODE" };
     const isSvg = cleanLang === "svg" || code.includes("<svg");
     const escapedCode = escapeHtml(code);
@@ -295,13 +461,13 @@ function renderMarkdown(rawText) {
         <div class="flex items-center justify-between px-3.5 py-2 bg-[#202020] border-b border-white/5 text-xs text-neutral-400">
           <span class="font-mono text-[11px] uppercase tracking-wider flex items-center gap-1.5 text-neutral-300">
             <span class="w-2 h-2 rounded-full bg-[#0078D4]"></span>
-            <span>${config.label}</span>
+            <span>${isSvg ? 'SmartArt Graphic' : config.label}</span>
           </span>
           <div class="flex items-center gap-2">
             ${isSvg ? `
-            <button type="button" onclick="toggleSvgPreview(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Toggle Vector Live Preview">
-              <span class="material-symbols-outlined text-[14px] text-[#4cc2ff]">visibility</span>
-              <span class="btn-label">Preview</span>
+            <button type="button" onclick="toggleSvgPreview(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Toggle Code / Visual Preview">
+              <span class="material-symbols-outlined text-[14px] text-[#4cc2ff]">code</span>
+              <span class="btn-label">Code</span>
             </button>` : ""}
             <button type="button" onclick="downloadCodeBlock(this, '${cleanLang}')" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Download .${config.ext} file directly">
               <span class="material-symbols-outlined text-[14px] text-[#0078D4]">download</span>
@@ -313,8 +479,8 @@ function renderMarkdown(rawText) {
             </button>
           </div>
         </div>
-        ${isSvg ? `<div class="svg-preview-box hidden p-4 flex items-center justify-center bg-[#111111] overflow-x-auto min-h-[160px]"></div>` : ""}
-        <div class="code-raw-box">
+        ${isSvg ? `<div class="svg-preview-box p-4 flex items-center justify-center bg-[#111111] overflow-x-auto min-h-[160px]">${code}</div>` : ""}
+        <div class="code-raw-box ${isSvg ? 'hidden' : ''}">
           <pre class="p-3.5 text-xs sm:text-sm font-mono text-neutral-200 overflow-x-auto leading-relaxed"><code>${escapedCode}</code></pre>
         </div>
       </div>
@@ -420,7 +586,7 @@ function renderMarkdown(rawText) {
   });
 
   // 9. Clean up stray <br/> adjacent to block elements
-  text = text.replace(/(?:<br\/>|\s)*(<div class="(?:markdown-table-wrapper|code-block-container))/g, '$1');
+  text = text.replace(/(?:<br\/>|\s)*(<div class="(?:markdown-table-wrapper|code-block-container|mermaid-block-container))/g, '$1');
   text = text.replace(/(<\/div>)(?:<br\/>|\s)*/g, '$1');
 
   return text;
@@ -432,6 +598,9 @@ window.downloadCodeBlock = downloadCodeBlock;
 window.copyCodeBlock = copyCodeBlock;
 window.toggleSvgPreview = toggleSvgPreview;
 window.downloadTableAsCSV = downloadTableAsCSV;
+window.toggleMermaidView = toggleMermaidView;
+window.downloadMermaidAsSvg = downloadMermaidAsSvg;
+window.renderAllMermaidDiagrams = renderAllMermaidDiagrams;
 
 
 // ==========================================

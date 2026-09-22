@@ -158,6 +158,11 @@ async function sendChatMessage() {
     actionsContainer.classList.remove("hidden");
     actionsContainer.classList.add("flex");
 
+    // Render Mermaid SmartArt diagrams if present
+    if (typeof renderAllMermaidDiagrams === "function") {
+      renderAllMermaidDiagrams(textContainer);
+    }
+
     // Refresh storage telemetry
     loadStorage();
 
