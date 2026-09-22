@@ -241,7 +241,7 @@ function downloadTableAsCSV(buttonEl) {
     csvContent += rowData.join(",") + "\r\n";
   });
 
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   const fileName = `rhynia_table_${Date.now().toString().slice(-6)}.csv`;
@@ -255,18 +255,42 @@ function downloadTableAsCSV(buttonEl) {
   showToast(`Downloaded ${fileName}!`, "success");
 }
 
+function splitTableRow(rowText) {
+  let s = (rowText || "").trim();
+  if (s.startsWith("|")) s = s.slice(1);
+  if (s.endsWith("|")) s = s.slice(0, -1);
+  return s.split("|").map(cell => cell.trim());
+}
+
+function renderInlineMarkdown(str) {
+  if (!str) return "";
+  return str
+    .replace(/`([^`]+)`/g, `<code class="px-1.5 py-0.5 rounded bg-white/10 font-mono text-[13px] text-white">$1</code>`)
+    .replace(/\*\*([^*]+)\*\*/g, `<strong class="text-white font-semibold">$1</strong>`)
+    .replace(/\*([^*]+)\*/g, `<em class="italic">$1</em>`);
+}
+
 function renderMarkdown(rawText) {
   if (!rawText) return "";
 
-  let html = escapeHtml(rawText);
+  const blocks = [];
+  function storeBlock(html) {
+    const idx = blocks.length;
+    blocks.push(html);
+    return `\n\n__RHYNIA_BLOCK_${idx}__\n\n`;
+  }
 
-  // 1. Triple-backtick code blocks: ```lang\ncode\n```
-  html = html.replace(/```([a-zA-Z0-9_\-\.]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+  // 1. Normalize line endings
+  let text = String(rawText).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+  // 2. Triple-backtick code blocks
+  text = text.replace(/```([a-zA-Z0-9_\-\.]*)[ \t]*\n([\s\S]*?)```/g, (match, lang, code) => {
     const cleanLang = (lang || "").toLowerCase().trim();
     const config = EXTENSION_MAP[cleanLang] || { ext: cleanLang || "txt", label: cleanLang ? cleanLang.toUpperCase() : "CODE" };
-    const isSvg = cleanLang === "svg" || code.includes("&lt;svg");
+    const isSvg = cleanLang === "svg" || code.includes("<svg");
+    const escapedCode = escapeHtml(code);
 
-    return `
+    const blockHtml = `
       <div class="code-block-container relative rounded-xl overflow-hidden my-3 border border-white/10 bg-[#161616] shadow-lg">
         <div class="flex items-center justify-between px-3.5 py-2 bg-[#202020] border-b border-white/5 text-xs text-neutral-400">
           <span class="font-mono text-[11px] uppercase tracking-wider flex items-center gap-1.5 text-neutral-300">
@@ -291,79 +315,113 @@ function renderMarkdown(rawText) {
         </div>
         ${isSvg ? `<div class="svg-preview-box hidden p-4 flex items-center justify-center bg-[#111111] overflow-x-auto min-h-[160px]"></div>` : ""}
         <div class="code-raw-box">
-          <pre class="p-3.5 text-xs sm:text-sm font-mono text-neutral-200 overflow-x-auto leading-relaxed"><code>${code}</code></pre>
+          <pre class="p-3.5 text-xs sm:text-sm font-mono text-neutral-200 overflow-x-auto leading-relaxed"><code>${escapedCode}</code></pre>
         </div>
       </div>
-    `;
+    `.trim();
+
+    return storeBlock(blockHtml);
   });
 
-  // 2. GFM Markdown Tables: | Col1 | Col2 |
-  html = html.replace(/((?:\|(?:[^\n|]+)\|(?:\r?\n|$))+)/g, (match) => {
-    const lines = match.trim().split(/\r?\n/).filter(l => l.trim().startsWith("|") && l.trim().endsWith("|"));
-    if (lines.length < 2) return match;
+  // 3. GFM Markdown Tables
+  const lines = text.split("\n");
+  const processedLines = [];
+  let i = 0;
 
-    const separatorIdx = lines.findIndex(l => /^\|(?:\s*:?-+:?\s*\|)+$/.test(l.replace(/\s+/g, "")));
-    if (separatorIdx <= 0) return match;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line.includes("|") && line.trim().length > 0) {
+      const tableLines = [];
+      let j = i;
+      while (j < lines.length && lines[j].includes("|") && lines[j].trim().length > 0) {
+        tableLines.push(lines[j]);
+        j++;
+      }
 
-    const headers = lines[0].split("|").slice(1, -1).map(h => h.trim());
-    const bodyLines = lines.slice(separatorIdx + 1);
+      if (tableLines.length >= 2) {
+        const separatorIdx = tableLines.findIndex((tl, idx) => {
+          if (idx === 0) return false;
+          const s = tl.trim();
+          return /^\|?(\s*:?-+:?\s*\|)+\s*:?-+:?\s*\|?$/.test(s);
+        });
 
-    return `
-      <div class="markdown-table-wrapper my-4 rounded-xl border border-white/10 bg-[#161616] overflow-hidden shadow-lg">
-        <div class="flex items-center justify-between px-3.5 py-1.5 bg-[#202020] border-b border-white/5 text-xs text-neutral-400">
-          <span class="font-mono text-[11px] uppercase tracking-wider flex items-center gap-1.5 text-neutral-300">
-            <span class="material-symbols-outlined text-[15px] text-[#0078D4]">table_chart</span>
-            <span>Data Table</span>
-          </span>
-          <button type="button" onclick="downloadTableAsCSV(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-xs font-medium text-neutral-300" title="Download as CSV Spreadsheet for Excel">
-            <span class="material-symbols-outlined text-[14px] text-[#107c41]">file_download</span>
-            <span>Export .csv</span>
-          </button>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs sm:text-sm border-collapse">
-            <thead>
-              <tr class="bg-[#242424] text-white border-b border-white/10">
-                ${headers.map(h => `<th class="px-3.5 py-2.5 font-semibold text-neutral-200 tracking-tight">${h}</th>`).join("")}
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-white/5">
-              ${bodyLines.map(rowLine => {
-                const cells = rowLine.split("|").slice(1, -1).map(c => c.trim());
-                return `<tr class="hover:bg-white/[0.03] transition-colors">
-                  ${cells.map(c => `<td class="px-3.5 py-2 text-neutral-300">${c}</td>`).join("")}
-                </tr>`;
-              }).join("")}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    `;
+        if (separatorIdx > 0) {
+          const headerLine = tableLines[0];
+          const headers = splitTableRow(headerLine);
+          const bodyLines = tableLines.slice(separatorIdx + 1);
+
+          let tableHtml = `<div class="markdown-table-wrapper my-4 rounded-xl border border-white/10 bg-[#161616] overflow-hidden shadow-lg">`;
+          tableHtml += `<div class="flex items-center justify-between px-3.5 py-1.5 bg-[#202020] border-b border-white/5 text-xs text-neutral-400">`;
+          tableHtml += `<span class="font-mono text-[11px] uppercase tracking-wider flex items-center gap-1.5 text-neutral-300">`;
+          tableHtml += `<span class="material-symbols-outlined text-[15px] text-[#0078D4]">table_chart</span>`;
+          tableHtml += `<span>Data Table</span>`;
+          tableHtml += `</span>`;
+          tableHtml += `<button type="button" onclick="downloadTableAsCSV(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-xs font-medium text-neutral-300" title="Download as CSV Spreadsheet for Excel">`;
+          tableHtml += `<span class="material-symbols-outlined text-[14px] text-[#107c41]">file_download</span>`;
+          tableHtml += `<span>Export .csv</span>`;
+          tableHtml += `</button>`;
+          tableHtml += `</div>`;
+          tableHtml += `<div class="overflow-x-auto">`;
+          tableHtml += `<table class="w-full text-left text-xs sm:text-sm border-collapse">`;
+          tableHtml += `<thead><tr class="bg-[#242424] text-white border-b border-white/10">`;
+          headers.forEach(h => {
+            tableHtml += `<th class="px-3.5 py-2.5 font-semibold text-neutral-200 tracking-tight">${renderInlineMarkdown(escapeHtml(h))}</th>`;
+          });
+          tableHtml += `</tr></thead>`;
+          tableHtml += `<tbody class="divide-y divide-white/5">`;
+          bodyLines.forEach(bl => {
+            const cells = splitTableRow(bl);
+            tableHtml += `<tr class="hover:bg-white/[0.03] transition-colors">`;
+            for (let c = 0; c < headers.length; c++) {
+              const cellVal = cells[c] || "";
+              tableHtml += `<td class="px-3.5 py-2 text-neutral-300">${renderInlineMarkdown(escapeHtml(cellVal))}</td>`;
+            }
+            tableHtml += `</tr>`;
+          });
+          tableHtml += `</tbody></table></div></div>`;
+
+          processedLines.push(storeBlock(tableHtml));
+          i = j;
+          continue;
+        }
+      }
+    }
+
+    processedLines.push(line);
+    i++;
+  }
+
+  text = processedLines.join("\n");
+
+  // 4. Escape general HTML (for surrounding text)
+  text = escapeHtml(text);
+
+  // 5. Inline text styles (bold, italic, inline code)
+  text = renderInlineMarkdown(text);
+
+  // 6. Lists
+  text = text.replace(/(?:^|\n)[*-]\s+(.+)/g, `\n<li class="ml-4 list-disc text-neutral-300 leading-relaxed">$1</li>`);
+  text = text.replace(/(?:^|\n)\d+\.\s+(.+)/g, `\n<li class="ml-4 list-decimal text-neutral-300 leading-relaxed">$1</li>`);
+
+  // 7. Paragraphs & Line Breaks
+  text = text.replace(/\n\n+/g, `<div class="h-2"></div>`);
+  text = text.replace(/\n/g, `<br/>`);
+
+  // 8. Restore Code & Table Blocks
+  blocks.forEach((blockHtml, idx) => {
+    const placeholder = `__RHYNIA_BLOCK_${idx}__`;
+    text = text.split(placeholder).join(blockHtml);
   });
 
-  // 3. Inline code: `code`
-  html = html.replace(/`([^`]+)`/g, `<code class="px-1.5 py-0.5 rounded bg-white/10 font-mono text-[13px] text-white">$1</code>`);
+  // 9. Clean up stray <br/> adjacent to block elements
+  text = text.replace(/(?:<br\/>|\s)*(<div class="(?:markdown-table-wrapper|code-block-container))/g, '$1');
+  text = text.replace(/(<\/div>)(?:<br\/>|\s)*/g, '$1');
 
-  // 4. Bold: **text**
-  html = html.replace(/\*\*([^*]+)\*\*/g, `<strong class="text-white font-semibold">$1</strong>`);
-
-  // 5. Italic: *text*
-  html = html.replace(/\*([^*]+)\*/g, `<em class="italic">$1</em>`);
-
-  // 6. Unordered List Items: * item or - item
-  html = html.replace(/(?:^|\n)[*-]\s+(.+)/g, `\n<li class="ml-4 list-disc text-neutral-300 leading-relaxed">$1</li>`);
-
-  // 7. Ordered List Items: 1. item
-  html = html.replace(/(?:^|\n)\d+\.\s+(.+)/g, `\n<li class="ml-4 list-decimal text-neutral-300 leading-relaxed">$1</li>`);
-
-  // 8. Paragraph line breaks
-  html = html.replace(/\n\n+/g, `<div class="h-2"></div>`);
-  html = html.replace(/\n/g, `<br/>`);
-
-  return html;
+  return text;
 }
 
-// Expose downloader functions to window
+// Expose functions to window
+window.renderMarkdown = renderMarkdown;
 window.downloadCodeBlock = downloadCodeBlock;
 window.copyCodeBlock = copyCodeBlock;
 window.toggleSvgPreview = toggleSvgPreview;
