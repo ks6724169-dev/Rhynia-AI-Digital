@@ -139,7 +139,7 @@
           <label class="block text-xs font-medium text-neutral-300 mb-1">Full Name</label>
           <div class="fluent-input flex items-center px-3 py-2 rounded-lg">
             <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">person</span>
-            <input type="text" name="full_name" required placeholder="Alex Rhynia" class="w-full bg-transparent border-0 p-0 text-white placeholder:text-neutral-500 text-sm focus:ring-0 focus:outline-none"/>
+            <input type="text" name="full_name" required placeholder="Full Name" class="w-full bg-transparent border-0 p-0 text-white placeholder:text-neutral-500 text-sm focus:ring-0 focus:outline-none"/>
           </div>
         </div>
 
@@ -147,7 +147,7 @@
           <label class="block text-xs font-medium text-neutral-300 mb-1">Email Address</label>
           <div class="fluent-input flex items-center px-3 py-2 rounded-lg">
             <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">mail</span>
-            <input type="email" name="email" required placeholder="alex.rhynia@example.com" class="w-full bg-transparent border-0 p-0 text-white placeholder:text-neutral-500 text-sm focus:ring-0 focus:outline-none"/>
+            <input type="email" name="email" required placeholder="name@example.com" class="w-full bg-transparent border-0 p-0 text-white placeholder:text-neutral-500 text-sm focus:ring-0 focus:outline-none"/>
           </div>
         </div>
 
@@ -266,29 +266,22 @@
 
   <div id="view-app" class="view-panel hidden min-h-screen flex-col justify-between relative overflow-hidden">
     
-    <!-- TOP BAR (Minimalist Fluent Navigation) -->
+    <!-- TOP BAR (Minimalist Fluent Navigation matching Screens 01 & 02) -->
     <header class="w-full max-w-screen-md mx-auto px-4 pt-3 pb-2 flex items-center justify-between border-b border-white/5 relative z-30">
-      <div class="flex items-center gap-3">
-        <!-- Drawer Toggle Button -->
-        <button id="menuToggle" aria-label="Open Sidebar Drawer" onclick="toggleSidebarDrawer(true)" class="w-10 h-10 flex items-center justify-center rounded-lg text-neutral-300 hover:text-white hover:bg-white/5 active:bg-white/10 transition-all">
-          <span class="material-symbols-outlined text-[22px]">menu</span>
-        </button>
-        <!-- Active Session / App Title -->
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-          <h2 id="active-thread-title" class="text-sm font-semibold text-white tracking-tight truncate max-w-[200px]">Rhynia</h2>
-        </div>
-      </div>
+      <!-- Left: 44px touch target [ ≡ ] button -->
+      <button id="menuToggle" aria-label="Open Navigation Drawer" onclick="toggleSidebarDrawer(true)" class="w-11 h-11 flex items-center justify-center rounded-lg text-neutral-300 hover:text-white hover:bg-white/5 active:bg-white/10 transition-all">
+        <span class="material-symbols-outlined text-[24px]">menu</span>
+      </button>
 
-      <!-- Action Buttons -->
-      <div class="flex items-center gap-1.5">
+      <!-- Right: Action Buttons [ 📝 ] & [ ⋮ ] -->
+      <div class="flex items-center gap-1">
         <!-- New Chat Button [ 📝 ] -->
-        <button onclick="startNewChat()" title="Start New Chat" class="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-300 hover:text-white hover:bg-white/5 transition-all">
+        <button onclick="startNewChat()" title="Start New Chat" class="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-300 hover:text-white hover:bg-white/5 active:scale-95 transition-all">
           <span class="material-symbols-outlined text-[20px]">edit_square</span>
         </button>
 
-        <!-- 3-Dots More Options Trigger -->
-        <button id="three-dots-trigger" onclick="toggle3DotsMenu()" aria-label="More Options" class="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-300 hover:text-white hover:bg-white/5 transition-all">
+        <!-- 3-Dots More Options Trigger [ ⋮ ] -->
+        <button id="three-dots-trigger" onclick="toggle3DotsMenu()" aria-label="More Options" class="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-300 hover:text-white hover:bg-white/5 active:scale-95 transition-all">
           <span class="material-symbols-outlined text-[20px]">more_vert</span>
         </button>
       </div>
@@ -296,26 +289,21 @@
       <!-- SCREEN 03: 3-DOTS MORE OPTIONS FLYOUT MENU -->
       <div id="three-dots-menu" class="hidden fluent-flyout absolute right-4 top-14 w-52 rounded-xl border border-white/10 p-1.5 z-50 animate-fade-in shadow-2xl">
         <button onclick="exportActiveSession('text')" class="w-full px-3 py-2 rounded-lg text-left text-xs text-neutral-200 hover:bg-white/10 flex items-center gap-2.5 transition-colors">
-          <span class="material-symbols-outlined text-[16px] text-primary">description</span>
-          <span>Export as Document</span>
+          <span class="material-symbols-outlined text-[16px] text-primary">share</span>
+          <span>Share Chat</span>
         </button>
-        <button onclick="exportActiveSession('slides')" class="w-full px-3 py-2 rounded-lg text-left text-xs text-neutral-200 hover:bg-white/10 flex items-center gap-2.5 transition-colors">
-          <span class="material-symbols-outlined text-[16px] text-[#00a4ef]">slideshow</span>
-          <span>Export Presentation</span>
-        </button>
-        <div class="my-1 border-t border-white/10"></div>
         <button onclick="pinActiveSession()" class="w-full px-3 py-2 rounded-lg text-left text-xs text-neutral-200 hover:bg-white/10 flex items-center gap-2.5 transition-colors">
           <span class="material-symbols-outlined text-[16px] text-yellow-400">keep</span>
-          <span>Pin / Unpin Thread</span>
+          <span>Pin to Top</span>
         </button>
         <button onclick="renameActiveSession()" class="w-full px-3 py-2 rounded-lg text-left text-xs text-neutral-200 hover:bg-white/10 flex items-center gap-2.5 transition-colors">
           <span class="material-symbols-outlined text-[16px] text-neutral-400">edit</span>
-          <span>Rename Thread</span>
+          <span>Rename Chat</span>
         </button>
         <div class="my-1 border-t border-white/10"></div>
         <button onclick="deleteActiveSession()" class="w-full px-3 py-2 rounded-lg text-left text-xs text-red-300 hover:bg-red-950/40 flex items-center gap-2.5 transition-colors">
           <span class="material-symbols-outlined text-[16px]">delete</span>
-          <span>Delete Conversation</span>
+          <span>Delete Chat</span>
         </button>
       </div>
     </header>
@@ -323,35 +311,9 @@
     <!-- CHAT MAIN WORKSPACE -->
     <main class="flex-1 w-full max-w-screen-md mx-auto flex flex-col justify-between px-4 overflow-hidden relative">
       
-      <!-- SCREEN 01: EMPTY STATE -->
-      <div id="screen-empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-10 my-auto">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-primary to-[#00a4ef] p-0.5 shadow-xl shadow-primary/20 mb-5 flex items-center justify-center animate-pulse">
-          <div class="w-full h-full bg-[#181818] rounded-2xl flex items-center justify-center">
-            <span class="text-2xl font-black tracking-wider text-white">R</span>
-          </div>
-        </div>
-        <h1 id="empty-state-greeting" class="text-2xl sm:text-3xl font-bold font-headline text-white tracking-tight">Good day</h1>
-        <p class="text-sm text-text-secondary mt-1.5 max-w-md">How can Rhynia assist your workflow today?</p>
-
-        <!-- Suggestion Prompt Pills -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-lg mt-8">
-          <button onclick="document.getElementById('chat-input').value = this.innerText; sendChatMessage();" class="p-3 text-left rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 transition-all text-xs text-neutral-300 hover:text-white flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px] text-primary">analytics</span>
-            <span>Synthesize quarterly intelligence metrics</span>
-          </button>
-          <button onclick="document.getElementById('chat-input').value = this.innerText; sendChatMessage();" class="p-3 text-left rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 transition-all text-xs text-neutral-300 hover:text-white flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px] text-[#1cdec3]">terminal</span>
-            <span>Architect modular microservice endpoints</span>
-          </button>
-          <button onclick="document.getElementById('chat-input').value = this.innerText; sendChatMessage();" class="p-3 text-left rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 transition-all text-xs text-neutral-300 hover:text-white flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px] text-[#8ecdff]">description</span>
-            <span>Draft executive brief and release summary</span>
-          </button>
-          <button onclick="document.getElementById('chat-input').value = this.innerText; sendChatMessage();" class="p-3 text-left rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/5 transition-all text-xs text-neutral-300 hover:text-white flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px] text-amber-400">search</span>
-            <span>Investigate live web research updates</span>
-          </button>
-        </div>
+      <!-- SCREEN 01: EMPTY STATE (Clean, Open Space per Wireframe 2.1) -->
+      <div id="screen-empty-state" class="flex-1 flex flex-col items-center justify-center text-center select-none py-12">
+        <!-- Minimal clean open space -->
       </div>
 
       <!-- SCREEN 02: ACTIVE CHAT CONVERSATION FEED -->
@@ -420,11 +382,11 @@
         <!-- Header / User Badge -->
         <div class="flex items-center justify-between pb-3 border-b border-white/10">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center font-bold text-sm shadow-md">
-              RA
+            <div class="user-avatar-initials w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center font-bold text-sm shadow-md">
+              --
             </div>
             <div>
-              <div class="user-display-name text-sm font-semibold text-white truncate max-w-[140px]">Alex</div>
+              <div class="user-display-name text-sm font-semibold text-white truncate max-w-[140px]">Loading...</div>
               <div class="text-[11px] text-neutral-400 flex items-center gap-1">
                 <span class="user-plan-badge text-[#8ecdff] font-medium">Free Tier</span>
               </div>
@@ -493,12 +455,12 @@
 
         <!-- User Profile Card -->
         <div class="fluent-card p-4 rounded-xl flex items-center gap-3 relative">
-          <div class="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center font-bold text-base shadow-md">
-            RA
+          <div class="user-avatar-initials w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center font-bold text-base shadow-md">
+            --
           </div>
           <div class="flex-1 truncate">
-            <div class="user-display-name text-sm font-semibold text-white truncate">Alex</div>
-            <div class="user-email-text text-xs text-neutral-400 truncate">alex.rhynia@example.com</div>
+            <div class="user-display-name text-sm font-semibold text-white truncate">Loading...</div>
+            <div class="user-email-text text-xs text-neutral-400 truncate">...</div>
             <div class="user-plan-badge text-[11px] text-[#8ecdff] font-medium mt-0.5">Free Tier</div>
           </div>
           <button onclick="openEditProfileModal()" title="Edit Profile" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white">

@@ -808,9 +808,19 @@ function renderStorageUI(data) {
 }
 
 function updateUserProfileUI(user) {
+  const name = user.display_name || user.email.split("@")[0];
+  const initials = (user.display_name 
+    ? user.display_name.split(" ").map(w => w[0]).join("") 
+    : user.email.substring(0, 2)
+  ).substring(0, 2).toUpperCase();
+
+  // Update initials across drawer & settings panel
+  const initialEls = document.querySelectorAll(".user-avatar-initials");
+  initialEls.forEach(el => el.textContent = initials || "R");
+
   // Update name & email across drawer & settings panel
   const nameEls = document.querySelectorAll(".user-display-name");
-  nameEls.forEach(el => el.textContent = user.display_name || user.email.split("@")[0]);
+  nameEls.forEach(el => el.textContent = name);
 
   const emailEls = document.querySelectorAll(".user-email-text");
   emailEls.forEach(el => el.textContent = user.email);
@@ -819,8 +829,8 @@ function updateUserProfileUI(user) {
   phoneEls.forEach(el => el.textContent = user.phone_number || "Not provided");
 
   const planEls = document.querySelectorAll(".user-plan-badge");
-  const planInfo = CONFIG.PLANS[user.plan] || { name: user.plan.toUpperCase() };
-  planEls.forEach(el => el.textContent = planInfo.name);
+  const planInfo = (CONFIG.PLANS && CONFIG.PLANS[user.plan]) || { name: (user.plan || "Free").toUpperCase() };
+  planEls.forEach(el => el.textContent = planInfo.name || "Free Tier");
 
   // Update empty state greeting
   const greetingEl = document.getElementById("empty-state-greeting");
