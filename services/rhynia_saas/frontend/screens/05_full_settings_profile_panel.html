@@ -208,16 +208,23 @@
   </div>
 </div>
 <!-- Language -->
-<div class="fluent-sub-card flex items-center justify-between p-3 rounded-fluent transition-colors">
+<div class="relative flex flex-col p-3 rounded-fluent bg-[#282828] border border-white/5 transition-colors">
+<div onclick="toggleLanguageSelector()" class="flex items-center justify-between cursor-pointer select-none">
 <div class="flex items-center gap-3">
 <div class="w-8 h-8 rounded-fluent bg-white/[0.04] flex items-center justify-center text-[#0078d4]">
 <span class="material-symbols-outlined text-[18px]">language</span>
 </div>
-<p class="text-sm font-normal text-white">Language</p>
+<div>
+<p data-i18n="language" class="text-sm font-normal text-white">Language</p>
+<p id="settings-language-label" class="text-xs text-neutral-400 current-lang-label">English (English (US))</p>
 </div>
-<button aria-label="Language options" class="p-1.5 rounded-[4px] text-[#8a919e] hover:text-white hover:bg-white/[0.06] transition-colors">
-<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</div>
+<button type="button" aria-label="Language options" class="p-1.5 rounded-[4px] text-[#8a919e] hover:text-white hover:bg-white/[0.06] transition-colors pointer-events-none">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
 </button>
+</div>
+<!-- 42 Languages Dynamic Flyout -->
+<div id="language-selector-flyout" class="hidden mt-3 pt-3 border-t border-white/10"></div>
 </div>
 <!-- Notifications with Fluent Switch -->
 <div class="fluent-sub-card flex items-center justify-between p-3 rounded-fluent transition-colors">
@@ -225,7 +232,7 @@
 <div class="w-8 h-8 rounded-fluent bg-white/[0.04] flex items-center justify-center text-[#0078d4]">
 <span class="material-symbols-outlined text-[18px]">notifications</span>
 </div>
-<p class="text-sm font-normal text-white">Notifications</p>
+<p data-i18n="notifications" class="text-sm font-normal text-white">Notifications</p>
 </div>
 <!-- Fluent Style Toggle Switch (pill container with sliding thumb) -->
 <label class="relative inline-flex items-center cursor-pointer select-none">
@@ -241,7 +248,7 @@
 <div class="flex items-center justify-between flex-wrap gap-2 pb-1">
 <div class="flex items-center gap-2.5">
 <span class="material-symbols-outlined text-[#0078d4] text-[20px]">hard_drive</span>
-<h3 class="text-sm font-semibold text-white tracking-tight">Free Storage</h3>
+<h3 data-i18n="free_storage" class="text-sm font-semibold text-white tracking-tight">Free Storage</h3>
 </div>
 <span class="text-xs font-medium text-[#8ecdff] bg-[#0078d4]/15 px-2.5 py-1 rounded-[4px] border border-[#0078d4]/30">
           38 MB of 500 MB used (7.6%)
@@ -258,15 +265,15 @@
 <div class="flex flex-wrap items-center gap-4 text-xs text-[#c0c7d4]">
 <div class="flex items-center gap-2">
 <span class="w-2 h-2 rounded-full bg-[#0078d4] shrink-0"></span>
-<span class="">Threads <strong class="text-white font-medium">24 MB</strong></span>
+<span class=""><span data-i18n="threads">Threads</span> <strong class="text-white font-medium">24 MB</strong></span>
 </div>
 <div class="flex items-center gap-2">
 <span class="w-2 h-2 rounded-full bg-[#00a4ef] shrink-0"></span>
-<span class="">Media <strong class="text-white font-medium">14 MB</strong></span>
+<span class=""><span data-i18n="media">Media</span> <strong class="text-white font-medium">14 MB</strong></span>
 </div>
 <div class="flex items-center gap-2 ml-auto">
 <span class="w-2 h-2 rounded-full bg-[#8a919e] shrink-0"></span>
-<span class=""><strong class="text-white font-medium">462 MB</strong> Free</span>
+<span class=""><strong class="text-white font-medium">462 MB</strong> <span data-i18n="free">Free</span></span>
 </div>
 </div>
 </div>
@@ -275,14 +282,13 @@
 <section class="pt-2">
 <button id="btn-logout" class="w-full py-2.5 px-4 rounded-fluent bg-[#93000a]/15 hover:bg-[#93000a]/25 border border-[#ffb4ab]/20 hover:border-[#ffb4ab]/35 text-[#ffb4ab] flex items-center justify-center gap-2 font-medium text-sm transition-all duration-150 active:scale-[0.99]" type="button">
 <span class="material-symbols-outlined text-[18px]">logout</span>
-        Log Out
-      </button>
-
+<span data-i18n="logout">Log Out</span>
+</button>
 </section>
 </main>
 </div>
 
-
+<script src="../modules/i18n.js"></script>
 <script>
   function applyTheme(theme) {
     const isLight = (theme === "light");
@@ -340,6 +346,7 @@
     applyTheme(saved);
     const savedAccent = localStorage.getItem("rhynia_accent_color") || "#0078D4";
     applyAccentColor(savedAccent);
+    if (window.I18n) window.I18n.init();
   });
 </script>
 </body></html>

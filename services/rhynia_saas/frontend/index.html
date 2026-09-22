@@ -443,17 +443,17 @@
     <header class="sticky top-0 z-30 h-14 border-b border-[#2d2d2d] bg-[#1a1a1a]/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between">
       <!-- Left: Hamburger Drawer Menu Button -->
       <div class="flex items-center">
-        <button id="btn-hamburger-menu" type="button" onclick="toggleSidebarDrawer(true)" class="p-2 -ml-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="Open Drawer">
+        <button id="btn-hamburger-menu" type="button" onclick="toggleSidebarDrawer(true)" class="p-2 -ml-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="Open Drawer" data-i18n-title="open_drawer">
           <span class="material-symbols-outlined text-xl">menu</span>
         </button>
       </div>
 
       <!-- Right: Action Buttons (New Chat with edit_square, and 3-Dots More Options) -->
       <div class="flex items-center gap-1 relative">
-        <button type="button" onclick="startNewChat()" class="p-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="New Chat">
+        <button type="button" onclick="startNewChat()" class="p-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="New Chat" data-i18n-title="new_chat">
           <span class="material-symbols-outlined text-xl">edit_square</span>
         </button>
-        <button id="btn-three-dots-trigger" type="button" onclick="toggle3DotsMenu()" class="p-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="More Options">
+        <button id="btn-three-dots-trigger" type="button" onclick="toggle3DotsMenu()" class="p-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="More Options" data-i18n-title="more_options">
           <span class="material-symbols-outlined text-xl">more_vert</span>
         </button>
 
@@ -463,14 +463,14 @@
             <button type="button" onclick="shareActiveSession()" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-neutral-200 hover:bg-white/10 transition-colors text-xs font-medium">
               <div class="flex items-center gap-2.5">
                 <span class="material-symbols-outlined text-base text-[#4cc2ff]">share</span>
-                <span>Share Chat</span>
+                <span data-i18n="share_chat">Share Chat</span>
               </div>
               <span class="material-symbols-outlined text-xs text-neutral-500">chevron_right</span>
             </button>
             <button type="button" onclick="pinActiveSession()" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-neutral-200 hover:bg-white/10 transition-colors text-xs font-medium">
               <div class="flex items-center gap-2.5">
                 <span class="material-symbols-outlined text-base text-[#0078D4]">keep</span>
-                <span>Pin Chat</span>
+                <span data-i18n="pin_chat">Pin Chat</span>
               </div>
               <span class="material-symbols-outlined text-xs text-neutral-500">chevron_right</span>
             </button>
@@ -479,7 +479,7 @@
             <button type="button" onclick="deleteActiveSession()" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-[#ff7b7b] hover:bg-[#93000a]/20 transition-colors text-xs font-medium">
               <div class="flex items-center gap-2.5">
                 <span class="material-symbols-outlined text-base text-[#ff7b7b]">delete</span>
-                <span>Delete Chat</span>
+                <span data-i18n="delete_chat">Delete Chat</span>
               </div>
               <span class="material-symbols-outlined text-xs text-[#ff7b7b]">chevron_right</span>
             </button>
@@ -497,7 +497,7 @@
           R
         </div>
         <h2 class="text-2xl font-bold tracking-tight text-white font-headline">Rhynia</h2>
-        <p class="text-sm text-neutral-400 mt-1 max-w-sm">Ready to assist with your research, engineering, and creative workflows.</p>
+        <p data-i18n="welcome_tagline" class="text-sm text-neutral-400 mt-1 max-w-sm">Ready to assist with your research, engineering, and creative workflows.</p>
       </div>
 
       <!-- SCREEN 02: ACTIVE CHAT (Open layout, no bounding card boxes) -->
@@ -521,13 +521,13 @@
                 <div class="w-7 h-7 rounded-md bg-[#1e1e1e] border border-white/10 flex items-center justify-center text-[#0078D4]">
                   <span class="material-symbols-outlined text-[18px]">photo_camera</span>
                 </div>
-                <span class="text-xs font-medium">Camera Capture</span>
+                <span data-i18n="camera_capture" class="text-xs font-medium">Camera Capture</span>
               </button>
               <button type="button" id="btnFileManager" onclick="triggerFileManager()" class="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-left text-white hover:bg-white/10 transition-colors">
                 <div class="w-7 h-7 rounded-md bg-[#1e1e1e] border border-white/10 flex items-center justify-center text-[#0078D4]">
                   <span class="material-symbols-outlined text-[18px]">folder_open</span>
                 </div>
-                <span class="text-xs font-medium">Device File Manager</span>
+                <span data-i18n="device_file_manager" class="text-xs font-medium">Device File Manager</span>
               </button>
             </div>
           </div>
@@ -539,20 +539,20 @@
           <!-- Continuous Stadium Capsule Pill (rounded-full) -->
           <div class="fluent-composer-pill rounded-full p-1.5 pl-2.5 flex items-center gap-2 bg-[#1e1e1e]/95 border border-white/10 shadow-2xl backdrop-blur-xl">
             <!-- (+) Attachment Button -->
-            <button id="plusToggle" type="button" onclick="toggleAttachmentMenu()" aria-label="Add attachment" class="w-9 h-9 rounded-full flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all shrink-0">
+            <button id="plusToggle" type="button" onclick="toggleAttachmentMenu()" aria-label="Add attachment" data-i18n-aria="add_attachment" class="w-9 h-9 rounded-full flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all shrink-0">
               <span id="plusIcon" class="material-symbols-outlined text-[22px] transition-transform">add</span>
             </button>
 
             <!-- Text Input Field -->
-            <input id="chat-input" type="text" autocomplete="off" placeholder="Ask anything or start a project..." class="flex-1 bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none px-2"/>
+            <input id="chat-input" type="text" autocomplete="off" placeholder="Ask anything or start a project..." data-i18n-placeholder="ask_placeholder" class="flex-1 bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none px-2"/>
 
             <!-- Mic Voice Dictation Button -->
-            <button id="micBtn" type="button" onclick="toggleVoiceInput()" aria-label="Voice input" class="w-9 h-9 rounded-full flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all shrink-0">
+            <button id="micBtn" type="button" onclick="toggleVoiceInput()" aria-label="Voice input" data-i18n-aria="voice_input" class="w-9 h-9 rounded-full flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all shrink-0">
               <span class="material-symbols-outlined text-[20px]">mic</span>
             </button>
 
             <!-- Azure Blue Send Message Button -->
-            <button id="btn-send-message" type="button" onclick="sendChatMessage()" aria-label="Send message" class="w-9 h-9 rounded-full bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white flex items-center justify-center active:scale-95 transition-all shrink-0 shadow-md shadow-[#0078D4]/30">
+            <button id="btn-send-message" type="button" onclick="sendChatMessage()" aria-label="Send message" data-i18n-aria="send_message" class="w-9 h-9 rounded-full bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white flex items-center justify-center active:scale-95 transition-all shrink-0 shadow-md shadow-[#0078D4]/30">
               <span class="material-symbols-outlined text-[19px] transform -rotate-45 ml-0.5">near_me</span>
             </button>
           </div>
@@ -574,7 +574,7 @@
           <span class="text-base font-semibold text-white tracking-tight">Rhynia</span>
         </div>
         <div class="flex items-center gap-1">
-          <button type="button" onclick="toggleDrawerSearch()" aria-label="Search conversations" class="w-8 h-8 rounded-md text-[#c0c7d4] hover:text-white hover:bg-[#2d2d2d] flex items-center justify-center transition-colors" title="Search chat history">
+          <button type="button" onclick="toggleDrawerSearch()" aria-label="Search conversations" data-i18n-title="search_conversations" class="w-8 h-8 rounded-md text-[#c0c7d4] hover:text-white hover:bg-[#2d2d2d] flex items-center justify-center transition-colors" title="Search conversations...">
             <span class="material-symbols-outlined text-lg">search</span>
           </button>
           <button type="button" onclick="toggleSidebarDrawer(false)" aria-label="Close drawer" class="w-8 h-8 rounded-md text-[#c0c7d4] hover:text-white hover:bg-[#2d2d2d] flex items-center justify-center transition-colors" title="Close">
@@ -587,7 +587,7 @@
       <div id="drawer-search-container" class="hidden px-3 py-2 border-b border-[#2d2d2d] bg-[#1a1a1a]">
         <div class="relative flex items-center">
           <span class="material-symbols-outlined absolute left-2 text-neutral-400 text-sm pointer-events-none">search</span>
-          <input id="drawer-search-input" oninput="filterDrawerSessions(this.value)" type="text" placeholder="Search conversations..." class="w-full rounded-md bg-[#252525] border border-white/10 pl-7 pr-7 py-1.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#0078D4]"/>
+          <input id="drawer-search-input" oninput="filterDrawerSessions(this.value)" type="text" placeholder="Search conversations..." data-i18n-placeholder="search_conversations" class="w-full rounded-md bg-[#252525] border border-white/10 pl-7 pr-7 py-1.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#0078D4]"/>
           <button type="button" onclick="toggleDrawerSearch()" class="absolute right-2 text-neutral-400 hover:text-white">
             <span class="material-symbols-outlined text-sm">close</span>
           </button>
@@ -598,21 +598,20 @@
       <div class="flex-1 overflow-y-auto custom-scrollbar px-3 py-3 space-y-4">
         <!-- Pinned Section -->
         <div id="drawer-pinned-section" class="space-y-1.5" style="display: none;">
-          <div class="px-2.5 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-[#8a919e]">
-            <span>Pinned</span>
-            <span class="material-symbols-outlined text-xs text-[#8a919e]" style="font-variation-settings: 'FILL' 1;">keep</span>
+          <div class="px-2 text-[11px] font-semibold text-[#0078D4] uppercase tracking-wider flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">keep</span>
+            <span data-i18n="pinned_chats">PINNED</span>
           </div>
-          <div id="drawer-pinned-list" class="space-y-1"></div>
+          <div id="drawer-pinned-list" class="space-y-0.5"></div>
         </div>
 
         <!-- Recent Section -->
-        <div class="space-y-1">
-          <div class="px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#8a919e]">
-            <span>Recent</span>
+        <div id="drawer-recent-section" class="space-y-1.5">
+          <div class="px-2 text-[11px] font-semibold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">schedule</span>
+            <span data-i18n="recent_chats">RECENT</span>
           </div>
-          <div id="drawer-recent-list" class="space-y-0.5">
-            <!-- Dynamic session items rendered here -->
-          </div>
+          <div id="drawer-recent-list" class="space-y-0.5"></div>
         </div>
       </div>
 
@@ -695,19 +694,19 @@
             <h3 class="text-sm font-semibold text-white">Preferences</h3>
           </div>
           <div class="space-y-2">
-            <!-- Appearance Theme Switcher -->
-            <div onclick="toggleAppearanceTheme()" class="flex items-center justify-between p-3 rounded-lg bg-[#282828] border border-white/5 hover:bg-[#303030] transition-colors cursor-pointer select-none" title="Click to toggle Light / Dark Mode">
+            <!-- Appearance Switcher (Fluent Light/Dark Mode) -->
+            <div class="flex items-center justify-between p-3 rounded-lg bg-[#282828] border border-white/5 transition-colors cursor-pointer select-none" onclick="toggleThemeMode()">
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[#0078D4]">
                   <span id="settings-theme-icon" class="material-symbols-outlined text-[18px]">dark_mode</span>
                 </div>
                 <div>
-                  <p class="text-sm font-medium text-white">Appearance</p>
-                  <p id="settings-theme-label" class="text-xs text-neutral-400">Dark Horizon</p>
+                  <p data-i18n="appearance" class="text-sm font-medium text-white">Appearance</p>
+                  <p id="settings-theme-label" data-i18n="dark_mode" class="text-xs text-neutral-400">Dark Horizon</p>
                 </div>
               </div>
               <div class="flex items-center gap-2.5">
-                <button type="button" class="px-2.5 py-1 rounded bg-[#353535] hover:bg-[#404040] text-xs font-medium text-white transition-colors border border-white/10 pointer-events-none" id="settings-theme-btn-text">
+                <button type="button" class="px-2.5 py-1 rounded bg-[#353535] hover:bg-[#404040] text-xs font-medium text-white transition-colors border border-white/10 pointer-events-none" id="settings-theme-btn-text" data-i18n="switch_to_light">
                   Switch to Light
                 </button>
                 <div class="relative inline-flex items-center pointer-events-none">
@@ -726,8 +725,8 @@
                     <span class="material-symbols-outlined text-[18px]">palette</span>
                   </div>
                   <div>
-                    <p class="text-sm font-medium text-white">Accent Color</p>
-                    <p class="text-xs text-neutral-400">Theme highlights & glow</p>
+                    <p data-i18n="accent_color" class="text-sm font-medium text-white">Accent Color</p>
+                    <p data-i18n="accent_desc" class="text-xs text-neutral-400">Theme highlights & glow</p>
                   </div>
                 </div>
                 <button type="button" class="p-1.5 rounded text-neutral-400 hover:text-white hover:bg-white/10 transition-colors pointer-events-none" title="Select Accent Color">
@@ -760,29 +759,26 @@
               </div>
             </div>
 
-            <!-- Language Selector -->
+            <!-- Language Selector (42 Languages: 22 Indian + 20 Global) -->
             <div class="relative flex flex-col p-3 rounded-lg bg-[#282828] border border-white/5 transition-colors">
-              <div class="flex items-center justify-between">
+              <div onclick="toggleLanguageSelector()" class="flex items-center justify-between cursor-pointer select-none">
                 <div class="flex items-center gap-3">
                   <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[#0078D4]">
                     <span class="material-symbols-outlined text-[18px]">language</span>
                   </div>
                   <div>
-                    <p class="text-sm font-medium text-white">Language</p>
-                    <p id="settings-language-label" class="text-xs text-neutral-400">English (US)</p>
+                    <p data-i18n="language" class="text-sm font-medium text-white">Language</p>
+                    <p id="settings-language-label" class="text-xs text-neutral-400 current-lang-label">English (English (US))</p>
                   </div>
                 </div>
-                <button type="button" onclick="toggleLanguageSelector()" class="p-1.5 rounded text-neutral-400 hover:text-white hover:bg-white/10 transition-colors" title="Select Language">
-                  <span class="material-symbols-outlined text-[18px]">more_vert</span>
+                <button type="button" class="p-1.5 rounded text-neutral-400 hover:text-white hover:bg-white/10 transition-colors pointer-events-none" title="Select Language">
+                  <span class="material-symbols-outlined text-[18px]">expand_more</span>
                 </button>
               </div>
 
-              <!-- Language Dropdown -->
-              <div id="language-selector-flyout" class="hidden mt-3 pt-3 border-t border-white/10 grid grid-cols-2 gap-2 text-xs">
-                <button type="button" onclick="selectLanguage('en', 'English (US)')" class="px-2.5 py-1.5 rounded bg-white/5 hover:bg-[#0078D4] text-white text-left transition-colors">English (US)</button>
-                <button type="button" onclick="selectLanguage('hi', 'हिन्दी (Hindi)')" class="px-2.5 py-1.5 rounded bg-white/5 hover:bg-[#0078D4] text-white text-left transition-colors">हिन्दी (Hindi)</button>
-                <button type="button" onclick="selectLanguage('es', 'Español (Spanish)')" class="px-2.5 py-1.5 rounded bg-white/5 hover:bg-[#0078D4] text-white text-left transition-colors">Español</button>
-                <button type="button" onclick="selectLanguage('fr', 'Français (French)')" class="px-2.5 py-1.5 rounded bg-white/5 hover:bg-[#0078D4] text-white text-left transition-colors">Français</button>
+              <!-- 42 Languages Dynamic Flyout (Rendered via i18n.js) -->
+              <div id="language-selector-flyout" class="hidden mt-3 pt-3 border-t border-white/10">
+                <!-- Dynamically rendered with search bar & category filter pills -->
               </div>
             </div>
 
@@ -793,8 +789,8 @@
                   <span class="material-symbols-outlined text-[18px]">notifications</span>
                 </div>
                 <div>
-                  <p class="text-sm font-medium text-white">Notifications</p>
-                  <p class="text-xs text-neutral-400">Push alerts for updates</p>
+                  <p data-i18n="notifications" class="text-sm font-medium text-white">Notifications</p>
+                  <p data-i18n="notifications_desc" class="text-xs text-neutral-400">Push alerts for updates</p>
                 </div>
               </div>
               <label class="relative inline-flex items-center cursor-pointer select-none">
@@ -811,7 +807,7 @@
           <div class="flex items-center justify-between flex-wrap gap-2 pb-1">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-[#0078D4] text-[20px]">hard_drive</span>
-              <h3 class="text-sm font-semibold text-white">Free Storage</h3>
+              <h3 data-i18n="free_storage" class="text-sm font-semibold text-white">Free Storage</h3>
             </div>
             <span id="settings-storage-badge" class="text-xs font-medium text-[#8ecdff] bg-[#0078D4]/15 px-2.5 py-1 rounded border border-[#0078D4]/30">
               0 MB of 500 MB used (0%)
@@ -828,15 +824,15 @@
             <div class="flex flex-wrap items-center gap-4 text-xs text-neutral-300">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-[#0078D4] shrink-0"></span>
-                <span>Threads <strong id="storage-val-threads" class="text-white font-medium">0 MB</strong></span>
+                <span><span data-i18n="threads">Threads</span> <strong id="storage-val-threads" class="text-white font-medium">0 MB</strong></span>
               </div>
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-[#00a4ef] shrink-0"></span>
-                <span>Media <strong id="storage-val-media" class="text-white font-medium">0 MB</strong></span>
+                <span><span data-i18n="media">Media</span> <strong id="storage-val-media" class="text-white font-medium">0 MB</strong></span>
               </div>
               <div class="flex items-center gap-2 ml-auto">
                 <span class="w-2 h-2 rounded-full bg-neutral-500 shrink-0"></span>
-                <span><strong id="storage-val-free" class="text-white font-medium">500 MB</strong> Free</span>
+                <span><strong id="storage-val-free" class="text-white font-medium">500 MB</strong> <span data-i18n="free">Free</span></span>
               </div>
             </div>
           </div>
@@ -846,7 +842,7 @@
         <section class="pt-2">
           <button id="btn-logout" type="button" onclick="logoutUser()" class="w-full py-2.5 px-4 rounded-lg bg-[#93000a]/20 hover:bg-[#93000a]/30 border border-[#ffb4ab]/20 text-[#ffb4ab] flex items-center justify-center gap-2 font-medium text-sm transition-all active:scale-[0.99]" title="Log out of Rhynia">
             <span class="material-symbols-outlined text-[18px]">logout</span>
-            <span>Log Out</span>
+            <span data-i18n="logout">Log Out</span>
           </button>
         </section>
       </div>
@@ -867,7 +863,7 @@
               <div class="w-7 h-7 rounded bg-[#0078D4]/15 flex items-center justify-center text-[#0078D4]">
                 <span class="material-symbols-outlined text-[18px]">edit</span>
               </div>
-              <h2 class="text-base font-semibold text-white">Edit Profile</h2>
+              <h2 data-i18n="edit_profile" class="text-base font-semibold text-white">Edit Profile</h2>
             </div>
             <button type="button" onclick="toggleEditProfileModal(false)" class="w-7 h-7 rounded flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 transition-colors">
               <span class="material-symbols-outlined text-[18px]">close</span>
@@ -896,11 +892,11 @@
           <!-- Edit Profile Form -->
           <form id="fluent-profile-form" class="space-y-3" onsubmit="saveUserProfile(event)">
             <div class="space-y-1">
-              <label class="block text-xs font-medium text-neutral-300" for="profile-name-input">Display Name</label>
+              <label data-i18n="display_name" class="block text-xs font-medium text-neutral-300" for="profile-name-input">Display Name</label>
               <input id="profile-name-input" type="text" class="w-full rounded bg-[#1f1f1f] border border-white/10 px-3 py-2 text-sm text-white placeholder-neutral-500 focus:border-[#0078D4] focus:outline-none"/>
             </div>
             <div class="space-y-1">
-              <label class="block text-xs font-medium text-neutral-300" for="profile-username-input">Username</label>
+              <label data-i18n="username" class="block text-xs font-medium text-neutral-300" for="profile-username-input">Username</label>
               <div class="relative flex items-center">
                 <span class="absolute left-3 text-neutral-500 text-sm">@</span>
                 <input id="profile-username-input" type="text" class="w-full rounded bg-[#1f1f1f] border border-white/10 pl-7 pr-3 py-2 text-sm text-white placeholder-neutral-500 focus:border-[#0078D4] focus:outline-none"/>
@@ -911,12 +907,12 @@
 
         <!-- Action Buttons -->
         <div class="flex items-center justify-end gap-2 pt-3 border-t border-white/10 mt-3">
-          <button type="button" onclick="toggleEditProfileModal(false)" class="px-4 py-1.5 rounded bg-[#2c2c2c] hover:bg-[#333333] border border-white/10 text-white text-xs font-medium transition-all">
+          <button type="button" onclick="toggleEditProfileModal(false)" class="px-4 py-1.5 rounded bg-[#2c2c2c] hover:bg-[#333333] border border-white/10 text-white text-xs font-medium transition-all" data-i18n="cancel">
             Cancel
           </button>
           <button type="submit" form="fluent-profile-form" class="px-4 py-1.5 rounded bg-[#0078D4] hover:bg-[#106ebe] text-white text-xs font-medium transition-all flex items-center gap-1.5 shadow-md">
             <span class="material-symbols-outlined text-[15px]">check</span>
-            <span>Save Changes</span>
+            <span data-i18n="save_changes">Save Changes</span>
           </button>
         </div>
       </div>
@@ -931,6 +927,7 @@
   <!-- SCRIPTS (Configuration, Modules & App Orchestrator)       -->
   <!-- ========================================================= -->
   <script src="config.js"></script>
+  <script src="modules/i18n.js"></script>
   <script src="app.js"></script>
   <script src="modules/auth.js"></script>
   <script src="modules/composer.js"></script>

@@ -411,16 +411,28 @@ function applyAccentColor(hexCode, persist) {
  * Toggle Language Selector Flyout
  */
 function toggleLanguageSelector() {
-  const picker = document.getElementById("language-selector-flyout");
-  if (!picker) return;
-  picker.classList.toggle("hidden");
+  if (window.I18n && typeof window.I18n.renderLanguageGrid === "function") {
+    const picker = document.getElementById("language-selector-flyout");
+    if (!picker) return;
+    const isHidden = picker.classList.toggle("hidden");
+    if (!isHidden) {
+      window.I18n.renderLanguageGrid();
+    }
+  } else {
+    const picker = document.getElementById("language-selector-flyout");
+    if (picker) picker.classList.toggle("hidden");
+  }
 }
 
 function selectLanguage(langCode, langName) {
-  const label = document.getElementById("settings-language-label");
-  if (label) label.textContent = langName;
-  toggleLanguageSelector();
-  showToast(`Language set to ${langName}`, "success");
+  if (window.I18n && typeof window.I18n.setLanguage === "function") {
+    window.I18n.setLanguage(langCode);
+  } else {
+    const label = document.getElementById("settings-language-label");
+    if (label && langName) label.textContent = langName;
+    const picker = document.getElementById("language-selector-flyout");
+    if (picker) picker.classList.add("hidden");
+  }
 }
 
 /**
