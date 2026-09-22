@@ -1,42 +1,77 @@
 {
-  "project_name": "Rhynia Intelligence SaaS v1.0",
+  "project_name": "Rhynia Intelligence SaaS — 16-Step Autonomous Enterprise Team",
   "version": "1.0.0",
-  "brand_rule": "Strictly Rhynia. Zero external vendor leakage.",
+  "brand_policy": "Strictly Rhynia. Zero external vendor leakage.",
   "agents": [
     {
-      "agent_id": "agent_lead",
+      "agent_id": "agent_lead_pm",
       "name": "Nova (Lead PM)",
-      "role": "Product & Sprint Lead",
-      "system_prompt_file": "prompts/agent_lead.md",
-      "allowed_tools": ["file_read", "file_write", "git_branch"]
+      "steps_handled": ["Step 1: Idea Lock", "Step 2: PRD", "Step 7: Sprint Planning"],
+      "system_prompt_file": "prompts/agent_lead_pm.md",
+      "allowed_tools": ["file_read", "file_write", "task_planner"]
+    },
+    {
+      "agent_id": "agent_ui_ux",
+      "name": "Pixel (UI/UX Designer)",
+      "steps_handled": ["Step 4: UI/UX Design System"],
+      "system_prompt_file": "prompts/agent_ui_ux.md",
+      "allowed_tools": ["file_read", "file_write", "design_tokens"]
     },
     {
       "agent_id": "agent_architect",
       "name": "Apex (System Architect)",
-      "role": "Database & API Schema Architect",
+      "steps_handled": ["Step 5: System Architecture", "Step 6: Tech Stack & Schema"],
       "system_prompt_file": "prompts/agent_architect.md",
-      "allowed_tools": ["file_read", "file_write"]
+      "allowed_tools": ["file_read", "file_write", "schema_validator"]
     },
     {
       "agent_id": "agent_frontend",
-      "name": "Pixel (Frontend Designer)",
-      "role": "UI/UX & 11 Interactive Screens Specialist",
+      "name": "Aura (Frontend Engineer)",
+      "steps_handled": ["Step 8: Coding (Client UI - 11 Screens)"],
       "system_prompt_file": "prompts/agent_frontend.md",
       "allowed_tools": ["file_read", "file_write", "linter"]
     },
     {
       "agent_id": "agent_backend",
       "name": "Cipher (Backend Engineer)",
-      "role": "FastAPI, 3-Tier Cascade & Cloud Database Engineer",
+      "steps_handled": ["Step 8: Coding (Server, FastAPI & DB APIs)"],
       "system_prompt_file": "prompts/agent_backend.md",
       "allowed_tools": ["file_read", "file_write", "terminal_exec"]
     },
     {
-      "agent_id": "agent_qa_security",
-      "name": "Aegis (QA & Security Auditor)",
-      "role": "Quality Gatekeeper & Brand Compliance Auditor",
-      "system_prompt_file": "prompts/agent_qa_security.md",
-      "allowed_tools": ["file_read", "terminal_exec", "run_tests", "linter"]
+      "agent_id": "agent_code_reviewer",
+      "name": "Vigil (Senior Code Reviewer)",
+      "steps_handled": ["Step 9: Code Review & Standards"],
+      "system_prompt_file": "prompts/agent_code_reviewer.md",
+      "allowed_tools": ["file_read", "git_diff_checker"]
+    },
+    {
+      "agent_id": "agent_ci_devops",
+      "name": "Pulse (DevOps & CI Build)",
+      "steps_handled": ["Step 10: CI Build Verification", "Step 14: Deployment Pipeline"],
+      "system_prompt_file": "prompts/agent_ci_devops.md",
+      "allowed_tools": ["compile_applet", "lint_applet", "terminal_exec"]
+    },
+    {
+      "agent_id": "agent_qa_tester",
+      "name": "Tracker (QA & Test Automation)",
+      "steps_handled": ["Step 11: End-to-End Automated Testing"],
+      "system_prompt_file": "prompts/agent_qa_tester.md",
+      "allowed_tools": ["file_read", "file_write", "run_test_suite"]
+    },
+    {
+      "agent_id": "agent_security",
+      "name": "Aegis (Security & Brand Auditor)",
+      "steps_handled": ["Step 12: Security Review & Zero-Leakage Audit"],
+      "system_prompt_file": "prompts/agent_security.md",
+      "allowed_tools": ["file_read", "terminal_exec", "sast_scanner"]
+    },
+    {
+      "agent_id": "agent_sre_telemetry",
+      "name": "Chronos (SRE, Telemetry & Lifecycle)",
+      "steps_handled": ["Step 13: Beta Release Gate", "Step 15: Telemetry & Monitoring", "Step 16: Maintenance & Milestone Updates"],
+      "system_prompt_file": "prompts/agent_sre_telemetry.md",
+      "allowed_tools": ["file_read", "file_write", "log_analyzer"]
     }
   ]
 }
