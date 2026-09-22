@@ -355,43 +355,59 @@
       </div>
 
       <!-- SCREEN 02: ACTIVE CHAT CONVERSATION FEED -->
-      <div id="screen-active-chat" class="hidden flex-1 overflow-y-auto py-4 pr-1" id="chat-scroll-area">
+      <div id="screen-active-chat" class="hidden flex-1 overflow-y-auto pt-2 pb-24 pr-1">
         <div id="chat-messages-container" class="flex flex-col gap-1 max-w-screen-md mx-auto"></div>
       </div>
+    </main>
 
-      <!-- COMPOSER INPUT DOCK (FLUENT 2 ACRYLIC PILL) -->
-      <div class="w-full pb-4 pt-2 relative z-20">
-        <!-- Attachment Chips Container -->
-        <div id="input-attachment-chips" class="hidden flex-wrap gap-2 mb-2 px-1"></div>
-
-        <div class="fluent-composer-pill rounded-2xl p-2 sm:p-2.5 flex flex-col gap-1.5">
-          <!-- Textarea Input Area -->
-          <textarea id="chat-input" rows="1" placeholder="Ask Rhynia anything..." class="w-full bg-transparent border-0 p-1 text-white placeholder:text-neutral-500 text-sm focus:ring-0 focus:outline-none resize-none max-h-36 overflow-y-auto leading-relaxed"></textarea>
-
-          <!-- Input Action Utilities -->
-          <div class="flex items-center justify-between pt-1 border-t border-white/5">
-            <div class="flex items-center gap-1.5">
-              <!-- File Attachment Button -->
-              <input type="file" id="file-upload-input" class="hidden" accept=".png,.jpg,.jpeg,.webp,.pdf,.docx,.txt,.md"/>
-              <button type="button" onclick="document.getElementById('file-upload-input').click()" title="Attach File" class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 transition-colors">
-                <span class="material-symbols-outlined text-[18px]">attach_file</span>
-              </button>
-
-              <!-- Web Search Grounding Toggle -->
-              <button type="button" id="search-grounding-toggle" onclick="toggleSearchGrounding()" title="Toggle Web Grounding" class="px-2.5 py-1 rounded-lg border border-transparent text-neutral-400 hover:text-white hover:bg-white/5 text-xs font-medium flex items-center gap-1.5 transition-all">
-                <span class="material-symbols-outlined text-[16px]">public</span>
-                <span class="hidden sm:inline">Search</span>
-              </button>
+    <!-- DOCKED FLOATING COMPOSER PILL (EXACT SPEC MATCH TO SCREENS 01 & 02) -->
+    <footer class="fixed bottom-0 inset-x-0 z-30 w-full max-w-screen-md mx-auto px-4 pb-5 pt-2">
+      <!-- Attachment Popover Flyout Menu -->
+      <div id="attachmentMenu" class="hidden absolute bottom-20 left-4 z-50 w-56 fluent-flyout rounded-xl p-1.5 transition-all shadow-2xl border border-white/10">
+        <div class="flex flex-col gap-0.5">
+          <button type="button" onclick="document.getElementById('camera-upload-input').click(); toggleAttachmentMenu(false);" class="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-left text-neutral-200 hover:bg-white/10 transition-colors">
+            <div class="w-7 h-7 rounded-md bg-[#252525] border border-white/10 flex items-center justify-center text-[#0078d4]">
+              <span class="material-symbols-outlined text-[18px]">photo_camera</span>
             </div>
-
-            <!-- Send Action Button -->
-            <button id="btn-send-message" type="button" onclick="sendChatMessage()" aria-label="Send message" class="w-8 h-8 rounded-lg bg-primary hover:bg-primary-hover active:bg-primary-pressed text-white flex items-center justify-center transition-all shadow-md">
-              <span class="material-symbols-outlined text-[18px]">arrow_upward</span>
-            </button>
-          </div>
+            <span class="text-xs font-medium">Camera Capture</span>
+          </button>
+          <button type="button" onclick="document.getElementById('file-upload-input').click(); toggleAttachmentMenu(false);" class="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-left text-neutral-200 hover:bg-white/10 transition-colors">
+            <div class="w-7 h-7 rounded-md bg-[#252525] border border-white/10 flex items-center justify-center text-[#0078d4]">
+              <span class="material-symbols-outlined text-[18px]">folder_open</span>
+            </div>
+            <span class="text-xs font-medium">Device File Manager</span>
+          </button>
         </div>
       </div>
-    </main>
+
+      <!-- Hidden Native File Inputs -->
+      <input type="file" id="file-upload-input" class="hidden" accept=".png,.jpg,.jpeg,.webp,.pdf,.docx,.txt,.md"/>
+      <input type="file" id="camera-upload-input" class="hidden" accept="image/*" capture="environment"/>
+
+      <!-- Attachment Chips Indicator -->
+      <div id="input-attachment-chips" class="hidden flex-wrap gap-2 mb-2 px-2"></div>
+
+      <!-- Single-Line Stadium Composer Pill (Matching 01_main_chat_empty_state.png) -->
+      <div class="fluent-composer-pill rounded-full px-2 py-1.5 flex items-center gap-2 transition-all duration-200">
+        <!-- (+) Attachment Button -->
+        <button id="plusToggle" type="button" onclick="toggleAttachmentMenu()" aria-label="Attach Media or File" class="w-10 h-10 rounded-full flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all flex-shrink-0">
+          <span id="plusIcon" class="material-symbols-outlined text-[22px] transition-transform duration-200">add</span>
+        </button>
+
+        <!-- Input Text Field -->
+        <input autocomplete="off" id="chat-input" placeholder="Ask Rhynia…" type="text" class="flex-1 bg-transparent border-0 text-white placeholder:text-neutral-500 text-[15px] focus:ring-0 focus:outline-none px-2 py-2"/>
+
+        <!-- Voice Dictation Button -->
+        <button id="micBtn" type="button" onclick="toggleVoiceInput()" aria-label="Voice Input" class="w-10 h-10 rounded-full flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all flex-shrink-0">
+          <span class="material-symbols-outlined text-[20px]">mic</span>
+        </button>
+
+        <!-- Send Action Button (Blue Circle with Diagonal Arrow) -->
+        <button id="btn-send-message" type="button" onclick="sendChatMessage()" aria-label="Send message" class="w-10 h-10 rounded-full bg-[#0078D4] hover:bg-[#1084D8] active:bg-[#006CBE] text-white flex items-center justify-center active:scale-95 transition-all flex-shrink-0 shadow-md shadow-blue-900/40">
+          <span class="material-symbols-outlined text-[20px] transform -rotate-45 ml-0.5">near_me</span>
+        </button>
+      </div>
+    </footer>
 
     <!-- ================================================================== -->
     <!-- 3. SLIDEOVER SIDEBAR DRAWER (SCREEN 04)                            -->

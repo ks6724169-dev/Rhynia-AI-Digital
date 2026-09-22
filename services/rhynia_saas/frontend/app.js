@@ -492,15 +492,37 @@ function attachMessageActions(bubbleEl, text) {
   if (!actionsEl) return;
 
   actionsEl.innerHTML = `
-    <button class="hover:text-white flex items-center gap-1 transition-colors" onclick="copyMessageText(this, ${JSON.stringify(text)})">
-      <span class="material-symbols-outlined text-[15px]">content_copy</span>
-      <span>Copy</span>
-    </button>
-    <button class="hover:text-white flex items-center gap-1 transition-colors" onclick="exportActiveSession('text')">
-      <span class="material-symbols-outlined text-[15px]">download</span>
-      <span>Export</span>
-    </button>
+    <div class="flex items-center gap-1 pt-1 text-neutral-400">
+      <button class="inline-flex items-center gap-1.5 py-1.5 px-2.5 rounded-md hover:text-white hover:bg-white/10 active:scale-95 transition-all text-xs font-medium" onclick="copyMessageText(this, ${JSON.stringify(text)})" title="Copy response">
+        <span class="material-symbols-outlined text-[17px]">content_copy</span>
+        <span>Copy</span>
+      </button>
+      <button class="w-8 h-8 rounded-md inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all" onclick="showToast('Response marked helpful', 'success')" title="Good response">
+        <span class="material-symbols-outlined text-[17px]">thumb_up</span>
+      </button>
+      <button class="w-8 h-8 rounded-md inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all" onclick="showToast('Feedback noted', 'info')" title="Poor response">
+        <span class="material-symbols-outlined text-[17px]">thumb_down</span>
+      </button>
+      <button class="w-8 h-8 rounded-md inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all" onclick="speakMessageText(${JSON.stringify(text)})" title="Read aloud">
+        <span class="material-symbols-outlined text-[17px]">volume_up</span>
+      </button>
+      <button class="w-8 h-8 rounded-md inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all" onclick="exportActiveSession('text')" title="Share or Export">
+        <span class="material-symbols-outlined text-[17px]">share</span>
+      </button>
+    </div>
   `;
+}
+
+function speakMessageText(text) {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text.replace(/[*#`]/g, ''));
+    utterance.rate = 1.0;
+    window.speechSynthesis.speak(utterance);
+    showToast('Reading response aloud...', 'info');
+  } else {
+    showToast('Speech synthesis not supported in browser', 'error');
+  }
 }
 
 function copyMessageText(btn, text) {
@@ -1168,20 +1190,66 @@ function updateSendButtonState() {
     btn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>`;
     btn.disabled = true;
   } else {
-    btn.innerHTML = `<span class="material-symbols-outlined text-[18px]">arrow_upward</span>`;
+    btn.innerHTML = `<span class="material-symbols-outlined text-[20px] transform -rotate-45 ml-0.5">near_me</span>`;
     btn.disabled = false;
   }
 }
 
+function toggleAttachmentMenu(force) {
+  const menu = document.getElementById("attachmentMenu");
+  const plusIcon = document.getElementById("plusIcon");
+  if (!menu) return;
+
+  const isHidden = menu.classList.contains("hidden");
+  const shouldShow = force !== undefined ? force : isHidden;
+
+  if (shouldShow) {
+    menu.classList.remove("hidden");
+    if (plusIcon) plusIcon.style.transform = "rotate(45deg)";
+  } else {
+    menu.classList.add("hidden");
+    if (plusIcon) plusIcon.style.transform = "rotate(0deg)";
+  }
+}
+
+function toggleVoiceInput() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    showToast("Voice dictation is not supported in this browser", "info");
+    return;
+  }
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+
+  const micBtn = document.getElementById("micBtn");
+  if (micBtn) micBtn.classList.add("text-primary", "animate-pulse");
+  showToast("Listening... speak now", "info");
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    const input = document.getElementById("chat-input");
+    if (input) {
+      input.value = input.value ? `${input.value} ${transcript}` : transcript;
+    }
+  };
+
+  recognition.onend = () => {
+    if (micBtn) micBtn.classList.remove("text-primary", "animate-pulse");
+  };
+
+  recognition.onerror = (event) => {
+    if (micBtn) micBtn.classList.remove("text-primary", "animate-pulse");
+    showToast(`Voice error: ${event.error}`, "error");
+  };
+
+  recognition.start();
+}
+
 function setupEventListeners() {
-  // Input auto-resize
   const chatInput = document.getElementById("chat-input");
   if (chatInput) {
-    chatInput.addEventListener("input", function() {
-      this.style.height = "auto";
-      this.style.height = (this.scrollHeight) + "px";
-    });
-
     chatInput.addEventListener("keydown", function(e) {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
@@ -1197,6 +1265,19 @@ function setupEventListeners() {
       if (this.files && this.files[0]) {
         handleFileUpload(this.files[0]);
         this.value = "";
+        toggleAttachmentMenu(false);
+      }
+    });
+  }
+
+  // Camera file picker trigger
+  const cameraInput = document.getElementById("camera-upload-input");
+  if (cameraInput) {
+    cameraInput.addEventListener("change", function() {
+      if (this.files && this.files[0]) {
+        handleFileUpload(this.files[0]);
+        this.value = "";
+        toggleAttachmentMenu(false);
       }
     });
   }
@@ -1207,6 +1288,12 @@ function setupEventListeners() {
     const menuBtn = document.getElementById("three-dots-trigger");
     if (menu && !menu.classList.contains("hidden") && !menu.contains(e.target) && !menuBtn.contains(e.target)) {
       menu.classList.add("hidden");
+    }
+
+    const attachMenu = document.getElementById("attachmentMenu");
+    const plusToggle = document.getElementById("plusToggle");
+    if (attachMenu && !attachMenu.classList.contains("hidden") && !attachMenu.contains(e.target) && !plusToggle.contains(e.target)) {
+      toggleAttachmentMenu(false);
     }
   });
 }
