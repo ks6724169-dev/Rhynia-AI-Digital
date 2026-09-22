@@ -282,9 +282,9 @@
 
       <!-- Action Buttons -->
       <div class="flex items-center gap-1.5">
-        <!-- New Chat Button -->
+        <!-- New Chat Button [ 📝 ] -->
         <button onclick="startNewChat()" title="Start New Chat" class="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-300 hover:text-white hover:bg-white/5 transition-all">
-          <span class="material-symbols-outlined text-[20px]">add</span>
+          <span class="material-symbols-outlined text-[20px]">edit_square</span>
         </button>
 
         <!-- 3-Dots More Options Trigger -->
@@ -461,15 +461,15 @@
         </div>
       </div>
 
-      <!-- Drawer Bottom Actions -->
-      <div class="pt-4 border-t border-white/10 flex flex-col gap-2">
-        <button onclick="toggleSidebarDrawer(false); toggleSettingsDrawer(true);" class="w-full px-3 py-2 rounded-lg text-xs text-neutral-300 hover:text-white hover:bg-white/5 flex items-center gap-2.5 transition-colors">
-          <span class="material-symbols-outlined text-[18px] text-[#8ecdff]">settings</span>
-          <span>Settings & Profile</span>
+      <!-- Drawer Bottom Actions (Section 2.4: [ 💬 Chat ] & [ 👤 Profile ]) -->
+      <div class="pt-4 border-t border-white/10 flex items-center justify-between gap-2">
+        <button onclick="startNewChat()" class="flex-1 py-2 px-3 rounded-lg text-xs font-medium text-white bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center gap-2 transition-colors">
+          <span class="material-symbols-outlined text-[18px] text-primary">chat</span>
+          <span>Chat</span>
         </button>
-        <button onclick="logout()" class="w-full px-3 py-2 rounded-lg text-xs text-red-400 hover:text-red-300 hover:bg-red-950/30 flex items-center gap-2.5 transition-colors">
-          <span class="material-symbols-outlined text-[18px]">logout</span>
-          <span>Log Out</span>
+        <button onclick="toggleSidebarDrawer(false); toggleSettingsDrawer(true);" class="flex-1 py-2 px-3 rounded-lg text-xs font-medium text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center gap-2 transition-colors">
+          <span class="material-symbols-outlined text-[18px] text-[#8ecdff]">person</span>
+          <span>Profile</span>
         </button>
       </div>
     </aside>
