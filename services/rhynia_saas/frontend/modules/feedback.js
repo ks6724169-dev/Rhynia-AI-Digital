@@ -1,9 +1,65 @@
 /**
- * Rhynia Intelligence SaaS — Feedback Module (Screenshots Match)
+ * Rhynia Intelligence SaaS — Feedback Module (Screenshots Exact Match)
  * Handles Like (thumb_up) and Dislike (thumb_down) Interactive Feedback Modal
  * Automatically localizes titles, tags, and notices to user's selected app language
  * Brand Compliance: 100% Rhynia Clean
  */
+
+const FEEDBACK_I18N_FALLBACK = {
+  hi: {
+    feedback_like_title: "आपको क्या पसंद आया? (ज़रूरी नहीं)",
+    feedback_dislike_title: "आपको क्या पसंद नहीं आया? (ज़रूरी नहीं)",
+    feedback_tag_incorrect: "गलत",
+    feedback_tag_unsafe: "आपत्तिजनक या असुरक्षित",
+    feedback_tag_not_working: "काम नहीं कर रहा है",
+    feedback_tag_not_helpful: "काम की नहीं थी",
+    feedback_tag_saved_time: "समय की बचत हुई",
+    feedback_tag_clear: "सटीक और स्पष्ट",
+    feedback_tag_helpful: "मददगार",
+    feedback_tag_great: "बेहतरीन",
+    feedback_tag_other: "अन्य",
+    feedback_comment_placeholder: "कुछ जानकारी शेयर करें...",
+    feedback_chat_copy_notice: "इस चैट की एक कॉपी शामिल की जाएगी।",
+    feedback_submit: "सबमिट करें",
+    feedback_submitted_toast: "धन्यवाद! आपका फ़ीडबैक सबमिट हो गया है।"
+  },
+  en: {
+    feedback_like_title: "What did you like? (Optional)",
+    feedback_dislike_title: "What didn't you like? (Optional)",
+    feedback_tag_incorrect: "Incorrect",
+    feedback_tag_unsafe: "Offensive or unsafe",
+    feedback_tag_not_working: "Not working",
+    feedback_tag_not_helpful: "Not helpful",
+    feedback_tag_saved_time: "Saved time",
+    feedback_tag_clear: "Accurate & clear",
+    feedback_tag_helpful: "Helpful",
+    feedback_tag_great: "Great response",
+    feedback_tag_other: "Other",
+    feedback_comment_placeholder: "Share some details...",
+    feedback_chat_copy_notice: "A copy of this chat will be included.",
+    feedback_submit: "Submit",
+    feedback_submitted_toast: "Thank you! Your feedback has been recorded."
+  }
+};
+
+/**
+ * Robust string resolver: prefers window.I18n, falls back to language dictionary, then English
+ */
+function resolveFeedbackString(key, fallbackDefault) {
+  if (window.I18n && typeof window.I18n.t === "function") {
+    const val = window.I18n.t(key);
+    if (val && val !== key) {
+      return val;
+    }
+  }
+
+  const currentLang = (window.I18n && window.I18n.currentLanguage) || localStorage.getItem("rhynia_language") || "en";
+  if (FEEDBACK_I18N_FALLBACK[currentLang] && FEEDBACK_I18N_FALLBACK[currentLang][key]) {
+    return FEEDBACK_I18N_FALLBACK[currentLang][key];
+  }
+
+  return FEEDBACK_I18N_FALLBACK.en[key] || fallbackDefault || key;
+}
 
 let activeFeedbackState = {
   rating: null,           // "like" or "dislike"
@@ -39,7 +95,7 @@ function openFeedbackModal(buttonEl, isPositive) {
   const titleEl = document.getElementById("feedback-modal-title");
   if (titleEl) {
     const titleKey = isPositive ? "feedback_like_title" : "feedback_dislike_title";
-    titleEl.textContent = window.I18n ? window.I18n.t(titleKey) : (isPositive ? "What did you like? (Optional)" : "What didn't you like? (Optional)");
+    titleEl.textContent = resolveFeedbackString(titleKey, isPositive ? "What did you like? (Optional)" : "What didn't you like? (Optional)");
   }
 
   // 2. Render Tags / Chips matching user screenshot
@@ -49,19 +105,18 @@ function openFeedbackModal(buttonEl, isPositive) {
   const commentInput = document.getElementById("feedback-modal-comment");
   if (commentInput) {
     commentInput.value = "";
-    const placeholderKey = "feedback_comment_placeholder";
-    commentInput.placeholder = window.I18n ? window.I18n.t(placeholderKey) : "Share some details...";
+    commentInput.placeholder = resolveFeedbackString("feedback_comment_placeholder", "Share some details...");
   }
 
   // 4. Update Copy Notice and Submit Button Text
   const noticeEl = document.getElementById("feedback-modal-notice");
   if (noticeEl) {
-    noticeEl.textContent = window.I18n ? window.I18n.t("feedback_chat_copy_notice") : "A copy of this chat will be included.";
+    noticeEl.textContent = resolveFeedbackString("feedback_chat_copy_notice", "A copy of this chat will be included.");
   }
 
   const submitBtn = document.getElementById("feedback-modal-submit-btn");
   if (submitBtn) {
-    submitBtn.textContent = window.I18n ? window.I18n.t("feedback_submit") : "Submit";
+    submitBtn.textContent = resolveFeedbackString("feedback_submit", "Submit");
     submitBtn.removeAttribute("disabled");
   }
 
@@ -97,7 +152,7 @@ function renderFeedbackTags(rating) {
       ];
 
   container.innerHTML = tagDefinitions.map(tag => {
-    const label = window.I18n ? window.I18n.t(tag.key) : tag.defaultText;
+    const label = resolveFeedbackString(tag.key, tag.defaultText);
     return `
       <button 
         type="button" 
@@ -142,11 +197,11 @@ function closeFeedbackModal() {
 
 /**
  * Submit Feedback to Backend API (/api/v1/feedback)
+ * Closes modal automatically and updates UI immediately
  */
 async function submitFeedbackModal() {
   const commentInput = document.getElementById("feedback-modal-comment");
   const comment = commentInput ? commentInput.value.trim() : "";
-  const submitBtn = document.getElementById("feedback-modal-submit-btn");
 
   const payload = {
     rating: activeFeedbackState.rating,
@@ -157,59 +212,53 @@ async function submitFeedbackModal() {
     chat_snippet: activeFeedbackState.chatSnippet
   };
 
+  const originBtn = activeFeedbackState.originButtonEl;
+  const rating = activeFeedbackState.rating;
+
+  // 1. AUTOMATICALLY CLOSE MODAL IMMEDIATELY
+  closeFeedbackModal();
+
+  // 2. Visually update active message icon
+  if (originBtn) {
+    const parentBar = originBtn.closest(".ai-actions-bar");
+    if (parentBar) {
+      const likeBtn = parentBar.querySelector("button[aria-label='Good response']");
+      const dislikeBtn = parentBar.querySelector("button[aria-label='Poor response']");
+      if (likeBtn) likeBtn.classList.remove("text-[#0078d4]", "bg-white/10");
+      if (dislikeBtn) dislikeBtn.classList.remove("text-red-400", "bg-white/10");
+    }
+
+    if (rating === "like") {
+      originBtn.classList.add("text-[#0078d4]", "bg-white/10");
+    } else {
+      originBtn.classList.add("text-red-400", "bg-white/10");
+    }
+  }
+
+  // 3. Show instant success toast
+  const toastMsg = resolveFeedbackString("feedback_submitted_toast", "धन्यवाद! आपका फ़ीडबैक सबमिट हो गया है।");
+  if (typeof showToast === "function") {
+    showToast(toastMsg, "success");
+  }
+
+  // 4. Send to Backend API
   try {
-    if (submitBtn) {
-      submitBtn.setAttribute("disabled", "true");
-      submitBtn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin inline-block mr-1">progress_activity</span>`;
+    const token = (window.AppState && window.AppState.token) || localStorage.getItem(CONFIG.TOKEN_KEY);
+    const headers = { "Content-Type": "application/json" };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
     }
 
     const res = await fetch(`${CONFIG.API_BASE}/feedback`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${AppState.token}`
-      },
+      headers: headers,
       body: JSON.stringify(payload)
     });
 
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || "Failed to submit feedback");
+      console.warn("Feedback submission response not ok:", res.status);
     }
-
-    // Success: Highlight origin button and reset sibling
-    if (activeFeedbackState.originButtonEl) {
-      const parentBar = activeFeedbackState.originButtonEl.closest(".ai-actions-bar");
-      if (parentBar) {
-        // Clear previous like/dislike highlight in this actions bar
-        const likeBtn = parentBar.querySelector("button[aria-label='Good response']");
-        const dislikeBtn = parentBar.querySelector("button[aria-label='Poor response']");
-        if (likeBtn) likeBtn.classList.remove("text-[#0078d4]", "bg-white/10");
-        if (dislikeBtn) dislikeBtn.classList.remove("text-red-400", "bg-white/10");
-      }
-
-      if (activeFeedbackState.rating === "like") {
-        activeFeedbackState.originButtonEl.classList.add("text-[#0078d4]", "bg-white/10");
-      } else {
-        activeFeedbackState.originButtonEl.classList.add("text-red-400", "bg-white/10");
-      }
-    }
-
-    closeFeedbackModal();
-    const toastMsg = window.I18n ? window.I18n.t("feedback_submitted_toast") : "Thank you! Your feedback has been recorded.";
-    if (typeof showToast === "function") {
-      showToast(toastMsg, "success");
-    }
-
   } catch (err) {
-    console.error("Feedback submit error:", err);
-    if (typeof showToast === "function") {
-      showToast(err.message || "Failed to submit feedback", "error");
-    }
-  } finally {
-    if (submitBtn) {
-      submitBtn.removeAttribute("disabled");
-      submitBtn.textContent = window.I18n ? window.I18n.t("feedback_submit") : "Submit";
-    }
+    console.warn("Feedback background send warning:", err);
   }
 }
