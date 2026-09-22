@@ -1036,6 +1036,79 @@ html.light #notification-settings-panel .peer:checked ~ .w-10.h-5 {
   background-color: #0078D4 !important;
 }
 
+/* ========================================================= */
+/* CODE BLOCK & MARKDOWN TABLE EXPORTER STYLES               */
+/* ========================================================= */
+
+.code-block-container {
+  backdrop-filter: blur(8px);
+}
+
+.svg-preview-box svg {
+  max-width: 100%;
+  max-height: 380px;
+  height: auto;
+}
+
+/* Light Mode Overrides for Code Blocks & Tables */
+html.light .code-block-container {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .code-block-container .bg-\[\#202020\] {
+  background-color: #f3f4f6 !important;
+  border-color: #e5e7eb !important;
+}
+
+html.light .code-block-container .text-neutral-300,
+html.light .code-block-container .text-neutral-400 {
+  color: #4b5563 !important;
+}
+
+html.light .code-block-container .code-raw-box pre code {
+  color: #1f2937 !important;
+}
+
+html.light .code-block-container .svg-preview-box {
+  background-color: #f8f9fa !important;
+}
+
+html.light .markdown-table-wrapper {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .markdown-table-wrapper .bg-\[\#202020\] {
+  background-color: #f3f4f6 !important;
+  border-color: #e5e7eb !important;
+}
+
+html.light .markdown-table-wrapper thead tr {
+  background-color: #f9fafb !important;
+  border-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+html.light .markdown-table-wrapper thead th {
+  color: #111827 !important;
+}
+
+html.light .markdown-table-wrapper tbody tr {
+  border-color: #f3f4f6 !important;
+}
+
+html.light .markdown-table-wrapper tbody td {
+  color: #374151 !important;
+}
+
+html.light .markdown-table-wrapper tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02) !important;
+}
+
+
 
 
 
