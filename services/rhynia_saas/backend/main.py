@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 
 from services.rhynia_saas.backend.config import settings
 from services.rhynia_saas.backend.database import init_db
@@ -72,16 +72,8 @@ if frontend_dir.exists():
 
 @app.get("/", tags=["General"])
 async def root():
-    """Root platform status check."""
-    return JSONResponse(
-        status_code=200,
-        content={
-            "status": "online",
-            "platform": "Rhynia Intelligence",
-            "version": settings.APP_VERSION,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        },
-    )
+    """Redirect root directly to web chat interface."""
+    return RedirectResponse(url="/app")
 
 
 @app.get("/api/v1/health", tags=["Health"])
