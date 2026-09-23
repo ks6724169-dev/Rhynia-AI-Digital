@@ -260,7 +260,12 @@ class CascadeLLMEngine:
                 settings.GEMINI_BACKUP_KEY or os.environ.get("GEMINI_BACKUP_KEY"),
             ] if k
         ]
-        gemini_models = ["gemini-2.5-flash", "gemini-3-flash-preview", "gemini-2.5-flash-lite"]
+        gemini_models = [
+            "gemini-flash-lite-latest",
+            "gemini-3.5-flash-lite",
+            "gemini-3.8-flash",
+            "gemini-flash-latest",
+        ]
 
         openrouter_key = settings.OPENROUTER_API_KEY or os.environ.get("OPENROUTER_API_KEY")
         openrouter_backup_key = settings.OPENROUTER_BACKUP_KEY or os.environ.get("OPENROUTER_BACKUP_KEY") or openrouter_key
