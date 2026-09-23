@@ -60,15 +60,18 @@ class Settings(BaseSettings):
     GROQ_API_KEY: Optional[str] = None
     HUGGINGFACE_API_KEY: Optional[str] = None
 
-    # Cascade Tiers (Configured dynamically via env)
+    # Cascade Tiers (Powered by Llama 3.3 70B & DeepSeek with Free Fallbacks)
     CASCADE_TIER_1_MODELS: list[str] = [
-        "deepseek/deepseek-chat",
         "meta-llama/llama-3.3-70b-instruct",
-        "mistralai/mistral-small-24b-instruct-2501",
+        "deepseek/deepseek-chat",
+        "liquid/lfm-2.5-2.6b:free",
+        "dots-studio/dots-3-note-preview:free",
+        "nex-agi/nex-n2.5-mini:free",
     ]
     CASCADE_TIER_2_MODELS: list[str] = [
         "deepseek/deepseek-chat",
         "meta-llama/llama-3.3-70b-instruct",
+        "liquid/lfm-2.5-2.6b:free",
     ]
     TIER_3_BACKUP_MODEL: str = "meta-llama/llama-3.3-70b-instruct"
 

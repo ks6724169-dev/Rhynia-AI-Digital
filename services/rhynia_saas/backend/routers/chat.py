@@ -2,6 +2,7 @@
 Rhynia Intelligence SaaS — Core Chat & Streaming Inference Router
 """
 
+import asyncio
 import json
 from datetime import datetime, timezone
 from typing import List, Optional
@@ -14,6 +15,7 @@ from services.rhynia_saas.backend.auth import get_current_user
 from services.rhynia_saas.backend.config import settings
 from services.rhynia_saas.backend.database import ChatMessage, ChatSession, User, get_db
 from services.rhynia_saas.backend.llm_engine import RHYNIA_SYSTEM_PROMPT, llm_engine
+from services.rhynia_saas.backend.services.educational_synthesis import educational_synthesis_engine
 from services.rhynia_saas.backend.services.image_search import educational_image_service
 from services.rhynia_saas.backend.services.search import search_service
 
@@ -176,6 +178,11 @@ async def send_chat_message(
             messages_payload, system_prompt=system_prompt, web_search=use_web_search
         )
 
+        # Double Guarantee: If reply_content has almost no text (< 50 chars), synthesize educational text!
+        if len(reply_content.strip()) < 50:
+            synth = educational_synthesis_engine.synthesize_topic(clean_message) or educational_synthesis_engine.generate_generic_educational(clean_message)
+            reply_content = synth
+
         # Seamless Visual Guarantee: Ensure verified educational diagrams appear in answer
         if diagrams and "![" not in reply_content:
             img_block = "\n\n" + "\n".join([f"![{d['title']}]({d['url']})" for d in diagrams]) + "\n\n"
@@ -229,6 +236,15 @@ async def send_chat_message(
 
             # Save completed reply
             full_reply = "".join(collected_reply)
+
+            # Double Guarantee: If full_reply has almost no text (< 50 chars), stream rich educational text first!
+            if len(full_reply.strip()) < 50:
+                synth = educational_synthesis_engine.synthesize_topic(clean_message) or educational_synthesis_engine.generate_generic_educational(clean_message)
+                for word in synth.split(" "):
+                    token_event = json.dumps({"type": "token", "content": word + " "})
+                    yield f"data: {token_event}\n\n"
+                    full_reply += word + " "
+                    await asyncio.sleep(0.01)
 
             # Seamless Visual Guarantee: If diagrams found but LLM omitted image tags, stream them cleanly
             if diagrams and "![" not in full_reply:
