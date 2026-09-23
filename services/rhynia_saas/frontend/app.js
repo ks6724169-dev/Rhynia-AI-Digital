@@ -1061,8 +1061,8 @@ function renderMarkdown(rawText) {
     return storeBlock(blockHtml);
   });
 
-  // 2B. Educational Image Cards & Multi-Image Galleries: ![Caption](URL)
-  text = text.replace(/((?:!\[([^\]]*)\]\((https?:\/\/[^\s\)\"\'<>]+)\)\s*)+)/gi, (match) => {
+  // 2B. Educational Image Cards & Multi-Image Galleries (1 to 6+ images)
+  text = text.replace(/((?:(?:[-*•]\s*)?!\[([^\]]*)\]\((https?:\/\/[^\s\)\"\'<>]+)\)[\s\r\n]*)+)/gi, (match) => {
     const imgRegex = /!\[([^\]]*)\]\((https?:\/\/[^\s\)\"\'<>]+)\)/gi;
     const items = [];
     let m;
@@ -1072,19 +1072,22 @@ function renderMarkdown(rawText) {
     if (!items.length) return match;
 
     const isGrid = items.length > 1;
-    let galleryHtml = `<div class="rhynia-image-gallery my-4 ${isGrid ? 'grid grid-cols-1 sm:grid-cols-2 gap-3.5' : 'max-w-2xl mx-auto'}">`;
+    const gridCols = items.length >= 3 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5" : (items.length === 2 ? "grid grid-cols-1 sm:grid-cols-2 gap-3.5" : "max-w-2xl mx-auto");
+    const serializedItems = encodeURIComponent(JSON.stringify(items));
+    let galleryHtml = `<div class="rhynia-image-gallery my-4 ${gridCols}" data-gallery-items="${serializedItems}">`;
 
-    items.forEach(item => {
+    items.forEach((item, itemIdx) => {
       const escapedCaption = escapeHtml(item.caption || "Educational Diagram");
       const safeUrl = item.url;
       galleryHtml += `
-        <div class="rhynia-image-card rounded-2xl overflow-hidden border border-white/10 bg-[#161616] shadow-xl transition-all duration-300 hover:border-[#0078D4]/60 hover:shadow-2xl">
-          <div class="rhynia-img-wrapper relative bg-[#0a0a0a] overflow-hidden flex items-center justify-center min-h-[190px] max-h-[340px] cursor-pointer group" onclick="window.openRhyniaLightbox('${safeUrl}', '${escapedCaption}')" title="Click to enlarge diagram">
+        <div class="rhynia-image-card rounded-2xl overflow-hidden border border-white/10 bg-[#161616] shadow-xl transition-all duration-300 hover:border-[#0078D4]/60 hover:shadow-2xl flex flex-col justify-between">
+          <div class="rhynia-img-wrapper relative bg-[#0a0a0a] overflow-hidden flex items-center justify-center min-h-[190px] max-h-[320px] cursor-pointer group" onclick="openRhyniaLightboxGalleryItem(this, ${itemIdx})" title="Click to enlarge diagram">
             <img src="${safeUrl}" alt="${escapedCaption}" loading="lazy" class="w-full h-full object-contain p-2 group-hover:scale-[1.03] transition-transform duration-300" onerror="this.parentElement.innerHTML='<div class=\\\'text-xs text-neutral-500 p-6 flex flex-col items-center gap-1.5\\\'><span class=\\\'material-symbols-outlined text-[20px] text-neutral-600\\\'>broken_image</span><span>Diagram unavailable</span></div>'"/>
             <div class="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[11px] font-medium flex items-center gap-1 shadow-md">
               <span class="material-symbols-outlined text-[14px]">zoom_in</span>
               <span>Zoom</span>
             </div>
+            ${items.length > 1 ? `<div class="absolute bottom-2 left-2 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-neutral-400 font-mono text-[10px]">#${itemIdx + 1} of ${items.length}</div>` : ""}
           </div>
           <div class="px-3.5 py-2.5 flex items-center justify-between bg-[#1c1c1c] border-t border-white/5 text-xs text-neutral-300">
             <span class="font-medium text-white flex items-center gap-1.5 truncate">
@@ -1092,7 +1095,7 @@ function renderMarkdown(rawText) {
               <span class="truncate" title="${escapedCaption}">${escapedCaption}</span>
             </span>
             <div class="flex items-center gap-2 shrink-0">
-              <button type="button" onclick="window.openRhyniaLightbox('${safeUrl}', '${escapedCaption}')" class="hover:text-white flex items-center gap-1 text-[11px] px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 transition-colors" title="Full screen view">
+              <button type="button" onclick="openRhyniaLightboxGalleryItem(this, ${itemIdx})" class="hover:text-white flex items-center gap-1 text-[11px] px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 transition-colors" title="Full screen view">
                 <span class="material-symbols-outlined text-[13px] text-[#4cc2ff]">fullscreen</span>
                 <span>View</span>
               </button>
@@ -1395,20 +1398,98 @@ function handleHashRoute() {
 window.addEventListener("hashchange", handleHashRoute);
 
 // =========================================================
-// RHYNIA EDUCATIONAL IMAGE LIGHTBOX MODAL
+// RHYNIA EDUCATIONAL IMAGE LIGHTBOX MODAL WITH CAROUSEL
 // =========================================================
-function openRhyniaLightbox(url, caption) {
+window.activeGalleryImages = [];
+window.activeGalleryIndex = 0;
+
+function openRhyniaLightbox(url, caption, galleryList = null, index = 0) {
   const modal = document.getElementById("rhynia-lightbox");
+  if (!modal) return;
+
+  if (Array.isArray(galleryList) && galleryList.length > 0) {
+    window.activeGalleryImages = galleryList;
+    window.activeGalleryIndex = Math.max(0, Math.min(index, galleryList.length - 1));
+  } else {
+    window.activeGalleryImages = [{ url, caption }];
+    window.activeGalleryIndex = 0;
+  }
+
+  updateLightboxSlide();
+  modal.classList.remove("hidden");
+}
+
+function openRhyniaLightboxGalleryItem(el, itemIdx) {
+  const gallery = el.closest(".rhynia-image-gallery");
+  if (!gallery || !gallery.dataset.galleryItems) {
+    return;
+  }
+  try {
+    const items = JSON.parse(decodeURIComponent(gallery.dataset.galleryItems));
+    openRhyniaLightbox(items[itemIdx].url, items[itemIdx].caption, items, itemIdx);
+  } catch (e) {
+    console.warn("Gallery lightbox parse error:", e);
+  }
+}
+
+function updateLightboxSlide() {
   const img = document.getElementById("lightbox-img");
   const cap = document.getElementById("lightbox-caption");
   const dl = document.getElementById("lightbox-download-btn");
-  if (!modal || !img) return;
+  const counter = document.getElementById("lightbox-counter");
+  const prevBtn = document.getElementById("lightbox-prev-btn");
+  const nextBtn = document.getElementById("lightbox-next-btn");
+  if (!window.activeGalleryImages || !window.activeGalleryImages.length) return;
 
-  img.src = url;
-  img.alt = caption || "Educational Diagram";
-  if (cap) cap.textContent = caption || "";
-  if (dl) dl.href = url;
-  modal.classList.remove("hidden");
+  const cur = window.activeGalleryImages[window.activeGalleryIndex];
+  if (img) {
+    img.src = cur.url;
+    img.alt = cur.caption || "Educational Diagram";
+  }
+  if (cap) cap.textContent = cur.caption || "";
+  if (dl) dl.href = cur.url;
+
+  const total = window.activeGalleryImages.length;
+  if (counter) {
+    counter.textContent = `${window.activeGalleryIndex + 1} / ${total}`;
+    if (total > 1) {
+      counter.classList.remove("hidden");
+    } else {
+      counter.classList.add("hidden");
+    }
+  }
+  if (prevBtn) {
+    if (total > 1) {
+      prevBtn.classList.remove("hidden");
+      prevBtn.classList.add("flex");
+    } else {
+      prevBtn.classList.add("hidden");
+      prevBtn.classList.remove("flex");
+    }
+  }
+  if (nextBtn) {
+    if (total > 1) {
+      nextBtn.classList.remove("hidden");
+      nextBtn.classList.add("flex");
+    } else {
+      nextBtn.classList.add("hidden");
+      nextBtn.classList.remove("flex");
+    }
+  }
+}
+
+function prevRhyniaLightbox(e) {
+  if (e) e.stopPropagation();
+  if (!window.activeGalleryImages || window.activeGalleryImages.length <= 1) return;
+  window.activeGalleryIndex = (window.activeGalleryIndex - 1 + window.activeGalleryImages.length) % window.activeGalleryImages.length;
+  updateLightboxSlide();
+}
+
+function nextRhyniaLightbox(e) {
+  if (e) e.stopPropagation();
+  if (!window.activeGalleryImages || window.activeGalleryImages.length <= 1) return;
+  window.activeGalleryIndex = (window.activeGalleryIndex + 1) % window.activeGalleryImages.length;
+  updateLightboxSlide();
 }
 
 function closeRhyniaLightbox(e) {
@@ -1417,10 +1498,19 @@ function closeRhyniaLightbox(e) {
 }
 
 window.openRhyniaLightbox = openRhyniaLightbox;
+window.openRhyniaLightboxGalleryItem = openRhyniaLightboxGalleryItem;
+window.prevRhyniaLightbox = prevRhyniaLightbox;
+window.nextRhyniaLightbox = nextRhyniaLightbox;
 window.closeRhyniaLightbox = closeRhyniaLightbox;
 
 document.addEventListener("keydown", (e) => {
+  const modal = document.getElementById("rhynia-lightbox");
+  if (!modal || modal.classList.contains("hidden")) return;
   if (e.key === "Escape") {
     closeRhyniaLightbox();
+  } else if (e.key === "ArrowLeft") {
+    prevRhyniaLightbox();
+  } else if (e.key === "ArrowRight") {
+    nextRhyniaLightbox();
   }
 });

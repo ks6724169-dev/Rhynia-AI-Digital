@@ -138,15 +138,13 @@ async def send_chat_message(
         f"- Remind users politely that private/login-protected social media accounts (personal Instagram DMs, private Facebook profiles) cannot be accessed due to platform privacy barriers."
     )
 
-    # 4B. Educational Diagram Retrieval Grounding (Automatic visual enrichment)
+    # 4B. Educational Diagram Retrieval Grounding (Automatic visual enrichment up to 5-6 diagrams)
     diagrams = []
     try:
-        edu_subject = educational_image_service.extract_subject(clean_message)
-        if edu_subject:
-            diagrams = await educational_image_service.search_diagrams(edu_subject, limit=2)
-            if diagrams:
-                diagram_prompt = educational_image_service.format_diagram_context(diagrams)
-                system_prompt = f"{system_prompt}\n\n{diagram_prompt}"
+        diagrams = await educational_image_service.search_smart_diagrams(clean_message, default_limit=5)
+        if diagrams:
+            diagram_prompt = educational_image_service.format_diagram_context(diagrams)
+            system_prompt = f"{system_prompt}\n\n{diagram_prompt}"
     except Exception as e:
         # Non-blocking: If image retrieval encounters any network hiccup, normal LLM response proceeds
         pass

@@ -1104,9 +1104,10 @@
 
   </div>
 
-  <!-- Full-Screen High-Resolution Image Lightbox Modal -->
-  <div id="rhynia-lightbox" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-4 transition-opacity" onclick="closeRhyniaLightbox(event)">
+  <!-- Full-Screen High-Resolution Image Lightbox Modal with Carousel Navigation -->
+  <div id="rhynia-lightbox" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-4 transition-opacity select-none" onclick="closeRhyniaLightbox(event)">
     <div class="absolute top-4 right-4 flex items-center gap-2 z-10">
+      <span id="lightbox-counter" class="text-xs text-neutral-300 font-mono px-2.5 py-1 rounded-md bg-white/10 border border-white/10 hidden">1 / 1</span>
       <a id="lightbox-download-btn" href="#" target="_blank" download class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium flex items-center gap-1.5 transition-all">
         <span class="material-symbols-outlined text-[16px] text-[#10b981]">file_download</span>
         <span>Download</span>
@@ -1115,6 +1116,17 @@
         <span class="material-symbols-outlined text-[20px]">close</span>
       </button>
     </div>
+
+    <!-- Prev Arrow Button -->
+    <button type="button" id="lightbox-prev-btn" onclick="prevRhyniaLightbox(event)" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white hidden items-center justify-center transition-all z-10 shadow-2xl active:scale-95" aria-label="Previous Diagram" title="Previous (Left Arrow)">
+      <span class="material-symbols-outlined text-[26px]">chevron_left</span>
+    </button>
+
+    <!-- Next Arrow Button -->
+    <button type="button" id="lightbox-next-btn" onclick="nextRhyniaLightbox(event)" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white hidden items-center justify-center transition-all z-10 shadow-2xl active:scale-95" aria-label="Next Diagram" title="Next (Right Arrow)">
+      <span class="material-symbols-outlined text-[26px]">chevron_right</span>
+    </button>
+
     <div class="max-w-4xl max-h-[85vh] w-full flex flex-col items-center justify-center" onclick="event.stopPropagation()">
       <div class="rounded-2xl overflow-hidden border border-white/15 bg-[#0e0e0e] shadow-2xl p-2 max-h-[75vh] flex items-center justify-center">
         <img id="lightbox-img" src="" alt="" class="max-h-[72vh] max-w-full object-contain rounded-xl"/>
@@ -1129,15 +1141,15 @@
   <!-- ========================================================= -->
   <!-- SCRIPTS (Configuration, Modules & App Orchestrator)       -->
   <!-- ========================================================= -->
-  <script src="config.js?v=16"></script>
-  <script src="modules/i18n.js?v=16"></script>
-  <script src="app.js?v=16"></script>
-  <script src="modules/auth.js?v=16"></script>
-  <script src="modules/composer.js?v=16"></script>
-  <script src="modules/chat.js?v=16"></script>
-  <script src="modules/feedback.js?v=16"></script>
-  <script src="modules/drawer.js?v=16"></script>
-  <script src="modules/settings.js?v=16"></script>
+  <script src="config.js?v=18"></script>
+  <script src="modules/i18n.js?v=18"></script>
+  <script src="app.js?v=18"></script>
+  <script src="modules/auth.js?v=18"></script>
+  <script src="modules/composer.js?v=18"></script>
+  <script src="modules/chat.js?v=18"></script>
+  <script src="modules/feedback.js?v=18"></script>
+  <script src="modules/drawer.js?v=18"></script>
+  <script src="modules/settings.js?v=18"></script>
 
 </body>
 </html>

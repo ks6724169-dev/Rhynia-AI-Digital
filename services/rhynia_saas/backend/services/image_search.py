@@ -2,8 +2,10 @@
 Rhynia Intelligence SaaS — Educational Image Retrieval Service
 Searches Wikimedia Commons and open educational scientific archives for high-res diagrams.
 Provides instant visual grounding for Biology, Anatomy, Physics, Chemistry, Botany & Astronomy.
+Supports Multi-Aspect Diagram Retrieval (up to 5-6 comprehensive diagrams per topic).
 """
 
+import asyncio
 import logging
 import re
 import urllib.parse
@@ -117,6 +119,165 @@ CONCEPT_MAP: Dict[str, str] = {
     "ज्वालामुखी": "volcano diagram",
     "food chain": "food chain ecosystem diagram",
     "खाद्य श्रृंखला": "food chain ecosystem diagram"
+}
+
+# Multi-aspect subtopics mapping for comprehensive scientific breakdowns (4 to 6 diagrams)
+CONCEPT_SUBTOPICS: Dict[str, List[str]] = {
+    "photosynthesis": [
+        "photosynthesis diagram",
+        "plant cell structure diagram",
+        "chloroplast structure diagram",
+        "calvin cycle diagram",
+        "leaf anatomy cross section diagram",
+        "stoma plant diagram"
+    ],
+    "prakash sanshleshan": [
+        "photosynthesis diagram",
+        "plant cell structure diagram",
+        "chloroplast structure diagram",
+        "calvin cycle diagram",
+        "leaf anatomy cross section diagram",
+        "stoma plant diagram"
+    ],
+    "प्रकाश संश्लेषण": [
+        "photosynthesis diagram",
+        "plant cell structure diagram",
+        "chloroplast structure diagram",
+        "calvin cycle diagram",
+        "leaf anatomy cross section diagram",
+        "stoma plant diagram"
+    ],
+    "प्रकाशसंश्लेषण": [
+        "photosynthesis diagram",
+        "plant cell structure diagram",
+        "chloroplast structure diagram",
+        "calvin cycle diagram",
+        "leaf anatomy cross section diagram",
+        "stoma plant diagram"
+    ],
+    "plant cell": [
+        "plant cell structure diagram",
+        "chloroplast structure diagram",
+        "cell wall membrane plant diagram",
+        "plant cell vacuole diagram",
+        "photosynthesis diagram"
+    ],
+    "पादप कोशिका": [
+        "plant cell structure diagram",
+        "chloroplast structure diagram",
+        "cell wall membrane plant diagram",
+        "plant cell vacuole diagram"
+    ],
+    "animal cell": [
+        "animal cell structure diagram",
+        "mitochondrion diagram",
+        "cell nucleus DNA diagram",
+        "endoplasmic reticulum golgi diagram",
+        "ribosome structure diagram"
+    ],
+    "जंतु कोशिका": [
+        "animal cell structure diagram",
+        "mitochondrion diagram",
+        "cell nucleus DNA diagram",
+        "endoplasmic reticulum golgi diagram"
+    ],
+    "cell": [
+        "plant cell structure diagram",
+        "animal cell structure diagram",
+        "mitochondrion diagram",
+        "cell nucleus DNA diagram",
+        "cell membrane structure diagram"
+    ],
+    "कोशिका": [
+        "plant cell structure diagram",
+        "animal cell structure diagram",
+        "mitochondrion diagram",
+        "cell nucleus DNA diagram",
+        "cell membrane structure diagram"
+    ],
+    "heart": [
+        "human heart diagram",
+        "heart blood flow circulation diagram",
+        "cardiac conduction system diagram",
+        "human circulatory system diagram",
+        "heart valves diagram"
+    ],
+    "हृदय": [
+        "human heart diagram",
+        "heart blood flow circulation diagram",
+        "cardiac conduction system diagram",
+        "human circulatory system diagram",
+        "heart valves diagram"
+    ],
+    "brain": [
+        "human brain anatomy diagram",
+        "neuron structure diagram",
+        "human nervous system diagram",
+        "brain lobes cerebellum diagram",
+        "synapse neurotransmitter diagram"
+    ],
+    "मस्तिष्क": [
+        "human brain anatomy diagram",
+        "neuron structure diagram",
+        "human nervous system diagram",
+        "brain lobes cerebellum diagram"
+    ],
+    "digestive system": [
+        "human digestive system diagram",
+        "stomach anatomy diagram",
+        "human liver digestive diagram",
+        "small intestine villi diagram",
+        "digestive tract human diagram"
+    ],
+    "पाचन तंत्र": [
+        "human digestive system diagram",
+        "stomach anatomy diagram",
+        "human liver digestive diagram",
+        "small intestine villi diagram"
+    ],
+    "respiratory system": [
+        "human respiratory system diagram",
+        "human lungs alveoli diagram",
+        "diaphragm breathing mechanism diagram",
+        "trachea bronchi lungs diagram"
+    ],
+    "श्वसन तंत्र": [
+        "human respiratory system diagram",
+        "human lungs alveoli diagram",
+        "diaphragm breathing mechanism diagram"
+    ],
+    "water cycle": [
+        "water cycle diagram",
+        "evaporation precipitation water cycle diagram",
+        "groundwater hydrological cycle diagram"
+    ],
+    "जल चक्र": [
+        "water cycle diagram",
+        "evaporation precipitation water cycle diagram",
+        "groundwater hydrological cycle diagram"
+    ],
+    "solar system": [
+        "solar system planets diagram",
+        "earth orbit seasons diagram",
+        "inner and outer planets solar system diagram",
+        "moon phases diagram"
+    ],
+    "सौर मंडल": [
+        "solar system planets diagram",
+        "earth orbit seasons diagram",
+        "inner and outer planets solar system diagram"
+    ],
+    "atom": [
+        "atom structure diagram",
+        "bohr model atom diagram",
+        "electron shell orbital diagram",
+        "periodic table diagram"
+    ],
+    "परमाणु": [
+        "atom structure diagram",
+        "bohr model atom diagram",
+        "electron shell orbital diagram"
+    ]
 }
 
 
@@ -234,6 +395,50 @@ class EducationalImageService:
 
         return results[:limit]
 
+    async def search_smart_diagrams(self, query: str, default_limit: int = 5) -> List[Dict[str, str]]:
+        """
+        Dynamically retrieves 1 to 6 diagrams depending on user requirement and topic depth.
+        For detailed or multi-image requests, concurrently queries specific sub-aspects.
+        """
+        low = query.lower()
+
+        # Check if user specifically asks for multiple or detailed diagrams
+        wants_multiple = any(k in low for k in [
+            "5-6", "5", "6", "multiple", "all", "sabhi", "saare", "images", "photos",
+            "diagrams", "तस्वीर", "चित्र", "डायग्राम", "detail", "detailed", "acche se",
+            "pura", "step by step", "विस्तार", "गहराई"
+        ])
+
+        # Check if query matches a rich concept subtopics mapping
+        for concept_key, subtopics in CONCEPT_SUBTOPICS.items():
+            if concept_key in low:
+                target_count = default_limit if wants_multiple else 3
+                # Fetch subtopics concurrently
+                tasks = [self.search_diagrams(sub, limit=1) for sub in subtopics[:target_count + 1]]
+                results = await asyncio.gather(*tasks)
+                flat = [img for r in results for img in r]
+
+                # Deduplicate by clean url
+                seen_urls = set()
+                unique: List[Dict[str, str]] = []
+                for item in flat:
+                    clean_u = item["url"].split("?")[0].lower()
+                    if clean_u not in seen_urls:
+                        seen_urls.add(clean_u)
+                        unique.append(item)
+                    if len(unique) >= target_count:
+                        break
+                if unique:
+                    return unique
+
+        # Fallback: single concept extract and search
+        extracted = self.extract_subject(query)
+        if extracted:
+            limit = default_limit if wants_multiple else 2
+            return await self.search_diagrams(extracted, limit=limit)
+
+        return []
+
     def format_diagram_context(self, diagrams: List[Dict[str, str]]) -> str:
         """Format retrieved diagram URLs into system prompt instructions."""
         if not diagrams:
@@ -243,13 +448,13 @@ class EducationalImageService:
         tag_str = "\n".join(tags)
 
         lines = [
-            "\nVERIFIED EDUCATIONAL SCIENTIFIC DIAGRAMS RETRIEVED (सत्यापित शैक्षणिक चित्र - अनिवार्य):",
+            f"\nVERIFIED EDUCATIONAL SCIENTIFIC DIAGRAMS RETRIEVED ({len(diagrams)} सत्यापित शैक्षणिक चित्र - अनिवार्य):",
             "The following verified educational diagrams were retrieved for this topic:",
             tag_str,
             "\nCRITICAL VISUAL EMBEDDING RULES (अनिवार्य नियम):",
             "1. You MUST include these EXACT markdown image tags in your response right after your opening overview paragraph (❖ section) or right before the sequential process steps:",
             tag_str,
-            "2. Place the image tags on consecutive lines without empty lines between them so the user interface renders them as a responsive 2-column image gallery.",
+            "2. Place the image tags on consecutive lines without empty lines between them so the user interface renders them as a responsive multi-column image gallery.",
             "3. DO NOT modify, shorten, or invent image URLs. Use the exact URLs provided above.",
             "4. Combine these visual diagrams with your structured Microsoft Word bullet analysis (`❖`, `➤`, `✔`, `■`, `•`) and a Mermaid flowchart so the user receives a world-class educational learning experience."
         ]
