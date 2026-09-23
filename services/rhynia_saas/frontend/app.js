@@ -1101,6 +1101,55 @@ function renderMarkdown(rawText) {
 
   text = processedLines.join("\n");
 
+  // 3B. Educational Image Cards & Multi-Image Galleries: ![Caption](URL)
+  text = text.replace(/((?:!\[([^\]]*)\]\((https?:\/\/[^\s\)\"\'<>]+)\)\s*)+)/gi, (match) => {
+    const imgRegex = /!\[([^\]]*)\]\((https?:\/\/[^\s\)\"\'<>]+)\)/gi;
+    const items = [];
+    let m;
+    while ((m = imgRegex.exec(match)) !== null) {
+      items.push({ caption: m[1].trim(), url: m[2].trim() });
+    }
+    if (!items.length) return match;
+
+    const isGrid = items.length > 1;
+    let galleryHtml = `<div class="rhynia-image-gallery my-4 ${isGrid ? 'grid grid-cols-1 sm:grid-cols-2 gap-3.5' : 'max-w-2xl mx-auto'}">`;
+
+    items.forEach(item => {
+      const escapedCaption = escapeHtml(item.caption || "Educational Diagram");
+      const safeUrl = item.url;
+      galleryHtml += `
+        <div class="rhynia-image-card rounded-2xl overflow-hidden border border-white/10 bg-[#161616] shadow-xl transition-all duration-300 hover:border-[#0078D4]/60 hover:shadow-2xl">
+          <div class="rhynia-img-wrapper relative bg-[#0a0a0a] overflow-hidden flex items-center justify-center min-h-[190px] max-h-[340px] cursor-pointer group" onclick="openRhyniaLightbox('${safeUrl}', '${escapedCaption}')" title="Click to enlarge diagram">
+            <img src="${safeUrl}" alt="${escapedCaption}" loading="lazy" class="w-full h-full object-contain p-2 group-hover:scale-[1.03] transition-transform duration-300" onerror="this.parentElement.innerHTML='<div class=\\\'text-xs text-neutral-500 p-6 flex flex-col items-center gap-1.5\\\'><span class=\\\'material-symbols-outlined text-[20px] text-neutral-600\\\'>broken_image</span><span>Diagram unavailable</span></div>'"/>
+            <div class="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[11px] font-medium flex items-center gap-1 shadow-md">
+              <span class="material-symbols-outlined text-[14px]">zoom_in</span>
+              <span>Zoom</span>
+            </div>
+          </div>
+          <div class="px-3.5 py-2.5 flex items-center justify-between bg-[#1c1c1c] border-t border-white/5 text-xs text-neutral-300">
+            <span class="font-medium text-white flex items-center gap-1.5 truncate">
+              <span class="material-symbols-outlined text-[16px] text-[#0078D4]">photo_library</span>
+              <span class="truncate" title="${escapedCaption}">${escapedCaption}</span>
+            </span>
+            <div class="flex items-center gap-2 shrink-0">
+              <button type="button" onclick="openRhyniaLightbox('${safeUrl}', '${escapedCaption}')" class="hover:text-white flex items-center gap-1 text-[11px] px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 transition-colors" title="Full screen view">
+                <span class="material-symbols-outlined text-[13px] text-[#4cc2ff]">fullscreen</span>
+                <span>View</span>
+              </button>
+              <a href="${safeUrl}" target="_blank" download class="hover:text-white flex items-center gap-1 text-[11px] px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 transition-colors" title="Download High-Res Diagram">
+                <span class="material-symbols-outlined text-[13px] text-[#10b981]">file_download</span>
+                <span>Export</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      `.trim();
+    });
+
+    galleryHtml += `</div>`;
+    return storeBlock(galleryHtml);
+  });
+
   // 4. Escape general HTML (for surrounding text)
   text = escapeHtml(text);
 
@@ -1309,3 +1358,33 @@ function handleHashRoute() {
 
 window.addEventListener("hashchange", handleHashRoute);
 
+// =========================================================
+// RHYNIA EDUCATIONAL IMAGE LIGHTBOX MODAL
+// =========================================================
+function openRhyniaLightbox(url, caption) {
+  const modal = document.getElementById("rhynia-lightbox");
+  const img = document.getElementById("lightbox-img");
+  const cap = document.getElementById("lightbox-caption");
+  const dl = document.getElementById("lightbox-download-btn");
+  if (!modal || !img) return;
+
+  img.src = url;
+  img.alt = caption || "Educational Diagram";
+  if (cap) cap.textContent = caption || "";
+  if (dl) dl.href = url;
+  modal.classList.remove("hidden");
+}
+
+function closeRhyniaLightbox(e) {
+  const modal = document.getElementById("rhynia-lightbox");
+  if (modal) modal.classList.add("hidden");
+}
+
+window.openRhyniaLightbox = openRhyniaLightbox;
+window.closeRhyniaLightbox = closeRhyniaLightbox;
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    closeRhyniaLightbox();
+  }
+});

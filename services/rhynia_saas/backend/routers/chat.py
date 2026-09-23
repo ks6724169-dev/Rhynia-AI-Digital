@@ -14,6 +14,7 @@ from services.rhynia_saas.backend.auth import get_current_user
 from services.rhynia_saas.backend.config import settings
 from services.rhynia_saas.backend.database import ChatMessage, ChatSession, User, get_db
 from services.rhynia_saas.backend.llm_engine import RHYNIA_SYSTEM_PROMPT, llm_engine
+from services.rhynia_saas.backend.services.image_search import educational_image_service
 from services.rhynia_saas.backend.services.search import search_service
 
 router = APIRouter(prefix="/api/v1/chat", tags=["Chat"])
@@ -137,6 +138,19 @@ async def send_chat_message(
         f"- Remind users politely that private/login-protected social media accounts (personal Instagram DMs, private Facebook profiles) cannot be accessed due to platform privacy barriers."
     )
 
+    # 4B. Educational Diagram Retrieval Grounding (Automatic visual enrichment)
+    diagrams = []
+    try:
+        edu_subject = educational_image_service.extract_subject(clean_message)
+        if edu_subject:
+            diagrams = await educational_image_service.search_diagrams(edu_subject, limit=2)
+            if diagrams:
+                diagram_prompt = educational_image_service.format_diagram_context(diagrams)
+                system_prompt = f"{system_prompt}\n\n{diagram_prompt}"
+    except Exception as e:
+        # Non-blocking: If image retrieval encounters any network hiccup, normal LLM response proceeds
+        pass
+
     # 5. Persist User Message
     user_msg = ChatMessage(
         session_id=session_id,
@@ -163,6 +177,15 @@ async def send_chat_message(
         reply_content, model_used, tokens_used = await llm_engine.generate_response(
             messages_payload, system_prompt=system_prompt, web_search=use_web_search
         )
+
+        # Seamless Visual Guarantee: Ensure verified educational diagrams appear in answer
+        if diagrams and "![" not in reply_content:
+            img_block = "\n\n" + "\n".join([f"![{d['title']}]({d['url']})" for d in diagrams]) + "\n\n"
+            if "\n\n" in reply_content:
+                parts = reply_content.split("\n\n", 1)
+                reply_content = parts[0] + img_block + parts[1]
+            else:
+                reply_content = reply_content + img_block
 
         # Persist Rhynia reply
         rhynia_msg = ChatMessage(
@@ -208,6 +231,14 @@ async def send_chat_message(
 
             # Save completed reply
             full_reply = "".join(collected_reply)
+
+            # Seamless Visual Guarantee: If diagrams found but LLM omitted image tags, stream them cleanly
+            if diagrams and "![" not in full_reply:
+                img_block = "\n\n" + "\n".join([f"![{d['title']}]({d['url']})" for d in diagrams]) + "\n\n"
+                token_event = json.dumps({"type": "token", "content": img_block})
+                yield f"data: {token_event}\n\n"
+                full_reply += img_block
+
             rhynia_msg = ChatMessage(
                 session_id=session_id,
                 user_id=current_user.id,

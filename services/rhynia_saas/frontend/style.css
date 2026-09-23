@@ -1649,3 +1649,64 @@ html.light .rhynia-citation-pill:hover {
   color: #ffffff !important;
 }
 
+/* ========================================================= */
+/* RHYNIA EDUCATIONAL IMAGE CARDS & GALLERIES               */
+/* ========================================================= */
+.rhynia-image-gallery {
+  width: 100%;
+  margin: 1.25rem 0;
+}
+
+.rhynia-image-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  user-select: none;
+}
+
+.rhynia-image-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 120, 212, 0.6) !important;
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.5), 0 0 18px rgba(0, 120, 212, 0.15) !important;
+}
+
+.rhynia-img-wrapper {
+  background: #0e0e0e;
+}
+
+/* Light Theme Overrides for Image Cards */
+html.light .rhynia-image-card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .rhynia-image-card:hover {
+  border-color: #0078D4 !important;
+  box-shadow: 0 10px 24px -4px rgba(0, 120, 212, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light .rhynia-img-wrapper {
+  background: #f8fafc !important;
+}
+
+html.light .rhynia-image-card .bg-\[\#1c1c1c\] {
+  background: #f1f5f9 !important;
+  border-top-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .rhynia-image-card .text-neutral-300,
+html.light .rhynia-image-card .text-white {
+  color: #1e293b !important;
+}
+
+html.light .rhynia-image-card button,
+html.light .rhynia-image-card a {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #334155 !important;
+}
+
+html.light .rhynia-image-card button:hover,
+html.light .rhynia-image-card a:hover {
+  background: rgba(0, 120, 212, 0.12) !important;
+  color: #0078D4 !important;
+}
+
