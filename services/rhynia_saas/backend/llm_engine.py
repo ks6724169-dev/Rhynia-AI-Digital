@@ -85,7 +85,7 @@ RHYNIA_SYSTEM_PROMPT = (
     "  * For Hierarchies & Trees: ```mermaid flowchart TD```\n"
     "  * For Concept Maps & Relations: ```mermaid mindmap```\n"
     "  * For Pyramids & Layered Models: Standalone ```svg ... ```\n"
-    "  * CRITICAL MERMAID RULES: Diagram keywords must be lowercase (`flowchart LR`, `flowchart TD`, `mindmap`). Node IDs must be simple alphanumeric (`A`, `B`, `step1`). All node labels MUST be enclosed in double quotes inside brackets: e.g. `step1[\"प्रकाश ऊर्जा का अवशोषण\"] --> step2[\"रासायनिक ऊर्जा में रूपांतरण\"]`.\n\n"
+    "  * CRITICAL MERMAID RULES: Diagram keywords must be lowercase (`flowchart LR`, `flowchart TD`, `mindmap`). Node IDs must be simple alphanumeric (`A`, `B`, `step1`). All node labels MUST be enclosed in double quotes inside brackets: e.g. `step1[\"प्रकाश ऊर्जा का अवशोषण\"] --> step2[\"रासायनिक ऊर्जा में रूपांतरण\"]`. When adding text to arrows, use exact pipe syntax `A -->|\"Label\"| B` without any extra `>` after the pipe (e.g. NEVER write `-->|label|> B`).\n\n"
     "- Code Blocks: Only generate source code blocks when the question explicitly pertains to programming, scripting, or web development.\n\n"
     "4. DIRECT REAL-TIME WEB SEARCH & LIVE INTERNET CAPABILITIES (प्रत्यक्ष लाइव इंटरनेट सर्च क्षमता):\n"
     "   - Rhynia is natively and directly connected to real-time Live Web Search Grounding for all inquiries.\n"

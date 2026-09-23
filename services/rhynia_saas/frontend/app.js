@@ -310,6 +310,35 @@ function downloadMermaidAsSvg(buttonEl) {
   showToast("SmartArt Diagram downloaded as .svg!", "success");
 }
 
+function normalizeMermaidCode(rawCode) {
+  if (!rawCode) return "";
+  let code = rawCode.trim();
+
+  // Strip markdown code fences if present
+  code = code.replace(/^```(?:mermaid)?\s*/i, "").replace(/```\s*$/i, "").trim();
+
+  // 1. Fix arrow pipes with trailing greater-than: -->|label|> to -->|label|
+  code = code.replace(/(-->|---|==>|-\.->)\s*\|([^|]+)\|>/g, "$1|$2|");
+
+  // 2. Ensure node brackets with spaces or non-ascii are safely quoted: A[text] -> A["text"]
+  code = code.replace(/(\b[A-Za-z0-9_]+)\[([^"\]\n]+)\]/g, (match, id, label) => {
+    const trimmed = label.trim();
+    if (!trimmed.startsWith('"') && !trimmed.endsWith('"')) {
+      return `${id}["${trimmed}"]`;
+    }
+    return match;
+  });
+
+  // 3. Ensure diagram type starts cleanly
+  if (!/^(flowchart|graph|sequenceDiagram|classDiagram|stateDiagram|erDiagram|journey|gantt|pie|mindmap)/i.test(code)) {
+    code = "flowchart LR\n" + code;
+  }
+
+  return code;
+}
+
+window.normalizeMermaidCode = normalizeMermaidCode;
+
 async function renderAllMermaidDiagrams(rootEl) {
   const container = rootEl || document;
   const boxes = container.querySelectorAll(".mermaid-diagram-box:not([data-rendered='true'])");
@@ -447,13 +476,20 @@ function renderInlineMarkdown(str) {
   out = out.replace(/\*([^*]+)\*/g, `<em class="italic">$1</em>`);
 
   // 4. Markdown Links: [Anchor Text](URL) -> Compact Blue Source Link Pills
-  out = out.replace(/\[([^\]]+)\]\((https?:\/\/[^\s\)\"\'<>]+)\)/gi, (match, label, url) => {
+  // Negative lookbehind (?<!!) guarantees ![Caption](URL) images are NOT matched as regular links!
+  out = out.replace(/(?<!!)\[([^\]]+)\]\((https?:\/\/[^\s\)\"\'<>]+)\)/gi, (match, label, url) => {
     const cleanLabel = (label || "").trim();
     // Numeric citation badges like [1], [2]
     if (/^\d+$/.test(cleanLabel)) {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="rhynia-citation-pill">[${cleanLabel}]</a>`;
     }
     return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="rhynia-source-link"><span class="material-symbols-outlined source-icon">public</span><span class="source-text">${cleanLabel}</span><span class="material-symbols-outlined external-icon">open_in_new</span></a>`;
+  });
+
+  // 4B. Isolated inline image fallback: ![Caption](URL)
+  out = out.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s\)\"\'<>]+)\)/gi, (match, caption, url) => {
+    const safeCaption = escapeHtml(caption || "Educational Diagram");
+    return `<div class="rhynia-image-gallery my-3.5 max-w-xl"><div class="rhynia-image-card rounded-2xl overflow-hidden border border-white/10 bg-[#161616] shadow-xl transition-all duration-300 hover:border-[#0078D4]/60"><div class="rhynia-img-wrapper relative bg-[#0a0a0a] min-h-[190px] max-h-[320px] flex items-center justify-center cursor-pointer group" onclick="window.openRhyniaLightbox('${url}', '${safeCaption}')" title="Click to enlarge diagram"><img src="${url}" alt="${safeCaption}" loading="lazy" class="w-full h-full object-contain p-2 group-hover:scale-[1.03] transition-transform duration-300"/><div class="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[11px] font-medium flex items-center gap-1 shadow-md"><span class="material-symbols-outlined text-[14px]">zoom_in</span><span>Zoom</span></div></div><div class="px-3.5 py-2.5 bg-[#1c1c1c] text-xs text-neutral-300 flex items-center justify-between border-t border-white/5"><span class="font-medium text-white flex items-center gap-1.5 truncate"><span class="material-symbols-outlined text-[16px] text-[#0078D4]">photo_library</span><span class="truncate" title="${safeCaption}">${safeCaption}</span></span><div class="flex items-center gap-2"><button type="button" onclick="window.openRhyniaLightbox('${url}', '${safeCaption}')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[#4cc2ff] text-[11px] flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">fullscreen</span><span>View</span></button><a href="${url}" target="_blank" download class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[#10b981] text-[11px] flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">file_download</span><span>Export</span></a></div></div></div></div>`;
   });
 
   // 5. Standalone numeric citation brackets: [1], [2] (not already linked in markdown)
@@ -1025,6 +1061,55 @@ function renderMarkdown(rawText) {
     return storeBlock(blockHtml);
   });
 
+  // 2B. Educational Image Cards & Multi-Image Galleries: ![Caption](URL)
+  text = text.replace(/((?:!\[([^\]]*)\]\((https?:\/\/[^\s\)\"\'<>]+)\)\s*)+)/gi, (match) => {
+    const imgRegex = /!\[([^\]]*)\]\((https?:\/\/[^\s\)\"\'<>]+)\)/gi;
+    const items = [];
+    let m;
+    while ((m = imgRegex.exec(match)) !== null) {
+      items.push({ caption: m[1].trim(), url: m[2].trim() });
+    }
+    if (!items.length) return match;
+
+    const isGrid = items.length > 1;
+    let galleryHtml = `<div class="rhynia-image-gallery my-4 ${isGrid ? 'grid grid-cols-1 sm:grid-cols-2 gap-3.5' : 'max-w-2xl mx-auto'}">`;
+
+    items.forEach(item => {
+      const escapedCaption = escapeHtml(item.caption || "Educational Diagram");
+      const safeUrl = item.url;
+      galleryHtml += `
+        <div class="rhynia-image-card rounded-2xl overflow-hidden border border-white/10 bg-[#161616] shadow-xl transition-all duration-300 hover:border-[#0078D4]/60 hover:shadow-2xl">
+          <div class="rhynia-img-wrapper relative bg-[#0a0a0a] overflow-hidden flex items-center justify-center min-h-[190px] max-h-[340px] cursor-pointer group" onclick="window.openRhyniaLightbox('${safeUrl}', '${escapedCaption}')" title="Click to enlarge diagram">
+            <img src="${safeUrl}" alt="${escapedCaption}" loading="lazy" class="w-full h-full object-contain p-2 group-hover:scale-[1.03] transition-transform duration-300" onerror="this.parentElement.innerHTML='<div class=\\\'text-xs text-neutral-500 p-6 flex flex-col items-center gap-1.5\\\'><span class=\\\'material-symbols-outlined text-[20px] text-neutral-600\\\'>broken_image</span><span>Diagram unavailable</span></div>'"/>
+            <div class="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[11px] font-medium flex items-center gap-1 shadow-md">
+              <span class="material-symbols-outlined text-[14px]">zoom_in</span>
+              <span>Zoom</span>
+            </div>
+          </div>
+          <div class="px-3.5 py-2.5 flex items-center justify-between bg-[#1c1c1c] border-t border-white/5 text-xs text-neutral-300">
+            <span class="font-medium text-white flex items-center gap-1.5 truncate">
+              <span class="material-symbols-outlined text-[16px] text-[#0078D4]">photo_library</span>
+              <span class="truncate" title="${escapedCaption}">${escapedCaption}</span>
+            </span>
+            <div class="flex items-center gap-2 shrink-0">
+              <button type="button" onclick="window.openRhyniaLightbox('${safeUrl}', '${escapedCaption}')" class="hover:text-white flex items-center gap-1 text-[11px] px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 transition-colors" title="Full screen view">
+                <span class="material-symbols-outlined text-[13px] text-[#4cc2ff]">fullscreen</span>
+                <span>View</span>
+              </button>
+              <a href="${safeUrl}" target="_blank" download class="hover:text-white flex items-center gap-1 text-[11px] px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 transition-colors" title="Download High-Res Diagram">
+                <span class="material-symbols-outlined text-[13px] text-[#10b981]">file_download</span>
+                <span>Export</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      `.trim();
+    });
+
+    galleryHtml += `</div>`;
+    return storeBlock(galleryHtml);
+  });
+
   // 3. GFM Markdown Tables
   const lines = text.split("\n");
   const processedLines = [];
@@ -1100,55 +1185,6 @@ function renderMarkdown(rawText) {
   }
 
   text = processedLines.join("\n");
-
-  // 3B. Educational Image Cards & Multi-Image Galleries: ![Caption](URL)
-  text = text.replace(/((?:!\[([^\]]*)\]\((https?:\/\/[^\s\)\"\'<>]+)\)\s*)+)/gi, (match) => {
-    const imgRegex = /!\[([^\]]*)\]\((https?:\/\/[^\s\)\"\'<>]+)\)/gi;
-    const items = [];
-    let m;
-    while ((m = imgRegex.exec(match)) !== null) {
-      items.push({ caption: m[1].trim(), url: m[2].trim() });
-    }
-    if (!items.length) return match;
-
-    const isGrid = items.length > 1;
-    let galleryHtml = `<div class="rhynia-image-gallery my-4 ${isGrid ? 'grid grid-cols-1 sm:grid-cols-2 gap-3.5' : 'max-w-2xl mx-auto'}">`;
-
-    items.forEach(item => {
-      const escapedCaption = escapeHtml(item.caption || "Educational Diagram");
-      const safeUrl = item.url;
-      galleryHtml += `
-        <div class="rhynia-image-card rounded-2xl overflow-hidden border border-white/10 bg-[#161616] shadow-xl transition-all duration-300 hover:border-[#0078D4]/60 hover:shadow-2xl">
-          <div class="rhynia-img-wrapper relative bg-[#0a0a0a] overflow-hidden flex items-center justify-center min-h-[190px] max-h-[340px] cursor-pointer group" onclick="openRhyniaLightbox('${safeUrl}', '${escapedCaption}')" title="Click to enlarge diagram">
-            <img src="${safeUrl}" alt="${escapedCaption}" loading="lazy" class="w-full h-full object-contain p-2 group-hover:scale-[1.03] transition-transform duration-300" onerror="this.parentElement.innerHTML='<div class=\\\'text-xs text-neutral-500 p-6 flex flex-col items-center gap-1.5\\\'><span class=\\\'material-symbols-outlined text-[20px] text-neutral-600\\\'>broken_image</span><span>Diagram unavailable</span></div>'"/>
-            <div class="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[11px] font-medium flex items-center gap-1 shadow-md">
-              <span class="material-symbols-outlined text-[14px]">zoom_in</span>
-              <span>Zoom</span>
-            </div>
-          </div>
-          <div class="px-3.5 py-2.5 flex items-center justify-between bg-[#1c1c1c] border-t border-white/5 text-xs text-neutral-300">
-            <span class="font-medium text-white flex items-center gap-1.5 truncate">
-              <span class="material-symbols-outlined text-[16px] text-[#0078D4]">photo_library</span>
-              <span class="truncate" title="${escapedCaption}">${escapedCaption}</span>
-            </span>
-            <div class="flex items-center gap-2 shrink-0">
-              <button type="button" onclick="openRhyniaLightbox('${safeUrl}', '${escapedCaption}')" class="hover:text-white flex items-center gap-1 text-[11px] px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 transition-colors" title="Full screen view">
-                <span class="material-symbols-outlined text-[13px] text-[#4cc2ff]">fullscreen</span>
-                <span>View</span>
-              </button>
-              <a href="${safeUrl}" target="_blank" download class="hover:text-white flex items-center gap-1 text-[11px] px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 transition-colors" title="Download High-Res Diagram">
-                <span class="material-symbols-outlined text-[13px] text-[#10b981]">file_download</span>
-                <span>Export</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      `.trim();
-    });
-
-    galleryHtml += `</div>`;
-    return storeBlock(galleryHtml);
-  });
 
   // 4. Escape general HTML (for surrounding text)
   text = escapeHtml(text);
