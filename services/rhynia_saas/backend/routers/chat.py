@@ -26,7 +26,7 @@ class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1)
     session_id: Optional[str] = None
     stream: bool = True
-    web_search: bool = False
+    web_search: bool = True
     deep_reasoning: bool = False
 
 
@@ -123,27 +123,19 @@ async def send_chat_message(
         db.refresh(session)
         session_id = session.id
 
-    # 4. Web Search Intent Detection & Grounding
-    search_keywords = [
-        "search", "सर्च", "खोज", "latest", "ताजा", "ताज़ा", "खबर", "news",
-        "today", "aaj", "current", "weather", "मौसम", "score", "match",
-        "youtube", "twitter", "tweet", "internet", "इंटरनेट", "गूगल", "google", "live", "लाइव", "online", "ऑनलाइन"
-    ]
-    is_search_intent = any(kw in clean_message.lower() for kw in search_keywords)
-    use_web_search = req.web_search or is_search_intent
+    # 4. Direct Real-Time Live Web Search Grounding (Directly Active By Default)
+    use_web_search = True
 
-    system_prompt = RHYNIA_SYSTEM_PROMPT
-    if use_web_search:
-        system_prompt = (
-            f"{RHYNIA_SYSTEM_PROMPT}\n\n"
-            f"LIVE INTERNET WEB SEARCH GROUNDING ACTIVE:\n"
-            f"- Real-time live web search is enabled for this inquiry.\n"
-            f"- Search the live web to retrieve the latest, up-to-date facts, news, and verifiable data.\n"
-            f"- COMPACT SOURCE LINKS: ALWAYS provide clean markdown links `[Source Name](url)` or `[domain.com](url)` (e.g. `[timesofindia.com](https://...)`, `[NDTV](https://...)`, `[Wikipedia](https://...)`). Embed them inline or list them cleanly under '❖ **स्रोतः**' with `✔ [Source Name](url)`.\n"
-            f"- Keep link labels short so the UI renders them as compact blue source pills.\n"
-            f"- You CAN search the public web, live news, public YouTube videos/channels, and public Twitter/X trends.\n"
-            f"- Remind users politely that private/login-protected social media accounts (personal Instagram DMs, private Facebook profiles) cannot be accessed due to platform privacy barriers."
-        )
+    system_prompt = (
+        f"{RHYNIA_SYSTEM_PROMPT}\n\n"
+        f"DIRECT REAL-TIME LIVE INTERNET SEARCH ACTIVE (प्रत्यक्ष लाइव इंटरनेट सर्च सक्रिय):\n"
+        f"- Direct real-time live internet web search is permanently enabled by default for all user queries.\n"
+        f"- Directly search and ground responses using the latest internet facts, real-time news, official websites, and live data.\n"
+        f"- COMPACT SOURCE LINKS: ALWAYS provide clean markdown links `[Source Name](url)` or `[domain.com](url)` (e.g. `[timesofindia.com](https://...)`, `[NDTV](https://...)`, `[Wikipedia](https://...)`). Embed them inline or list them cleanly under '❖ **स्रोतः**' with `✔ [Source Name](url)` so the UI renders them as compact blue source pills.\n"
+        f"- Keep link labels short and concise.\n"
+        f"- You CAN search the public web, live news, public YouTube videos/channels, and public Twitter/X trends.\n"
+        f"- Remind users politely that private/login-protected social media accounts (personal Instagram DMs, private Facebook profiles) cannot be accessed due to platform privacy barriers."
+    )
 
     # 5. Persist User Message
     user_msg = ChatMessage(

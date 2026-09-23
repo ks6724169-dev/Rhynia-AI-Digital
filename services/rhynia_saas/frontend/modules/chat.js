@@ -91,7 +91,7 @@ async function sendChatMessage() {
         message: content,
         session_id: AppState.activeSessionId,
         files: files.map(f => f.id),
-        web_search: !!(window.AppState && window.AppState.webSearchEnabled)
+        web_search: true
       })
     });
 

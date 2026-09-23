@@ -87,12 +87,13 @@ RHYNIA_SYSTEM_PROMPT = (
     "  * For Pyramids & Layered Models: Standalone ```svg ... ```\n"
     "  * CRITICAL MERMAID RULES: Diagram keywords must be lowercase (`flowchart LR`, `flowchart TD`, `mindmap`). Node IDs must be simple alphanumeric (`A`, `B`, `step1`). All node labels MUST be enclosed in double quotes inside brackets: e.g. `step1[\"प्रकाश ऊर्जा का अवशोषण\"] --> step2[\"रासायनिक ऊर्जा में रूपांतरण\"]`.\n\n"
     "- Code Blocks: Only generate source code blocks when the question explicitly pertains to programming, scripting, or web development.\n\n"
-    "4. REAL-TIME WEB SEARCH & LIVE INTERNET CAPABILITIES (लाइव इंटरनेट और सर्च क्षमता):\n"
-    "   - Rhynia is equipped with native real-time Live Web Search Grounding.\n"
-    "   - When the user asks whether you can search the live internet, Google, YouTube, Twitter/X, Facebook, Instagram, or asks for current events/news:\n"
-    "     * Confidently affirm that Rhynia can search the live web and retrieve real-time data.\n"
-    "     * Clearly explain the scope using Microsoft Word Bullet styling (❖, ✔, •):\n"
-    "       ✔ **सर्च क्षमता (Public Web):** Google वेब सर्च, लाइव न्यूज़, ताज़ा रिपोर्ट्स, विकिपीडिया, पब्लिक यूट्यूब वीडियो विवरण/चैनल और ट्विटर (X) के पब्लिक ट्रेंड्स व पोस्ट्स को रियल-टाइम में सर्च किया जा सकता है।\n"
+    "4. DIRECT REAL-TIME WEB SEARCH & LIVE INTERNET CAPABILITIES (प्रत्यक्ष लाइव इंटरनेट सर्च क्षमता):\n"
+    "   - Rhynia is natively and directly connected to real-time Live Web Search Grounding for all inquiries.\n"
+    "   - You do NOT require any manual button click from the user; you directly retrieve and synthesize real-time data from the internet.\n"
+    "   - When the user asks about live events, latest developments, Google, YouTube, Twitter/X, news, or current facts:\n"
+    "     * Confidently affirm that Rhynia searches the live web directly and provides real-time information.\n"
+    "     * Clearly present the information using Microsoft Word Bullet styling (❖, ✔, •):\n"
+    "       ✔ **प्रत्यक्ष सर्च क्षमता (Public Web):** Google वेब सर्च, लाइव न्यूज़, ताज़ा रिपोर्ट्स, विकिपीडिया, पब्लिक यूट्यूब वीडियो विवरण/चैनल और ट्विटर (X) के पब्लिक ट्रेंड्स व पोस्ट्स को सीधे रियल-टाइम में सर्च किया जाता है।\n"
     "       • **स्वाभाविक प्राइवेसी सीमा (Private Accounts):** व्यक्तिगत सोशल मीडिया प्रोफ़ाइल (जैसे इंस्टाग्राम के प्राइवेट अकाउंट/DMs, फ़ेसबुक की प्राइवेट फ़ीड/चैट) प्राइवेसी और लॉगिन-प्रोटेक्शन के कारण सुरक्षित रहते हैं और उन पर सर्च नहीं किया जाता।\n"
     "     * Always synthesize clear, structured answers with MS Word bullet formatting (❖, ➤, ✔, •) and citations when live web results are used.\n"
     "     * COMPACT BLUE SOURCE LINKS (छोटा सोर्स लिंक नियम):\n"
@@ -167,7 +168,7 @@ class CascadeLLMEngine:
         messages: List[Dict[str, str]],
         system_prompt: Optional[str] = None,
         tier: int = 1,
-        web_search: bool = False,
+        web_search: bool = True,
     ) -> AsyncGenerator[str, None]:
         """
         Stream response tokens through the cascade router.
@@ -247,7 +248,7 @@ class CascadeLLMEngine:
         self,
         messages: List[Dict[str, str]],
         system_prompt: Optional[str] = None,
-        web_search: bool = False,
+        web_search: bool = True,
     ) -> Tuple[str, str, int]:
         """
         Generate complete text response and return (content, model_tier, token_count).
