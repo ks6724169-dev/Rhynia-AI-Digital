@@ -220,7 +220,22 @@ CONCEPT_SUBTOPICS: Dict[str, List[str]] = {
         "human brain anatomy diagram",
         "neuron structure diagram",
         "human nervous system diagram",
-        "brain lobes cerebellum diagram"
+        "brain lobes cerebellum diagram",
+        "synapse neurotransmitter diagram"
+    ],
+    "दिमाग": [
+        "human brain anatomy diagram",
+        "neuron structure diagram",
+        "human nervous system diagram",
+        "brain lobes cerebellum diagram",
+        "synapse neurotransmitter diagram"
+    ],
+    "dimag": [
+        "human brain anatomy diagram",
+        "neuron structure diagram",
+        "human nervous system diagram",
+        "brain lobes cerebellum diagram",
+        "synapse neurotransmitter diagram"
     ],
     "digestive system": [
         "human digestive system diagram",
