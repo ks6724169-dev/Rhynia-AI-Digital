@@ -1113,6 +1113,41 @@ function renderMarkdown(rawText) {
     return storeBlock(galleryHtml);
   });
 
+  // 2C. Recommended Follow-up Questions Interactive Pill Box
+  text = text.replace(/(?:^|\n)(?:(?:❖|■)?\s*\*\*(?:आगे जानने योग्य महत्वपूर्ण प्रश्न|संबंधित महत्वपूर्ण प्रश्न|अनुशंसित प्रश्न|Recommended (?:Follow-up )?Questions)[:\*]*\*\*)\s*\n((?:(?:\s*[-*•●]\s*|\s*\d+\.\s*).+\n?)+)/gi, (match, questionsBlock) => {
+    const qLines = questionsBlock.split("\n").filter(l => l.trim().length > 0);
+    const pills = [];
+    qLines.forEach(l => {
+      const cleanQ = l.replace(/^[\s*\-•●\d\.]+/g, "").replace(/^[*_]+|[*_]+$/g, "").trim();
+      if (cleanQ.length > 3) {
+        const escapedQ = escapeHtml(cleanQ);
+        const encodedParam = encodeURIComponent(cleanQ);
+        pills.push(`
+          <button type="button" onclick="window.sendSuggestedPrompt(decodeURIComponent('${encodedParam}'))" class="rhynia-followup-pill text-left text-xs px-3.5 py-2.5 rounded-xl bg-[#1c1f24] hover:bg-[#0078D4]/20 border border-white/10 hover:border-[#0078D4]/50 text-neutral-200 hover:text-white transition-all duration-200 flex items-center justify-between gap-3 group active:scale-[0.99] cursor-pointer shadow-sm">
+            <span class="font-medium text-neutral-200 group-hover:text-white">${escapedQ}</span>
+            <span class="material-symbols-outlined text-[15px] text-neutral-500 group-hover:text-[#4cc2ff] transition-colors shrink-0">arrow_forward</span>
+          </button>
+        `.trim());
+      }
+    });
+
+    if (pills.length === 0) return match;
+
+    const boxHtml = `
+      <div class="rhynia-recommended-questions-box my-4 p-4 rounded-2xl border border-white/10 bg-[#121417] shadow-xl">
+        <div class="flex items-center gap-2 mb-3 text-xs font-semibold text-white">
+          <span class="material-symbols-outlined text-[16px] text-[#4cc2ff]">help_outline</span>
+          <span>आगे जानने योग्य महत्वपूर्ण प्रश्न (Recommended Questions)</span>
+        </div>
+        <div class="flex flex-col gap-2">
+          ${pills.join("\n")}
+        </div>
+      </div>
+    `.trim();
+
+    return storeBlock(boxHtml);
+  });
+
   // 3. GFM Markdown Tables
   const lines = text.split("\n");
   const processedLines = [];
@@ -1243,6 +1278,23 @@ window.renderAllRhyniaCharts = renderAllRhyniaCharts;
 window.toggleChartView = toggleChartView;
 window.downloadChartAsPng = downloadChartAsPng;
 window.copyChartSpec = copyChartSpec;
+
+/**
+ * Handle Click on Recommended Follow-up Question Chip
+ * Automatically puts prompt into chat-input and submits message
+ */
+window.sendSuggestedPrompt = function(promptText) {
+  if (!promptText) return;
+  const inputEl = document.getElementById("chat-input");
+  if (!inputEl) return;
+  inputEl.value = promptText.trim();
+  if (typeof updateSendButtonState === "function") {
+    updateSendButtonState();
+  }
+  if (typeof window.sendChatMessage === "function") {
+    window.sendChatMessage();
+  }
+};
 
 
 // ==========================================

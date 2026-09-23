@@ -578,3 +578,6 @@ function scrollChatToBottom() {
     chatScroll.scrollTop = chatScroll.scrollHeight;
   }
 }
+
+window.sendChatMessage = sendChatMessage;
+window.scrollChatToBottom = scrollChatToBottom;

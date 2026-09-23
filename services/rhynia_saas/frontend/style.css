@@ -1710,3 +1710,68 @@ html.light .rhynia-image-card a:hover {
   color: #0078D4 !important;
 }
 
+/* ========================================================= */
+/* RHYNIA RECOMMENDED FOLLOW-UP QUESTIONS INTERACTIVE PILLS  */
+/* ========================================================= */
+.rhynia-recommended-questions-box {
+  position: relative;
+  background: #121417;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1rem 1.15rem;
+  margin: 1.5rem 0 1rem 0;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35);
+}
+
+.rhynia-followup-pill {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.rhynia-followup-pill:hover {
+  transform: translateX(4px);
+  border-color: rgba(76, 194, 255, 0.5) !important;
+  background: rgba(0, 120, 212, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(0, 120, 212, 0.25);
+}
+
+/* Light Theme Overrides */
+html.light .rhynia-recommended-questions-box {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .rhynia-recommended-questions-box .text-white {
+  color: #0f172a !important;
+}
+
+html.light .rhynia-followup-pill {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+html.light .rhynia-followup-pill span {
+  color: #334155 !important;
+}
+
+html.light .rhynia-followup-pill:hover {
+  background: #f0f7ff !important;
+  border-color: #0078D4 !important;
+  box-shadow: 0 4px 12px rgba(0, 120, 212, 0.15);
+}
+
+html.light .rhynia-followup-pill:hover span {
+  color: #0078D4 !important;
+}
+
+html.light .rhynia-followup-pill .material-symbols-outlined {
+  color: #94a3b8 !important;
+}
+
+html.light .rhynia-followup-pill:hover .material-symbols-outlined {
+  color: #0078D4 !important;
+}
+

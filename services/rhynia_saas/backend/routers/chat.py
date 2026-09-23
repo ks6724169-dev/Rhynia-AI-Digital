@@ -183,14 +183,29 @@ async def send_chat_message(
             synth = educational_synthesis_engine.synthesize_topic(clean_message) or educational_synthesis_engine.generate_generic_educational(clean_message)
             reply_content = synth
 
-        # Seamless Visual Guarantee: Ensure verified educational diagrams appear in answer
+        # Seamless Visual Guarantee: Ensure verified educational diagrams appear in balanced rhythm
         if diagrams and "![" not in reply_content:
-            img_block = "\n\n" + "\n".join([f"![{d['title']}]({d['url']})" for d in diagrams]) + "\n\n"
-            if "\n\n" in reply_content:
-                parts = reply_content.split("\n\n", 1)
-                reply_content = parts[0] + img_block + parts[1]
+            if len(diagrams) >= 4:
+                g1, g2 = diagrams[:3], diagrams[3:]
+            elif len(diagrams) >= 2:
+                g1, g2 = diagrams[:2], diagrams[2:]
             else:
-                reply_content = reply_content + img_block
+                g1, g2 = diagrams, []
+
+            g1_block = "\n\n" + "\n".join([f"![{d['title']}]({d['url']})" for d in g1]) + "\n\n"
+            g2_block = ("\n\n" + "\n".join([f"![{d['title']}]({d['url']})" for d in g2]) + "\n\n") if g2 else ""
+
+            parts = reply_content.split("\n\n", 1)
+            if len(parts) > 1:
+                intro = parts[0]
+                remainder = parts[1]
+                if g2_block and "\n\n" in remainder:
+                    subparts = remainder.rsplit("\n\n", 1)
+                    reply_content = f"{intro}{g1_block}{subparts[0]}{g2_block}{subparts[1]}"
+                else:
+                    reply_content = f"{intro}{g1_block}{remainder}{g2_block}"
+            else:
+                reply_content = f"{reply_content}{g1_block}{g2_block}"
 
         # Persist Rhynia reply
         rhynia_msg = ChatMessage(

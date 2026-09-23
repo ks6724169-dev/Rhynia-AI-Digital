@@ -440,24 +440,45 @@ class EducationalImageService:
         return []
 
     def format_diagram_context(self, diagrams: List[Dict[str, str]]) -> str:
-        """Format retrieved diagram URLs into system prompt instructions."""
+        """Format retrieved diagram URLs into balanced 2-group placement instructions."""
         if not diagrams:
             return ""
 
-        tags = [f"![{d['title']}]({d['url']})" for d in diagrams]
-        tag_str = "\n".join(tags)
+        # Divide into Group 1 (Top Overview, 2-3 images) and Group 2 (In-between detailed points, 1-2 images)
+        if len(diagrams) >= 4:
+            g1 = diagrams[:3]
+            g2 = diagrams[3:]
+        elif len(diagrams) >= 2:
+            g1 = diagrams[:2]
+            g2 = diagrams[2:]
+        else:
+            g1 = diagrams
+            g2 = []
+
+        g1_tags = "\n".join([f"![{d['title']}]({d['url']})" for d in g1])
+        g2_tags = "\n".join([f"![{d['title']}]({d['url']})" for d in g2]) if g2 else ""
 
         lines = [
-            f"\nVERIFIED EDUCATIONAL SCIENTIFIC DIAGRAMS RETRIEVED ({len(diagrams)} सत्यापित शैक्षणिक चित्र - अनिवार्य):",
-            "The following verified educational diagrams were retrieved for this topic:",
-            tag_str,
-            "\nCRITICAL VISUAL EMBEDDING RULES (अनिवार्य नियम):",
-            "1. You MUST include these EXACT markdown image tags in your response right after your opening overview paragraph (❖ section) or right before the sequential process steps:",
-            tag_str,
-            "2. Place the image tags on consecutive lines without empty lines between them so the user interface renders them as a responsive multi-column image gallery.",
-            "3. DO NOT modify, shorten, or invent image URLs. Use the exact URLs provided above.",
-            "4. Combine these visual diagrams with your structured Microsoft Word bullet analysis (`❖`, `➤`, `✔`, `■`, `•`) and a Mermaid flowchart so the user receives a world-class educational learning experience."
+            f"\nVERIFIED EDUCATIONAL SCIENTIFIC DIAGRAMS RETRIEVED ({len(diagrams)} सत्यापित शैक्षणिक चित्र - अनिवार्य संतुलित लेआउट):",
+            "Embed these verified diagrams following the rhythmic, balanced structure requested by the user:",
+            "\n➤ GROUP 1: शुरुआती 1-2/3 लाइन पैराग्राफ के ठीक नीचे (Top Overview Gallery - 2-3 Diagrams):",
+            g1_tags,
+            "Instruction: Place these Group 1 diagrams right after your opening 1-2/3 line introductory paragraph.",
         ]
+
+        if g2_tags:
+            lines.extend([
+                "\n➤ GROUP 2: मुख्य पॉइंट्स या पैराग्राफ के बीच में (In-Between Sub-Topic Diagrams - 1-2 Diagrams):",
+                g2_tags,
+                "Instruction: Place these Group 2 diagrams inside your detailed breakdown section alongside the relevant sub-process or organelle (e.g. Chloroplast interior, Calvin cycle, Heart valves) so theory and visuals work in perfect synergy.",
+            ])
+
+        lines.extend([
+            "\nCRITICAL EMBEDDING RULES (अनिवार्य नियम):",
+            "1. DO NOT dump all diagrams at the very end in a single clump. Follow the balanced rhythm (Intro -> 2-3 Images -> Points -> 1-2 Images -> Smart Diagram -> Table -> Conclusion -> Recommended Questions).",
+            "2. DO NOT modify, shorten, or invent image URLs. Use the exact markdown tags provided above.",
+            "3. Multiple image tags placed consecutively automatically render into a clean, responsive gallery in the UI."
+        ])
         return "\n".join(lines)
 
 
