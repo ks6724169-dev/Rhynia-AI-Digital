@@ -55,8 +55,11 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_DAYS: int = 7
     OTP_EXPIRE_SECONDS: int = 300  # 5 minutes
 
-    # AI Model Cascade (3-Tier Engine)
+    # AI Model Cascade (Multi-Provider Engine)
     OPENROUTER_API_KEY: Optional[str] = None
+    OPENROUTER_BACKUP_KEY: Optional[str] = None
+    GEMINI_API_KEY: Optional[str] = None
+    GEMINI_BACKUP_KEY: Optional[str] = None
     GROQ_API_KEY: Optional[str] = None
     HUGGINGFACE_API_KEY: Optional[str] = None
 

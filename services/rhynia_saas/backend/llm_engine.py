@@ -11,6 +11,7 @@ from typing import AsyncGenerator, Dict, List, Optional, Tuple
 import httpx
 
 from services.rhynia_saas.backend.config import settings
+from services.rhynia_saas.backend.services.educational_synthesis import educational_synthesis_engine
 
 logger = logging.getLogger("rhynia.llm_engine")
 
@@ -107,22 +108,21 @@ RHYNIA_SYSTEM_PROMPT = (
 
 class CascadeLLMEngine:
     """
-    3-Tier AI Cascade Router:
-    - Tier 1: Free models via OpenRouter
-    - Tier 2: Paid Flash models via OpenRouter (triggered on HTTP 429)
-    - Tier 3: Safety Reserve (Groq / HuggingFace)
+    Indestructible 4-Tier AI Model Cascade Router:
+    - Tier 1: Google Gemini Ultra-Fast Native API (via GEMINI_API_KEY and GEMINI_BACKUP_KEY)
+    - Tier 2: OpenRouter Flagship Models (Llama 3.3 70B & DeepSeek via OPENROUTER_API_KEY)
+    - Tier 3: OpenRouter Free Models (Liquid, Dots, Nex-mini via OPENROUTER_BACKUP_KEY)
+    - Tier 4: Educational Synthesis Engine (Local / Zero-Failure Offline Fallback)
     """
 
     def __init__(self):
         self.openrouter_url = "https://openrouter.ai/api/v1/chat/completions"
-        self.groq_url = "https://api.groq.com/openai/v1/chat/completions"
-        self.api_key = settings.OPENROUTER_API_KEY
-        self.groq_key = settings.GROQ_API_KEY
+        self.gemini_url_template = "https://generativelanguage.googleapis.com/v1beta/models/{model}:streamGenerateContent?alt=sse&key={key}"
 
     def _build_payload_messages(
         self, messages: List[Dict[str, str]], system_prompt: Optional[str] = None
     ) -> List[Dict[str, str]]:
-        """Construct full message payload with Rhynia system prompt and live IST time at the root."""
+        """Construct standard message payload with Rhynia system prompt and live IST time."""
         base_prompt = system_prompt or RHYNIA_SYSTEM_PROMPT
 
         # Inject real-time Indian Standard Time (IST - UTC+05:30)
@@ -145,69 +145,125 @@ class CascadeLLMEngine:
         formatted = [{"role": "system", "content": sys_content}]
         for m in messages:
             role = m.get("role", "user")
-            # Normalize role
             if role not in ["user", "system", "model"]:
                 role = "user"
             formatted.append({"role": role, "content": m.get("content", "")})
         return formatted
 
-    async def _mock_stream(self, prompt: str) -> AsyncGenerator[str, None]:
-        """Generate high-fidelity structured educational response in offline/fallback mode."""
-        low = prompt.lower()
-        if any(k in low for k in ["photo", "prakash", "प्रकाश", "पादप"]):
-            response_text = (
-                "❖ **प्रकाश संश्लेषण (Photosynthesis) का सम्पूर्ण वैज्ञानिक विवरण:**\n\n"
-                "प्रकाश संश्लेषण (Photosynthesis) वह मौलिक जैव-रासायनिक प्रक्रिया है जिसके द्वारा हरे पौधे, शैवाल तथा कुछ प्रकाश-संश्लेषी जीवाणु सूर्य के प्रकाश की ऊर्जा को ग्रहण कर रासायनिक ऊर्जा (ग्लूकोज) में परिवर्तित करते हैं।\n\n"
-                "➤ **रासायनिक समीकरण (Chemical Equation):**\n"
-                "6CO₂ + 6H₂O + सूर्य का प्रकाश + क्लोरोफिल ➔ C₆H₁₂O₆ (ग्लूकोज) + 6O₂ (ऑक्सीजन)\n\n"
-                "❖ **मुख्य संघटक एवं उनकी भूमिका:**\n"
-                "✔ **सूर्य का प्रकाश (Sunlight):** प्रकाश अभिक्रिया के लिए आवश्यक फोटॉन ऊर्जा प्रदान करता है।\n"
-                "✔ **क्लोरोफिल (Chlorophyll):** पत्तियों के हरित लवक (Chloroplast) में स्थित हरा वर्णक जो प्रकाश को अवशोषित करता है।\n"
-                "✔ **कार्बन डाइऑक्साइड (CO₂):** वायुमंडल से रंध्रों (Stomata) द्वारा पत्तियों में प्रवेश करती है।\n"
-                "✔ **जल (H₂O):** जड़ों द्वारा अवशोषित होकर जाइलम (Xylem) नलिकाओं द्वारा पत्तियों तक पहुँचता है।\n\n"
-                "➤ **प्रकाश संश्लेषण के दो प्रमुख चरण:**\n"
-                "1. **प्रकाश-निर्भर अभिक्रिया (Light Reaction / Thylakoid):**\n"
-                "   ■ यह थाइलाकोइड झिल्ली में घटित होती है जहाँ प्रकाश ऊर्जा द्वारा जल अणुओं का प्रकाश-अपघटन (Photolysis) होता है।\n"
-                "   ■ इससे O₂ मुक्त होती है और ATP तथा NADPH का निर्माण होता है।\n\n"
-                "2. **प्रकाश-अनिर्भर अभिक्रिया (Dark Reaction / Calvin Cycle / Stroma):**\n"
-                "   ■ यह क्लोरोप्लास्ट के स्ट्रोमा में घटित होती है।\n"
-                "   ■ यहाँ CO₂ का स्थिरीकरण (Carbon Fixation) होकर ग्लूकोज शर्करा का निर्माण होता है।\n\n"
-                "❖ **पारिस्थितिक महत्व:**\n"
-                "• पृथ्वी के समस्त जीवों के लिए प्राथमिक भोजन एवं ऊर्जा का मूल आधार है।\n"
-                "• वायुमंडल में जीवनदायिनी ऑक्सीजन (O₂) का संतुलन बनाए रखता है।"
+    def _build_gemini_payload(
+        self, messages: List[Dict[str, str]], system_prompt: Optional[str] = None
+    ) -> Dict:
+        """Construct Google Gemini native contents and systemInstruction payload."""
+        base_prompt = system_prompt or RHYNIA_SYSTEM_PROMPT
+
+        try:
+            ist_tz = timezone(timedelta(hours=5, minutes=30))
+            now_ist = datetime.now(ist_tz)
+            formatted_datetime = now_ist.strftime("%A, %d %B %Y, %I:%M:%S %p IST")
+            time_context = (
+                f"\n\nREAL-TIME TEMPORAL CONTEXT (सटीक वर्तमान समय और दिनांक):\n"
+                f"- Current Date & Time: {formatted_datetime}\n"
+                f"- Day of the Week: {now_ist.strftime('%A')}\n"
+                f"- Current Date: {now_ist.day} {now_ist.strftime('%B')} {now_ist.year}\n"
+                f"- Timezone: Indian Standard Time (IST, UTC+05:30)\n"
+                f"- CRITICAL INSTRUCTION: Always use this exact real-time system clock whenever the user asks for the current date, time, year, month, or day."
             )
-        elif any(k in low for k in ["heart", "हृदय", "दिल"]):
-            response_text = (
-                "❖ **मानव हृदय (Human Heart Anatomy & Function):**\n\n"
-                "मानव हृदय एक पेशीय अंग (Muscular Organ) है जो पूरे शरीर में रक्त परिसंचरण (Blood Circulation) का कार्य करता है।\n\n"
-                "➤ **हृदय के चार प्रमुख कोष्ठक (4 Chambers):**\n"
-                "✔ **दायाँ आलिंद (Right Atrium):** शरीर से अशुद्ध रक्त (Deoxygenated Blood) प्राप्त करता है।\n"
-                "✔ **दायाँ निलय (Right Ventricle):** अशुद्ध रक्त को शुद्धिकरण के लिए फेफड़ों में पंप करता है।\n"
-                "✔ **बायाँ आलिंद (Left Atrium):** फेफड़ों से ऑक्सीजन-युक्त शुद्ध रक्त प्राप्त करता है।\n"
-                "✔ **बायाँ निलय (Left Ventricle):** शुद्ध रक्त को महाधमनी (Aorta) द्वारा संपूर्ण शरीर में पंप करता है।"
-            )
-        elif any(k in low for k in ["cell", "कोशिका"]):
-            response_text = (
-                "❖ **कोशिका विज्ञान (Cell Biology Overview):**\n\n"
-                "कोशिका (Cell) जीवन की सबसे छोटी संरचनात्मक और कार्यात्मक इकाई है।\n\n"
-                "➤ **पादप कोशिका एवं जंतु कोशिका में मुख्य अंतर:**\n"
-                "✔ **कोशिका भित्ति (Cell Wall):** केवल पादप कोशिकाओं में सेल्यूलोज की बनी होती है।\n"
-                "✔ **हरित लवक (Chloroplast):** केवल पौधों में प्रकाश संश्लेषण के लिए पाया जाता है।\n"
-                "✔ **माइटोकॉन्ड्रिया (Mitochondria):** कोशिका का 'ऊर्जा गृह' (Powerhouse of the Cell) कहलाता है।"
-            )
-        else:
-            response_text = (
-                f"❖ **{prompt.strip()}:**\n\n"
-                f"Rhynia AI ने आपके प्रश्न का विस्तृत एवं प्रामाणिक उत्तर तैयार किया है।\n\n"
-                f"➤ **मुख्य वैज्ञानिक एवं सैद्धांतिक बिंदु:**\n"
-                f"✔ **परिचय एवं परिभाषा:** इस विषय की आधारभूत समझ और मुख्य संकल्पनाएँ।\n"
-                f"✔ **संरचना एवं कार्यप्रणाली:** घटकों का क्रमबद्ध और तार्किक विश्लेषण।\n"
-                f"✔ **निष्कर्ष एवं अनुप्रयोग:** आधुनिक संदर्भ और व्यवहारिक उपयोगिता।"
-            )
-        words = response_text.split(" ")
-        for word in words:
-            yield word + " "
-            await asyncio.sleep(0.015)
+        except Exception:
+            time_context = ""
+
+        sys_instruction = base_prompt + time_context
+
+        # Build Gemini contents: role must be 'user' or 'model'
+        contents = []
+        for m in messages:
+            role = m.get("role", "user")
+            content = m.get("content", "").strip()
+            if not content:
+                continue
+            gemini_role = "model" if role in ["model", "assistant"] else "user"
+
+            # Avoid consecutive same-role messages by combining text
+            if contents and contents[-1]["role"] == gemini_role:
+                contents[-1]["parts"][0]["text"] += f"\n\n{content}"
+            else:
+                contents.append({"role": gemini_role, "parts": [{"text": content}]})
+
+        # Gemini contents must start with 'user'
+        if contents and contents[0]["role"] != "user":
+            contents.pop(0)
+
+        if not contents:
+            contents = [{"role": "user", "parts": [{"text": "Hello"}]}]
+
+        return {
+            "contents": contents,
+            "systemInstruction": {"parts": [{"text": sys_instruction}]},
+            "generationConfig": {
+                "temperature": 0.7,
+                "maxOutputTokens": 4096,
+            },
+        }
+
+    async def _stream_gemini(
+        self, client: httpx.AsyncClient, key: str, model_id: str, payload: Dict
+    ) -> AsyncGenerator[str, None]:
+        """Stream tokens directly from Google Generative Language API SSE."""
+        url = self.gemini_url_template.format(model=model_id, key=key)
+        async with client.stream("POST", url, json=payload, timeout=25.0) as resp:
+            if resp.status_code != 200:
+                logger.warning(f"Gemini {model_id} returned status {resp.status_code}. Cascading...")
+                return
+
+            async for line in resp.aiter_lines():
+                if line.startswith("data: "):
+                    data_str = line[6:].strip()
+                    if not data_str:
+                        continue
+                    try:
+                        data_json = json.loads(data_str)
+                        candidates = data_json.get("candidates", [])
+                        if candidates:
+                            parts = candidates[0].get("content", {}).get("parts", [])
+                            for part in parts:
+                                token = part.get("text", "")
+                                if token:
+                                    yield token
+                    except Exception:
+                        continue
+
+    async def _stream_openrouter(
+        self, client: httpx.AsyncClient, key: str, model_id: str, full_messages: List[Dict]
+    ) -> AsyncGenerator[str, None]:
+        """Stream tokens from OpenRouter API SSE."""
+        headers = {
+            "Authorization": f"Bearer {key}",
+            "HTTP-Referer": "https://rhynia.com",
+            "X-Title": "Rhynia Intelligence",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "model": model_id,
+            "messages": full_messages,
+            "stream": True,
+            "temperature": 0.7,
+        }
+        async with client.stream("POST", self.openrouter_url, headers=headers, json=payload, timeout=25.0) as resp:
+            if resp.status_code != 200:
+                logger.warning(f"OpenRouter {model_id} returned status {resp.status_code}. Cascading...")
+                return
+
+            async for line in resp.aiter_lines():
+                if line.startswith("data: "):
+                    data_str = line[6:].strip()
+                    if data_str == "[DONE]":
+                        break
+                    try:
+                        data_json = json.loads(data_str)
+                        delta = data_json["choices"][0]["delta"].get("content", "")
+                        if delta:
+                            yield delta
+                    except Exception:
+                        continue
 
     async def generate_stream(
         self,
@@ -217,75 +273,94 @@ class CascadeLLMEngine:
         web_search: bool = True,
     ) -> AsyncGenerator[str, None]:
         """
-        Stream response tokens through the cascade router.
-        Auto-falls back from Tier 1 to Tier 2 on HTTP 429 or failure.
+        Indestructible 4-Tier Cascade Router:
+        - Tier 1: Google Gemini Ultra-Fast Native API (Primary & Backup Gemini Keys)
+        - Tier 2: OpenRouter Flagship Models (Llama 3.3 70B & DeepSeek via Primary OpenRouter Key)
+        - Tier 3: OpenRouter Free Models (Liquid, Dots, Nex-mini via Backup Key)
+        - Tier 4: Guaranteed Educational Synthesis Engine (Local / Zero-Failure Offline)
         """
-        full_messages = self._build_payload_messages(messages, system_prompt)
+        gemini_payload = self._build_gemini_payload(messages, system_prompt)
+        openrouter_messages = self._build_payload_messages(messages, system_prompt)
         last_user_query = messages[-1]["content"] if messages else "Hello"
 
-        # Dynamically resolve API key from instance, settings or environment
-        api_key = self.api_key or settings.OPENROUTER_API_KEY or os.environ.get("OPENROUTER_API_KEY")
+        # Catalog all 4 keys from settings or environment
+        gemini_keys = [
+            k for k in [
+                settings.GEMINI_API_KEY or os.environ.get("GEMINI_API_KEY"),
+                settings.GEMINI_BACKUP_KEY or os.environ.get("GEMINI_BACKUP_KEY"),
+            ] if k
+        ]
+        gemini_models = ["gemini-2.5-flash", "gemini-3-flash-preview", "gemini-2.5-flash-lite"]
 
-        # If no API key configured, use fallback streaming in development
-        if not api_key:
-            async for token in self._mock_stream(last_user_query):
-                yield token
-            return
+        openrouter_key = settings.OPENROUTER_API_KEY or os.environ.get("OPENROUTER_API_KEY")
+        openrouter_backup_key = settings.OPENROUTER_BACKUP_KEY or os.environ.get("OPENROUTER_BACKUP_KEY") or openrouter_key
 
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "HTTP-Referer": "https://rhynia.com",
-            "X-Title": "Rhynia Intelligence",
-            "Content-Type": "application/json",
-        }
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            # ====================================================
+            # TIER 1: Google Gemini Ultra-Fast Native API (Keys 1 & 2)
+            # ====================================================
+            for g_key in gemini_keys:
+                for g_model in gemini_models:
+                    streamed_any = False
+                    try:
+                        async for token in self._stream_gemini(client, g_key, g_model, gemini_payload):
+                            streamed_any = True
+                            yield token
+                        if streamed_any:
+                            logger.info(f"Successfully answered via Gemini ({g_model})")
+                            return
+                    except Exception as e:
+                        logger.warning(f"Gemini {g_model} exception: {e}. Cascading...")
+                        continue
 
-        # Model resolution by tier from configuration
-        if tier == 1:
-            models_to_try = settings.CASCADE_TIER_1_MODELS
-        else:
-            models_to_try = settings.CASCADE_TIER_2_MODELS
+            # ====================================================
+            # TIER 2: OpenRouter Flagship Models (Llama 3.3 70B & DeepSeek)
+            # ====================================================
+            if openrouter_key:
+                tier2_models = ["meta-llama/llama-3.3-70b-instruct", "deepseek/deepseek-chat"]
+                for or_model in tier2_models:
+                    streamed_any = False
+                    try:
+                        async for token in self._stream_openrouter(client, openrouter_key, or_model, openrouter_messages):
+                            streamed_any = True
+                            yield token
+                        if streamed_any:
+                            logger.info(f"Successfully answered via OpenRouter ({or_model})")
+                            return
+                    except Exception as e:
+                        logger.warning(f"OpenRouter {or_model} exception: {e}. Cascading...")
+                        continue
 
-        async with httpx.AsyncClient(timeout=25.0) as client:
-            for model_id in models_to_try:
-                try:
-                    payload = {
-                        "model": model_id,
-                        "messages": full_messages,
-                        "stream": True,
-                        "temperature": 0.7,
-                    }
+            # ====================================================
+            # TIER 3: OpenRouter Free Models (Backup Key)
+            # ====================================================
+            if openrouter_backup_key:
+                tier3_models = [
+                    "liquid/lfm-2.5-2.6b:free",
+                    "dots-studio/dots-3-note-preview:free",
+                    "nex-agi/nex-n2.5-mini:free",
+                ]
+                for or_free in tier3_models:
+                    streamed_any = False
+                    try:
+                        async for token in self._stream_openrouter(client, openrouter_backup_key, or_free, openrouter_messages):
+                            streamed_any = True
+                            yield token
+                        if streamed_any:
+                            logger.info(f"Successfully answered via OpenRouter Free ({or_free})")
+                            return
+                    except Exception as e:
+                        logger.warning(f"OpenRouter Free {or_free} exception: {e}. Cascading...")
+                        continue
 
-                    async with client.stream("POST", self.openrouter_url, headers=headers, json=payload) as response:
-                        if response.status_code == 429:
-                            logger.warning(f"Tier 1 model {model_id} hit rate limit (429). Cascading...")
-                            continue
-
-                        if response.status_code != 200:
-                            logger.warning(f"Model {model_id} returned status {response.status_code}. Cascading...")
-                            continue
-
-                        # Successfully streaming
-                        async for line in response.aiter_lines():
-                            if line.startswith("data: "):
-                                data_str = line[6:].strip()
-                                if data_str == "[DONE]":
-                                    break
-                                try:
-                                    data_json = json.loads(data_str)
-                                    delta = data_json["choices"][0]["delta"].get("content", "")
-                                    if delta:
-                                        yield delta
-                                except Exception:
-                                    continue
-                        return
-
-                except Exception as e:
-                    logger.error(f"Cascade error with {model_id}: {e}")
-                    continue
-
-        # Tier 3 Safety Fallback (Mock/Offline)
-        async for token in self._mock_stream(last_user_query):
-            yield token
+        # ====================================================
+        # TIER 4: Guaranteed Offline Educational Synthesis (100% Zero-Failure)
+        # ====================================================
+        logger.info(f"All online APIs exhausted or timed out. Falling back to Tier 4 Educational Synthesis Engine.")
+        synth_text = educational_synthesis_engine.synthesize_topic(last_user_query) or educational_synthesis_engine.generate_generic_educational(last_user_query)
+        for word in synth_text.split(" "):
+            yield word + " "
+            await asyncio.sleep(0.015)
 
     async def generate_response(
         self,
