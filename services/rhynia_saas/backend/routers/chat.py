@@ -193,9 +193,15 @@ async def send_chat_message(
         f"- Remind users politely that private/login-protected social media accounts (personal Instagram DMs, private Facebook profiles) cannot be accessed due to platform privacy barriers."
     )
 
-    # 4B. Educational Diagram Retrieval Grounding (Only for general queries when user has NOT uploaded attachments)
+    # 4B. Educational Diagram Retrieval Grounding (Only for educational/exploratory topics)
+    msg_cleaned = re.sub(r"[^\w\s]", " ", clean_message.lower())
+    words = msg_cleaned.split()
+    casual_lead_tokens = {"hi", "hello", "hey", "namaste", "kaise", "kya", "haal", "good", "morning", "night", "thanks", "thank", "ok", "bye", "who"}
+    is_greeting_or_chit_chat = (any(w in casual_lead_tokens for w in words[:2]) and len(words) <= 6)
+    is_simple_math = bool(re.search(r"^\s*[\d\s\+\-\*\/\^\(\)\=\?]+\s*$", clean_message)) or (("+" in clean_message or "-" in clean_message or "*" in clean_message or "kitna" in clean_message or "plus" in clean_message) and len(words) <= 7)
+
     diagrams = []
-    if not req.files:
+    if not req.files and not is_greeting_or_chit_chat and not is_simple_math:
         try:
             diagrams = await educational_image_service.search_smart_diagrams(clean_message, default_limit=5)
             if diagrams:
@@ -358,36 +364,12 @@ async def send_chat_message(
             messages_payload, system_prompt=system_prompt, web_search=use_web_search, attachments=attachments
         )
 
-        # Double Guarantee: If reply_content has almost no text (< 50 chars), synthesize educational text!
-        if len(reply_content.strip()) < 50:
+        # Fallback ONLY if reply is completely empty (zero text from online providers)
+        if not reply_content.strip():
             synth = educational_synthesis_engine.synthesize_topic(clean_message) or educational_synthesis_engine.generate_generic_educational(clean_message)
             reply_content = synth
 
-        # Seamless Visual Guarantee: Ensure verified educational diagrams appear in balanced rhythm
-        if diagrams and "![" not in reply_content:
-            if len(diagrams) >= 4:
-                g1, g2 = diagrams[:3], diagrams[3:]
-            elif len(diagrams) >= 2:
-                g1, g2 = diagrams[:2], diagrams[2:]
-            else:
-                g1, g2 = diagrams, []
-
-            g1_block = "\n\n" + "\n".join([f"![{d['title']}]({d['url']})" for d in g1]) + "\n\n"
-            g2_block = ("\n\n" + "\n".join([f"![{d['title']}]({d['url']})" for d in g2]) + "\n\n") if g2 else ""
-
-            parts = reply_content.split("\n\n", 1)
-            if len(parts) > 1:
-                intro = parts[0]
-                remainder = parts[1]
-                if g2_block and "\n\n" in remainder:
-                    subparts = remainder.rsplit("\n\n", 1)
-                    reply_content = f"{intro}{g1_block}{subparts[0]}{g2_block}{subparts[1]}"
-                else:
-                    reply_content = f"{intro}{g1_block}{remainder}{g2_block}"
-            else:
-                reply_content = f"{reply_content}{g1_block}{g2_block}"
-
-        # Clean any malformed /thumb/ URLs and sanitize images
+        # Clean any malformed /thumb/ URLs and sanitize images if any were included
         reply_content = sanitize_response_images(reply_content, diagrams)
 
         # Persist Rhynia reply
@@ -435,21 +417,14 @@ async def send_chat_message(
             # Save completed reply
             full_reply = "".join(collected_reply)
 
-            # Double Guarantee: If full_reply has almost no text (< 50 chars), stream rich educational text first!
-            if len(full_reply.strip()) < 50:
+            # Fallback ONLY if stream produced completely empty reply (offline/error)
+            if not full_reply.strip():
                 synth = educational_synthesis_engine.synthesize_topic(clean_message) or educational_synthesis_engine.generate_generic_educational(clean_message)
                 for word in synth.split(" "):
                     token_event = json.dumps({"type": "token", "content": word + " "})
                     yield f"data: {token_event}\n\n"
                     full_reply += word + " "
                     await asyncio.sleep(0.01)
-
-            # Seamless Visual Guarantee: If diagrams found but LLM omitted image tags, stream them cleanly
-            if diagrams and "![" not in full_reply:
-                img_block = "\n\n" + "\n".join([f"![{d['title']}]({d['url']})" for d in diagrams]) + "\n\n"
-                token_event = json.dumps({"type": "token", "content": img_block})
-                yield f"data: {token_event}\n\n"
-                full_reply += img_block
 
             # Clean any malformed /thumb/ URLs and sanitize images in final persisted reply
             full_reply = sanitize_response_images(full_reply, diagrams)
