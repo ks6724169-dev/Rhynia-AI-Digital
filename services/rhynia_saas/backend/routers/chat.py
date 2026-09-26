@@ -228,9 +228,26 @@ async def send_chat_message(
             try:
                 # 1. Images (Multimodal Vision)
                 if mime.startswith("image/") or suffix in [".jpg", ".jpeg", ".png", ".webp", ".gif"]:
-                    with open(file_path, "rb") as f:
-                        data_b64 = base64.b64encode(f.read()).decode("utf-8")
-                    image_mime = mime if mime.startswith("image/") else "image/jpeg"
+                    try:
+                        import io
+                        from PIL import Image, ImageOps
+                        with Image.open(file_path) as img:
+                            img = ImageOps.exif_transpose(img)
+                            if img.mode not in ("RGB", "L"):
+                                img = img.convert("RGB")
+                            # Bound maximum dimension to 1600px for lightning-fast multimodal analysis
+                            if img.width > 1600 or img.height > 1600:
+                                img.thumbnail((1600, 1600), Image.Resampling.LANCZOS)
+                            buf = io.BytesIO()
+                            img.save(buf, format="JPEG", quality=85, optimize=True)
+                            data_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
+                            image_mime = "image/jpeg"
+                    except Exception as img_err:
+                        logger.warning(f"Image vision prep fallback for {uf.original_filename}: {img_err}")
+                        with open(file_path, "rb") as f:
+                            data_b64 = base64.b64encode(f.read()).decode("utf-8")
+                        image_mime = mime if mime.startswith("image/") else "image/jpeg"
+
                     attachments.append({
                         "type": "image",
                         "mime_type": image_mime,

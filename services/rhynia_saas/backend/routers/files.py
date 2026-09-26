@@ -106,7 +106,39 @@ async def upload_file(
             ),
         )
 
-    # 5. Sanitize filename and prepare user upload directory
+    # 5. For image files, perform server-side normalization & EXIF orientation fix
+    if content_type in ["image/jpeg", "image/png", "image/webp"]:
+        try:
+            from io import BytesIO
+            from PIL import Image, ImageOps
+            img = Image.open(BytesIO(file_bytes))
+            img = ImageOps.exif_transpose(img)
+
+            # Bound maximum dimensions to 2048px for sharp detail without bloat
+            max_dim = 2048
+            if img.width > max_dim or img.height > max_dim:
+                img.thumbnail((max_dim, max_dim), Image.Resampling.LANCZOS)
+
+            out_buf = BytesIO()
+            if content_type == "image/jpeg":
+                if img.mode not in ("RGB", "L"):
+                    img = img.convert("RGB")
+                img.save(out_buf, format="JPEG", quality=88, optimize=True)
+            elif content_type == "image/webp":
+                if img.mode not in ("RGB", "RGBA"):
+                    img = img.convert("RGB")
+                img.save(out_buf, format="WEBP", quality=88)
+            elif content_type == "image/png":
+                img.save(out_buf, format="PNG", optimize=True)
+
+            opt_bytes = out_buf.getvalue()
+            if len(opt_bytes) < len(file_bytes) or (img.width > max_dim or img.height > max_dim):
+                file_bytes = opt_bytes
+                file_size = len(file_bytes)
+        except Exception:
+            pass
+
+    # 6. Sanitize filename and prepare user upload directory
     user_upload_dir = settings.UPLOAD_DIR / str(current_user.id)
     user_upload_dir.mkdir(parents=True, exist_ok=True)
 
@@ -115,7 +147,7 @@ async def upload_file(
     stored_name = f"{unique_prefix}_{clean_name}"
     disk_path = user_upload_dir / stored_name
 
-    # 6. Save file to disk
+    # 7. Save file to disk
     with open(disk_path, "wb") as f:
         f.write(file_bytes)
 

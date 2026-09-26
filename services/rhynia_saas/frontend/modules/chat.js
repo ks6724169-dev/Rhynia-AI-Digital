@@ -202,20 +202,26 @@ function appendUserMessageUI(text, files) {
   if (files && files.length > 0) {
     filesHtml = `<div class="flex flex-wrap gap-2 mb-2 justify-end">` +
       files.map(f => {
-        const isImg = f.name && f.name.match(/\.(jpg|jpeg|png|webp|gif)$/i);
-        if (isImg && f.url) {
+        const isImg = (f.type && f.type.startsWith("image/")) || (f.name && f.name.match(/\.(jpg|jpeg|png|webp|gif)$/i));
+        const displayUrl = f.previewUrl || f.url;
+        if (isImg && displayUrl) {
           return `
-            <div class="rounded-xl overflow-hidden border border-white/10 bg-[#1a1a1a] shadow-md max-w-[200px] max-h-[140px] group relative cursor-pointer" onclick="window.openRhyniaLightbox('${f.url}', '${escapeHtml(f.name)}')">
-              <img src="${f.url}" alt="${escapeHtml(f.name)}" class="w-full h-full object-cover transition-transform group-hover:scale-105" />
-              <div class="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-sm px-2 py-0.5 text-[10px] text-white truncate text-center">${escapeHtml(f.name)}</div>
+            <div class="rounded-xl overflow-hidden border border-white/20 bg-[#181818] w-16 h-16 shadow-md group relative cursor-pointer flex-shrink-0 transition-transform hover:scale-105" onclick="window.openRhyniaLightbox('${displayUrl}', '${escapeHtml(f.name)}')">
+              <img src="${displayUrl}" alt="${escapeHtml(f.name)}" class="w-full h-full object-cover" />
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors flex items-center justify-center">
+                <span class="material-symbols-outlined text-white text-[18px] opacity-0 group-hover:opacity-100 transition-opacity drop-shadow">zoom_in</span>
+              </div>
             </div>
           `;
         }
+        const docInfo = (typeof getDocTypeInfo === "function") ? getDocTypeInfo(f.type, f.name) : { icon: "description", color: "text-[#0078d4] bg-white/5 border-white/10" };
         return `
-          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#202020] border border-white/10 text-xs text-neutral-200 shadow-sm">
-            <span class="material-symbols-outlined text-[15px] text-[#0078d4]">description</span>
-            <span class="truncate max-w-[150px]">${escapeHtml(f.name)}</span>
-          </span>
+          <div class="inline-flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-xl bg-[#212121] border border-white/10 text-xs text-neutral-200 shadow-sm flex-shrink-0">
+            <div class="w-6 h-6 rounded-md flex items-center justify-center border ${docInfo.color}">
+              <span class="material-symbols-outlined text-[15px]">${docInfo.icon}</span>
+            </div>
+            <span class="truncate max-w-[150px] font-medium text-white">${escapeHtml(f.name)}</span>
+          </div>
         `;
       }).join("") +
       `</div>`;
