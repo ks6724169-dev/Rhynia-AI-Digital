@@ -4,6 +4,8 @@
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
   <title>Rhynia Intelligence</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png"/>
+  <link rel="apple-touch-icon" href="assets/icon-192.png"/>
 
   <!-- Google Fonts: Inter, Plus Jakarta Sans, JetBrains Mono -->
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -111,10 +113,7 @@
       <!-- Brand Header -->
       <section class="flex-1 flex flex-col justify-center py-4">
         <div class="text-center flex flex-col items-center mb-6">
-          <div class="w-16 h-16 rounded-2xl bg-[#0078D4] text-white flex items-center justify-center font-bold text-2xl shadow-lg mb-3 border border-white/20">
-            R
-          </div>
-          <h1 class="text-2xl font-bold tracking-tight text-white font-headline">Rhynia</h1>
+          <img src="assets/logo.png" alt="Rhynia Intelligence" class="w-40 h-auto object-contain mb-2 drop-shadow-2xl" />
           <p class="text-xs text-neutral-400 mt-1 max-w-[260px]">Sign in to your Rhynia account</p>
         </div>
 
@@ -210,9 +209,7 @@
       </header>
 
       <section class="flex flex-col items-center text-center mt-1 mb-4">
-        <div class="w-14 h-14 rounded-2xl bg-[#0078D4] text-white flex items-center justify-center font-bold text-2xl shadow-lg mb-2 border border-white/20">
-          R
-        </div>
+        <img src="assets/logo.png" alt="Rhynia Intelligence" class="w-36 h-auto object-contain mb-2 drop-shadow-2xl" />
         <h1 class="text-xl font-bold tracking-tight text-white font-headline">Create your account</h1>
         <p class="text-xs text-neutral-400 mt-1 max-w-[280px]">Join Rhynia to empower your intelligence and workflows</p>
       </section>
@@ -452,11 +449,15 @@
 
     <!-- Top Navigation Header (Screen 01 & 02) -->
     <header class="sticky top-0 z-30 h-14 border-b border-[#2d2d2d] bg-[#1a1a1a]/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between">
-      <!-- Left: Hamburger Drawer Menu Button -->
-      <div class="flex items-center">
+      <!-- Left: Hamburger Drawer Menu Button & Logo -->
+      <div class="flex items-center gap-3">
         <button id="btn-hamburger-menu" type="button" onclick="toggleSidebarDrawer(true)" class="p-2 -ml-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="Open Drawer" data-i18n-title="open_drawer">
           <span class="material-symbols-outlined text-xl">menu</span>
         </button>
+        <div class="flex items-center gap-2 cursor-pointer select-none" onclick="startNewChat()">
+          <img src="assets/logo-icon.png" alt="Rhynia" class="w-7 h-7 rounded-lg object-contain shadow-sm shadow-[#0078D4]/30" />
+          <span class="font-semibold text-sm tracking-tight text-white font-headline">Rhynia</span>
+        </div>
       </div>
 
       <!-- Right: Action Buttons (New Chat with edit_square, and 3-Dots More Options) -->
@@ -502,18 +503,41 @@
     <!-- Main Chat Workspace Container -->
     <div id="main-chat-container" class="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 flex flex-col justify-between relative pb-28">
 
-      <!-- SCREEN 01: EMPTY STATE (Minimalist open workspace, ZERO mock prompt cards) -->
-      <div id="screen-empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-20 animate-fade-in select-none">
-        <div class="w-20 h-20 rounded-3xl bg-[#0078D4] text-white flex items-center justify-center font-bold text-4xl shadow-xl shadow-[#0078D4]/20 mb-4 border border-white/20">
-          R
+      <!-- SCREEN 01: EMPTY STATE (Center Theme Logo & Glowing Welcome Hero) -->
+      <div id="screen-empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-12 sm:py-16 animate-fade-in select-none">
+        <!-- Glowing Circular Theme Logo Badge -->
+        <div class="relative group cursor-pointer mb-5" onclick="startNewChat()">
+          <!-- Ambient animated radial glow behind badge -->
+          <div class="absolute -inset-3 bg-gradient-to-r from-[#0078D4] via-[#00d2ff] to-[#00ff88] rounded-full blur-2xl opacity-40 group-hover:opacity-75 transition-opacity duration-700 animate-pulse"></div>
+          <img src="assets/chat-center-badge.png" alt="Rhynia Intelligence" class="relative w-44 h-44 sm:w-52 sm:h-52 object-contain rounded-full shadow-2xl transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_0_30px_rgba(0,120,212,0.5)]" />
         </div>
-        <h2 class="text-2xl font-bold tracking-tight text-white font-headline">Rhynia</h2>
-        <p data-i18n="welcome_tagline" class="text-sm text-neutral-400 mt-1 max-w-sm">Ready to assist with your research, engineering, and creative workflows.</p>
+
+        <!-- Greeting with dynamic User Name and Cyan Radiance Spikes -->
+        <div class="flex items-center justify-center gap-2 text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          <span class="text-[#00d2ff] font-light text-xl select-none">˗</span>
+          <h2 class="flex items-center gap-1.5">
+            <span>Hello</span>
+            <span id="empty-state-username" class="text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-[#00d2ff] font-extrabold">Alex</span>
+          </h2>
+          <span class="text-[#00d2ff] font-light text-xl select-none">˗</span>
+        </div>
+
+        <!-- Horizontal Neon Gradient Accent Line -->
+        <div class="w-32 sm:w-44 h-1 rounded-full bg-gradient-to-r from-[#0078d4] via-[#00d2ff] to-[#00ff88] my-3.5 shadow-lg shadow-cyan-500/50"></div>
+
+        <!-- Subtitle -->
+        <p class="text-sm sm:text-base font-medium text-neutral-300 tracking-wide">
+          Welcome to <span class="text-white font-semibold">Rhynia</span> <span class="text-[#00d2ff] font-semibold">intelligence</span>
+        </p>
       </div>
 
-      <!-- SCREEN 02: ACTIVE CHAT (Open layout, no bounding card boxes) -->
-      <div id="screen-active-chat" class="hidden flex-1 flex flex-col gap-6 py-6 overflow-y-auto">
-        <div id="chat-messages-container" class="flex flex-col gap-6 w-full">
+      <!-- SCREEN 02: ACTIVE CHAT (Open layout, Center theme watermark) -->
+      <div id="screen-active-chat" class="hidden flex-1 flex flex-col gap-6 py-6 overflow-y-auto relative">
+        <!-- Subtle Center Theme Logo Watermark Backdrop -->
+        <div class="pointer-events-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-[0.035] select-none flex items-center justify-center">
+          <img src="assets/chat-center-badge.png" alt="" class="w-80 h-80 sm:w-96 sm:h-96 object-contain" />
+        </div>
+        <div id="chat-messages-container" class="flex flex-col gap-6 w-full relative z-10">
           <!-- Dynamic User & Rhynia message bubbles injected here -->
         </div>
       </div>
@@ -578,10 +602,8 @@
     <aside id="sidebar-drawer" class="fixed inset-y-0 left-0 z-50 flex flex-col justify-between w-80 max-w-[85vw] bg-[#202020] border-r border-[#333333] shadow-2xl transition-transform duration-300 transform -translate-x-full">
       <!-- Drawer Header: Brand + Live Search Toggle -->
       <div class="h-14 px-4 border-b border-[#2d2d2d] flex items-center justify-between bg-[#202020]">
-        <div class="flex items-center gap-3">
-          <div class="w-7 h-7 rounded-md bg-[#0078D4] flex items-center justify-center text-white font-semibold text-xs shadow-sm">
-            R
-          </div>
+        <div class="flex items-center gap-2.5">
+          <img src="assets/logo-icon.png" alt="Rhynia" class="w-7 h-7 rounded-lg object-contain shadow-sm shadow-[#0078D4]/30" />
           <span class="text-base font-semibold text-white tracking-tight">Rhynia</span>
         </div>
         <div class="flex items-center gap-1">
@@ -1141,15 +1163,15 @@
   <!-- ========================================================= -->
   <!-- SCRIPTS (Configuration, Modules & App Orchestrator)       -->
   <!-- ========================================================= -->
-  <script src="config.js?v=23"></script>
-  <script src="modules/i18n.js?v=23"></script>
-  <script src="app.js?v=23"></script>
-  <script src="modules/auth.js?v=23"></script>
-  <script src="modules/composer.js?v=23"></script>
-  <script src="modules/chat.js?v=23"></script>
-  <script src="modules/feedback.js?v=23"></script>
-  <script src="modules/drawer.js?v=23"></script>
-  <script src="modules/settings.js?v=23"></script>
+  <script src="config.js?v=24"></script>
+  <script src="modules/i18n.js?v=24"></script>
+  <script src="app.js?v=24"></script>
+  <script src="modules/auth.js?v=24"></script>
+  <script src="modules/composer.js?v=24"></script>
+  <script src="modules/chat.js?v=24"></script>
+  <script src="modules/feedback.js?v=24"></script>
+  <script src="modules/drawer.js?v=24"></script>
+  <script src="modules/settings.js?v=24"></script>
 
 </body>
 </html>

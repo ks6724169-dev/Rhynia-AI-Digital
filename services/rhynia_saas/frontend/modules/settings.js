@@ -83,9 +83,12 @@ function renderUserProfileUI(user) {
   const email = user.email || "No email linked";
   const phone = user.phone_number || "Not provided";
 
-  // 1. Settings Panel (Screen 05)
+  // 1. Settings Panel (Screen 05) & Empty State Hero
   const nameEl = document.getElementById("settings-user-name");
   if (nameEl) nameEl.textContent = displayName;
+
+  const emptyNameEl = document.getElementById("empty-state-username");
+  if (emptyNameEl) emptyNameEl.textContent = displayName;
 
   const emailEl = document.getElementById("settings-user-email");
   if (emailEl) emailEl.textContent = email;
