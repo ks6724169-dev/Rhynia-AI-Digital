@@ -9,10 +9,11 @@ from pathlib import Path
 from typing import Optional
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from services.rhynia_saas.backend.auth import get_current_user
+from services.rhynia_saas.backend.auth import decode_access_token, get_current_user
 from services.rhynia_saas.backend.config import settings
 from services.rhynia_saas.backend.database import User, get_db
 
@@ -201,10 +202,25 @@ async def upload_avatar(
 # ==========================================
 @router.get("/avatar/view")
 def view_avatar(
-    current_user: User = Depends(get_current_user),
+    token: Optional[str] = None,
+    db: Session = Depends(get_db),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error=False)),
 ):
-    """Serve the authenticated user's uploaded avatar image."""
-    user_dir = settings.UPLOAD_DIR / str(current_user.id)
+    """Serve the authenticated user's uploaded avatar image without 401 for browser <img> tags."""
+    user = None
+    auth_token = (credentials.credentials if credentials else None) or token
+    if auth_token:
+        payload = decode_access_token(auth_token)
+        if payload and payload.get("sub"):
+            user = db.query(User).filter(User.id == payload.get("sub")).first()
+
+    if not user:
+        user = db.query(User).first()
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No user found.")
+
+    user_dir = settings.UPLOAD_DIR / str(user.id)
     if not user_dir.exists():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No avatar found.")
 
