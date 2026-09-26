@@ -68,6 +68,8 @@ class UserResponse(BaseModel):
     id: str
     email: Optional[str]
     username: str
+    display_name: Optional[str] = None
+    avatar_url: Optional[str] = None
     phone_number: Optional[str]
     plan_tier: str
     daily_messages_used: int

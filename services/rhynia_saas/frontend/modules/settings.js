@@ -87,8 +87,9 @@ function renderUserProfileUI(user) {
   const nameEl = document.getElementById("settings-user-name");
   if (nameEl) nameEl.textContent = displayName;
 
-  const emptyNameEl = document.getElementById("empty-state-username");
-  if (emptyNameEl) emptyNameEl.textContent = displayName;
+  if (typeof updateEmptyStateUserName === "function") {
+    updateEmptyStateUserName(user);
+  }
 
   const emailEl = document.getElementById("settings-user-email");
   if (emailEl) emailEl.textContent = email;

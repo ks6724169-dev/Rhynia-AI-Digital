@@ -235,6 +235,9 @@ async function initializeWorkspace() {
       AppState.user = profile;
       localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(profile));
       renderUserProfileUI(profile);
+      if (typeof updateEmptyStateUserName === "function") {
+        updateEmptyStateUserName(profile);
+      }
       updateDrawerProfileAvatar();
     }
   } catch (e) {

@@ -41,9 +41,9 @@ function showEmptyChatScreen() {
   if (headerTitle) headerTitle.textContent = "Rhynia";
 
   const user = window.AppState && window.AppState.user;
-  const displayName = user ? (user.display_name || user.username || "Alex") : "Alex";
-  const emptyNameEl = document.getElementById("empty-state-username");
-  if (emptyNameEl) emptyNameEl.textContent = displayName;
+  if (typeof updateEmptyStateUserName === "function") {
+    updateEmptyStateUserName(user);
+  }
 }
 
 /**

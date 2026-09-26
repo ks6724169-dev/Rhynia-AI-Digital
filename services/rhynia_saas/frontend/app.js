@@ -25,6 +25,47 @@ try {
   AppState.user = null;
 }
 
+/**
+ * Dynamically resolves and renders the logged-in user's real name across the UI (Hello [Name])
+ */
+function updateEmptyStateUserName(userObj) {
+  const el = document.getElementById("empty-state-username");
+  if (!el) return;
+
+  const user = userObj || (window.AppState && window.AppState.user) || (function() {
+    try {
+      const cached = localStorage.getItem(CONFIG.USER_KEY);
+      return cached ? JSON.parse(cached) : null;
+    } catch (e) { return null; }
+  })();
+
+  if (!user) {
+    el.textContent = "";
+    return;
+  }
+
+  let finalName = "";
+  // 1. Priority: User's explicitly set display_name or full_name
+  if (user.display_name && typeof user.display_name === "string" && user.display_name.trim()) {
+    finalName = user.display_name.trim();
+  } else if (user.full_name && typeof user.full_name === "string" && user.full_name.trim()) {
+    finalName = user.full_name.trim();
+  } else if (user.name && typeof user.name === "string" && user.name.trim()) {
+    finalName = user.name.trim();
+  } else if (user.username && typeof user.username === "string" && user.username.trim()) {
+    // 2. Fallback: Cleaned username (e.g. "kumarsatnamimanish_688" -> "Kumarsatnamimanish")
+    const clean = user.username.replace(/[_\d]+$/, "").trim();
+    finalName = clean ? (clean.charAt(0).toUpperCase() + clean.slice(1)) : user.username;
+  } else if (user.email && typeof user.email === "string" && user.email.trim()) {
+    // 3. Fallback: Email username part
+    const part = user.email.split("@")[0].replace(/[_\d]+$/, "").trim();
+    finalName = part ? (part.charAt(0).toUpperCase() + part.slice(1)) : user.email.split("@")[0];
+  }
+
+  el.textContent = finalName || "";
+}
+window.updateEmptyStateUserName = updateEmptyStateUserName;
+
 // ==========================================
 // VIEW SWITCHER (LOGIN-FIRST ROUTING GATE)
 // ==========================================
@@ -1386,6 +1427,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Populate user profile info across all UI elements
     renderUserProfileUI(profile);
+    updateEmptyStateUserName(profile);
     updateDrawerProfileAvatar();
 
     // Load active sessions list
