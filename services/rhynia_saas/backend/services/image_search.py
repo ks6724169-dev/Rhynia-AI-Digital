@@ -613,12 +613,70 @@ class EducationalImageService:
 
         return results[:limit]
 
+    def is_visual_worthy_query(self, query: str) -> bool:
+        """
+        Gatekeeper: Determines if a user query actually calls for images or diagrams.
+        Strictly blocks image retrieval on exam preparation, advice, coding, math, greetings, or text-first topics.
+        """
+        if not query or not query.strip():
+            return False
+
+        low = query.lower().strip()
+
+        # 1. Non-visual intent blockers: Questions about study, exams, prep, advice, coding, recipes, tips
+        non_visual_blockers = [
+            "taiyaari", "tayari", "prepare", "preparation", "upsc", "ias", "ips", "ssc", "exam", "exams",
+            "syllabus", "notes", "strategy", "kaise kare", "kaise karein", "kaise padhe", "kaise padhein",
+            "kaise sikhe", "kaise sikhein", "study plan", "tips", "how to", "guide", "routine",
+            "time table", "interview", "resume", "python", "javascript", "code", "coding", "program",
+            "function", "syntax", "debug", "error", "meaning", "arth", "paribhasha", "definition",
+            "essay", "nibandh", "letter", "patra", "poem", "kavita", "shayari", "story", "kahani",
+            "joke", "chutkula", "solve", "math", "hisab", "calculate"
+        ]
+
+        # Explicit visual requests (e.g. "photo", "diagram", "chitra", "tasveer")
+        explicit_visual_words = [
+            "photo", "photos", "image", "images", "pic", "pics", "picture", "pictures",
+            "diagram", "diagrams", "flowchart", "chitra", "chitr", "tasveer", "tasveerein",
+            "naksha", "map", "चित्र", "तस्वीर", "तस्वीरें", "फोटो", "डायग्राम", "नक्शा",
+            "दिखाओ", "दिखाइए", "बनाओ", "draw", "look like", "kaisa dikhta", "kaisi dikhti"
+        ]
+        has_explicit_visual = any(re.search(rf"\b{re.escape(w)}\b", low) for w in explicit_visual_words)
+
+        # If user explicitly asked for a photo/diagram, allow it!
+        if has_explicit_visual:
+            return True
+
+        # If user did NOT ask for a visual, but query contains study/exam/prep/code blockers, strictly block!
+        if any(re.search(rf"\b{re.escape(b)}\b", low) for b in non_visual_blockers):
+            return False
+
+        # 2. Check if query matches a known STEM concept where visual diagram is standard (e.g. Photosynthesis, Heart, Brain, Cell)
+        for concept_key in CONCEPT_MAP.keys():
+            if re.search(r"[a-zA-Z]", concept_key):
+                if re.search(rf"\b{re.escape(concept_key)}\b", low):
+                    return True
+            elif concept_key in low:
+                return True
+
+        for concept_key in CONCEPT_SUBTOPICS.keys():
+            if re.search(r"[a-zA-Z]", concept_key):
+                if re.search(rf"\b{re.escape(concept_key)}\b", low):
+                    return True
+            elif concept_key in low:
+                return True
+
+        # By default, do NOT pollute answers with random images
+        return False
+
     async def search_smart_diagrams(self, query: str, default_limit: int = 5) -> List[Dict[str, str]]:
         """
         Dynamically retrieves 1 to 6 diagrams or verified entity images.
-        Supports both STEM scientific concepts (via Wikimedia diagrams)
-        and Universal entities (People, TV Shows, Movies, Deities, Products, Places via Wikipedia/Wikimedia).
+        Strictly activates ONLY when query has genuine visual intent.
         """
+        if not self.is_visual_worthy_query(query):
+            return []
+
         low = query.lower()
         low = re.sub(r"\bearrth\b", "earth", low)
         low = re.sub(r"\bstructur\b", "structure", low)
@@ -665,16 +723,21 @@ class EducationalImageService:
             if diagrams:
                 return diagrams
 
-        # 3. Universal Visual Search (Persons, TV Shows, Deities, Products, Monuments, Places, Culture)
+        # 3. Universal Visual Search (Persons, TV Shows, Deities, Products, Monuments, Places via Wikipedia)
         limit = default_limit if wants_multiple else 3
         universal_images = await self.search_universal_images(query, limit=limit)
         if universal_images:
             return universal_images
 
-        # 4. Open Web & Pinterest Image Grounding (Fallback when Wikipedia has no images or user requests Pinterest/Art)
-        web_images = await self.search_web_and_pinterest_images(query, limit=limit)
-        if web_images:
-            return web_images
+        # 4. Open Web & Pinterest Image Grounding (ONLY if user explicitly requested a photo or image)
+        explicit_visual_words = [
+            "photo", "photos", "image", "images", "pic", "pics", "picture", "pictures",
+            "diagram", "diagrams", "chitra", "chitr", "tasveer", "चित्र", "तस्वीर", "फोटो", "डायग्राम"
+        ]
+        if any(w in low for w in explicit_visual_words) or prefer_pinterest:
+            web_images = await self.search_web_and_pinterest_images(query, limit=limit)
+            if web_images:
+                return web_images
 
         return []
 
@@ -733,46 +796,22 @@ class EducationalImageService:
         return results[:limit]
 
     def format_diagram_context(self, diagrams: List[Dict[str, str]]) -> str:
-        """Format retrieved diagram and entity image URLs into balanced placement instructions."""
+        """Format retrieved diagram and entity image URLs for natural, contextual placement."""
         if not diagrams:
             return ""
 
-        # Divide into Group 1 (Top Overview, 2-3 images) and Group 2 (In-between detailed points, 1-2 images)
-        if len(diagrams) >= 4:
-            g1 = diagrams[:3]
-            g2 = diagrams[3:]
-        elif len(diagrams) >= 2:
-            g1 = diagrams[:2]
-            g2 = diagrams[2:]
-        else:
-            g1 = diagrams
-            g2 = []
-
-        g1_tags = "\n".join([f"![{d['title']}]({d['url']})" for d in g1])
-        g2_tags = "\n".join([f"![{d['title']}]({d['url']})" for d in g2]) if g2 else ""
+        tags = "\n".join([f"![{d['title']}]({d['url']})" for d in diagrams])
 
         lines = [
-            f"\nVERIFIED VISUAL GROUNDING & IMAGES RETRIEVED ({len(diagrams)} सत्यापित उच्च-गुणवत्ता चित्र - अनिवार्य संतुलित लेआउट):",
-            "Embed these verified images following the rhythmic, balanced structure requested by the user:",
-            "\n➤ GROUP 1: शुरुआती 1-2/3 लाइन परिचयात्मक पैराग्राफ के ठीक नीचे (Top Overview Gallery):",
-            g1_tags,
-            "Instruction: Place these Group 1 images right after your opening 1-2/3 line introductory paragraph.",
+            f"\nVERIFIED VISUAL GROUNDING ({len(diagrams)} Verified Images Available):",
+            "Embed these verified markdown images naturally into your response where they directly illustrate the concept:",
+            tags,
+            "\nCRITICAL IMAGE RULES:",
+            "1. ONLY embed the verified markdown image tags provided above.",
+            "2. Place them contextually alongside the relevant section or topic.",
+            "3. If these images do not directly match what the user is asking, do NOT embed them.",
+            "4. NEVER invent or hallucinate unverified external image links."
         ]
-
-        if g2_tags:
-            lines.extend([
-                "\n➤ GROUP 2: मुख्य विवरण/पॉइंट्स के बीच में (In-Between Visuals):",
-                g2_tags,
-                "Instruction: Place these Group 2 images inside your detailed section alongside the relevant point or sub-topic so theory and visuals work in perfect synergy.",
-            ])
-
-        lines.extend([
-            "\nCRITICAL IMAGE INTEGRITY MANDATES (अनिवार्य नियम):",
-            "1. ONLY use the exact verified markdown image tags provided above.",
-            "2. STRICTLY FORBIDDEN: NEVER invent, hallucinate, or construct unverified external image links (e.g., NEVER generate images.unsplash.com, pexels, imgur, or imaginary URLs).",
-            "3. If no verified images are provided in this context, DO NOT output any markdown image tags (![...](...)).",
-            "4. Multiple image tags placed consecutively automatically render into a clean, responsive gallery in the UI."
-        ])
         return "\n".join(lines)
 
 

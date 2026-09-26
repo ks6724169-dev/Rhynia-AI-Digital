@@ -193,17 +193,11 @@ async def send_chat_message(
         f"- Remind users politely that private/login-protected social media accounts (personal Instagram DMs, private Facebook profiles) cannot be accessed due to platform privacy barriers."
     )
 
-    # 4B. Educational Diagram Retrieval Grounding (Only for educational/exploratory topics)
-    msg_cleaned = re.sub(r"[^\w\s]", " ", clean_message.lower())
-    words = msg_cleaned.split()
-    casual_lead_tokens = {"hi", "hello", "hey", "namaste", "kaise", "kya", "haal", "good", "morning", "night", "thanks", "thank", "ok", "bye", "who"}
-    is_greeting_or_chit_chat = (any(w in casual_lead_tokens for w in words[:2]) and len(words) <= 6)
-    is_simple_math = bool(re.search(r"^\s*[\d\s\+\-\*\/\^\(\)\=\?]+\s*$", clean_message)) or (("+" in clean_message or "-" in clean_message or "*" in clean_message or "kitna" in clean_message or "plus" in clean_message) and len(words) <= 7)
-
+    # 4B. Educational Diagram Retrieval Grounding (Strictly only when query has genuine visual intent)
     diagrams = []
-    if not req.files and not is_greeting_or_chit_chat and not is_simple_math:
+    if not req.files and educational_image_service.is_visual_worthy_query(clean_message):
         try:
-            diagrams = await educational_image_service.search_smart_diagrams(clean_message, default_limit=5)
+            diagrams = await educational_image_service.search_smart_diagrams(clean_message, default_limit=4)
             if diagrams:
                 diagram_prompt = educational_image_service.format_diagram_context(diagrams)
                 system_prompt = f"{system_prompt}\n\n{diagram_prompt}"
