@@ -56,6 +56,9 @@ async function sendChatMessage() {
     return;
   }
 
+  const effectiveMessage = content || (files.length > 0 ? "कृपया इस संलग्न फ़ोटो/फ़ाइल का गहन विश्लेषण करें और इसके बारे में विस्तार से समझाएं। (Please analyze the attached file/image in detail)." : "");
+  const displayContent = content || (files.length === 1 ? `संलग्न फ़ाइल का विश्लेषण: ${files[0].name}` : `संलग्न ${files.length} फ़ाइलों का विश्लेषण`);
+
   // Clear input and pending files immediately
   inputEl.value = "";
   AppState.pendingFiles = [];
@@ -71,7 +74,7 @@ async function sendChatMessage() {
   showActiveChatScreen();
 
   // 1. Render User Prompt Message (Right-aligned, soft surface)
-  appendUserMessageUI(content, files);
+  appendUserMessageUI(displayContent, files);
 
   // 2. Render Rhynia Response Stream Container (Left-aligned, open layout)
   const { rhyniaMessageId, textContainer, actionsContainer } = appendRhyniaPlaceholderUI();
@@ -88,7 +91,7 @@ async function sendChatMessage() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        message: content,
+        message: effectiveMessage,
         session_id: AppState.activeSessionId,
         files: files.map(f => f.id),
         web_search: true
@@ -197,13 +200,24 @@ function appendUserMessageUI(text, files) {
 
   let filesHtml = "";
   if (files && files.length > 0) {
-    filesHtml = `<div class="flex flex-wrap gap-1.5 mb-2 justify-end">` +
-      files.map(f => `
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#252525] border border-white/10 text-xs text-neutral-300">
-          <span class="material-symbols-outlined text-[15px] text-[#0078d4]">attach_file</span>
-          <span class="truncate max-w-[150px]">${escapeHtml(f.name)}</span>
-        </span>
-      `).join("") +
+    filesHtml = `<div class="flex flex-wrap gap-2 mb-2 justify-end">` +
+      files.map(f => {
+        const isImg = f.name && f.name.match(/\.(jpg|jpeg|png|webp|gif)$/i);
+        if (isImg && f.url) {
+          return `
+            <div class="rounded-xl overflow-hidden border border-white/10 bg-[#1a1a1a] shadow-md max-w-[200px] max-h-[140px] group relative cursor-pointer" onclick="window.openRhyniaLightbox('${f.url}', '${escapeHtml(f.name)}')">
+              <img src="${f.url}" alt="${escapeHtml(f.name)}" class="w-full h-full object-cover transition-transform group-hover:scale-105" />
+              <div class="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-sm px-2 py-0.5 text-[10px] text-white truncate text-center">${escapeHtml(f.name)}</div>
+            </div>
+          `;
+        }
+        return `
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#202020] border border-white/10 text-xs text-neutral-200 shadow-sm">
+            <span class="material-symbols-outlined text-[15px] text-[#0078d4]">description</span>
+            <span class="truncate max-w-[150px]">${escapeHtml(f.name)}</span>
+          </span>
+        `;
+      }).join("") +
       `</div>`;
   }
 

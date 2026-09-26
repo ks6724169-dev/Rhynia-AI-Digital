@@ -3,23 +3,30 @@ Rhynia Intelligence SaaS — Core Chat & Streaming Inference Router
 """
 
 import asyncio
+import base64
 import json
+import logging
 import re
+import zipfile
+import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
+import pypdf
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from services.rhynia_saas.backend.auth import get_current_user
 from services.rhynia_saas.backend.config import settings
-from services.rhynia_saas.backend.database import ChatMessage, ChatSession, User, get_db
+from services.rhynia_saas.backend.database import ChatMessage, ChatSession, User, UserFile, get_db
 from services.rhynia_saas.backend.llm_engine import RHYNIA_SYSTEM_PROMPT, llm_engine
 from services.rhynia_saas.backend.services.educational_synthesis import educational_synthesis_engine
 from services.rhynia_saas.backend.services.image_search import educational_image_service
 from services.rhynia_saas.backend.services.search import search_service
 
+logger = logging.getLogger("rhynia.chat")
 router = APIRouter(prefix="/api/v1/chat", tags=["Chat"])
 
 
@@ -27,11 +34,12 @@ router = APIRouter(prefix="/api/v1/chat", tags=["Chat"])
 # PYDANTIC SCHEMAS
 # ==========================================
 class ChatRequest(BaseModel):
-    message: str = Field(..., min_length=1)
+    message: Optional[str] = Field(default="")
     session_id: Optional[str] = None
     stream: bool = True
     web_search: bool = True
     deep_reasoning: bool = False
+    files: Optional[List[str]] = Field(default_factory=list)
 
 
 class ChatResponseJSON(BaseModel):
@@ -133,13 +141,15 @@ async def send_chat_message(
     Send a message to Rhynia Intelligence with streaming token response (SSE).
     Enforces Plan limits, persists message history, and grounds with search if requested.
     """
-    # 1. Validate Message Content
-    clean_message = req.message.strip()
-    if not clean_message:
+    # 1. Validate Message Content & Attachments
+    clean_message = (req.message or "").strip()
+    if not clean_message and not req.files:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Message cannot be empty or contain only whitespace.",
         )
+    if not clean_message and req.files:
+        clean_message = "कृपया इस संलग्न फ़ोटो/फ़ाइल का गहन और विस्तार से विश्लेषण करें, इसमें क्या-क्या जानकारी व दृश्य हैं स्पष्ट बताएं।"
 
     # 2. Enforce Plan Limits
     limit = enforce_daily_quota(current_user, db)
@@ -183,16 +193,136 @@ async def send_chat_message(
         f"- Remind users politely that private/login-protected social media accounts (personal Instagram DMs, private Facebook profiles) cannot be accessed due to platform privacy barriers."
     )
 
-    # 4B. Educational Diagram Retrieval Grounding (Automatic visual enrichment up to 5-6 diagrams)
+    # 4B. Educational Diagram Retrieval Grounding (Only for general queries when user has NOT uploaded attachments)
     diagrams = []
-    try:
-        diagrams = await educational_image_service.search_smart_diagrams(clean_message, default_limit=5)
-        if diagrams:
-            diagram_prompt = educational_image_service.format_diagram_context(diagrams)
-            system_prompt = f"{system_prompt}\n\n{diagram_prompt}"
-    except Exception as e:
-        # Non-blocking: If image retrieval encounters any network hiccup, normal LLM response proceeds
-        pass
+    if not req.files:
+        try:
+            diagrams = await educational_image_service.search_smart_diagrams(clean_message, default_limit=5)
+            if diagrams:
+                diagram_prompt = educational_image_service.format_diagram_context(diagrams)
+                system_prompt = f"{system_prompt}\n\n{diagram_prompt}"
+        except Exception as e:
+            # Non-blocking: If image retrieval encounters any network hiccup, normal LLM response proceeds
+            pass
+
+    # 4C. Multimodal Attachments Processing (Photos, PDFs, Documents)
+    attachments = []
+    file_contexts = []
+    attached_file_names = []
+
+    if req.files:
+        user_files = (
+            db.query(UserFile)
+            .filter(UserFile.id.in_(req.files), UserFile.user_id == current_user.id)
+            .all()
+        )
+        for uf in user_files:
+            file_path = Path(uf.file_path)
+            if not file_path.exists():
+                continue
+
+            attached_file_names.append(uf.original_filename)
+            mime = (uf.mime_type or "").lower()
+            suffix = file_path.suffix.lower()
+
+            try:
+                # 1. Images (Multimodal Vision)
+                if mime.startswith("image/") or suffix in [".jpg", ".jpeg", ".png", ".webp", ".gif"]:
+                    with open(file_path, "rb") as f:
+                        data_b64 = base64.b64encode(f.read()).decode("utf-8")
+                    image_mime = mime if mime.startswith("image/") else "image/jpeg"
+                    attachments.append({
+                        "type": "image",
+                        "mime_type": image_mime,
+                        "data": data_b64,
+                        "name": uf.original_filename,
+                    })
+                    file_contexts.append(f"[संलग्न फ़ोटो / Image Attachment: {uf.original_filename}]")
+
+                # 2. PDF Documents
+                elif mime == "application/pdf" or suffix == ".pdf":
+                    with open(file_path, "rb") as f:
+                        pdf_bytes = f.read()
+                        data_b64 = base64.b64encode(pdf_bytes).decode("utf-8")
+                    attachments.append({
+                        "type": "pdf",
+                        "mime_type": "application/pdf",
+                        "data": data_b64,
+                        "name": uf.original_filename,
+                    })
+
+                    # Extract text via pypdf
+                    extracted_text = ""
+                    try:
+                        reader = pypdf.PdfReader(str(file_path))
+                        pages_text = []
+                        for idx, page in enumerate(reader.pages[:30]):
+                            t = page.extract_text() or ""
+                            if t.strip():
+                                pages_text.append(f"--- पृष्ठ {idx + 1} ---\n{t.strip()}")
+                        extracted_text = "\n\n".join(pages_text)
+                    except Exception as pe:
+                        logger.warning(f"Error reading PDF {uf.original_filename}: {pe}")
+
+                    if extracted_text:
+                        file_contexts.append(
+                            f"\n=== संलग्न PDF दस्तावेज़ ({uf.original_filename}) की सामग्री ===\n"
+                            f"{extracted_text[:40000]}\n"
+                            f"=== दस्तावेज़ समाप्ति ==="
+                        )
+                    else:
+                        file_contexts.append(f"[संलग्न PDF दस्तावेज़: {uf.original_filename}]")
+
+                # 3. Word Documents (.docx)
+                elif suffix == ".docx" or "wordprocessingml" in mime:
+                    docx_text = ""
+                    try:
+                        with zipfile.ZipFile(str(file_path)) as docx_zip:
+                            tree = ET.fromstring(docx_zip.read("word/document.xml"))
+                            ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+                            paras = []
+                            for p in tree.iterfind(".//w:p", ns):
+                                pieces = [node.text for node in p.iterfind(".//w:t", ns) if node.text]
+                                if pieces:
+                                    paras.append("".join(pieces))
+                            docx_text = "\n".join(paras)
+                    except Exception as de:
+                        logger.warning(f"Error reading docx {uf.original_filename}: {de}")
+
+                    if docx_text:
+                        file_contexts.append(
+                            f"\n=== संलग्न WORD दस्तावेज़ ({uf.original_filename}) की सामग्री ===\n"
+                            f"{docx_text[:40000]}\n"
+                            f"=== दस्तावेज़ समाप्ति ==="
+                        )
+                    else:
+                        file_contexts.append(f"[संलग्न Word दस्तावेज़: {uf.original_filename}]")
+
+                # 4. Text, Code, CSV, Markdown, JSON
+                elif mime.startswith("text/") or suffix in [".txt", ".md", ".csv", ".json", ".py", ".js", ".html"]:
+                    try:
+                        with open(file_path, "r", encoding="utf-8", errors="replace") as f:
+                            raw_text = f.read(50000)
+                        file_contexts.append(
+                            f"\n=== संलग्न फ़ाइल ({uf.original_filename}) की सामग्री ===\n"
+                            f"{raw_text}\n"
+                            f"=== फ़ाइल समाप्ति ==="
+                        )
+                    except Exception as te:
+                        logger.warning(f"Error reading text file: {te}")
+            except Exception as fe:
+                logger.error(f"Error processing attachment {uf.original_filename}: {fe}")
+
+    # Inject attachment context instructions into system prompt
+    if file_contexts:
+        attachments_info = (
+            "\n\nUSER UPLOADED ATTACHMENT CONTEXT (उपयोगकर्ता द्वारा संलग्न फ़ोटो/फ़ाइलें):\n"
+            "- The user has attached photos or documents with this message.\n"
+            "- CRITICAL MULTIMODAL INSTRUCTION: Deeply examine and analyze all visual details of the attached photos (objects, diagrams, text/labels, colors, people, handwriting, charts, scenes) and the extracted contents of any documents.\n"
+            "- Answer the user's inquiry thoroughly and accurately grounded in the visual/textual details of these attachments.\n"
+            + "\n".join(file_contexts)
+        )
+        system_prompt = f"{system_prompt}\n{attachments_info}"
 
     # 5. Persist User Message
     user_msg = ChatMessage(
@@ -215,10 +345,17 @@ async def send_chat_message(
     )
     messages_payload = [{"role": m.role, "content": m.content} for m in history_records]
 
+    # Augment last message with extracted textual contexts if present
+    if file_contexts and messages_payload:
+        last_turn = messages_payload[-1]
+        if last_turn.get("role") == "user":
+            doc_context_text = "\n\n".join(file_contexts)
+            last_turn["content"] = f"{clean_message}\n\n【संलग्न दस्तावेज़/फ़ोटो विवरण】:\n{doc_context_text}"
+
     # 7. Non-Streaming JSON Fallback
     if not req.stream:
         reply_content, model_used, tokens_used = await llm_engine.generate_response(
-            messages_payload, system_prompt=system_prompt, web_search=use_web_search
+            messages_payload, system_prompt=system_prompt, web_search=use_web_search, attachments=attachments
         )
 
         # Double Guarantee: If reply_content has almost no text (< 50 chars), synthesize educational text!
@@ -289,7 +426,7 @@ async def send_chat_message(
 
             # Stream tokens
             async for token in llm_engine.generate_stream(
-                messages_payload, system_prompt=system_prompt, web_search=use_web_search
+                messages_payload, system_prompt=system_prompt, web_search=use_web_search, attachments=attachments
             ):
                 collected_reply.append(token)
                 token_event = json.dumps({"type": "token", "content": token})

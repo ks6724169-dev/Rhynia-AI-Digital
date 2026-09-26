@@ -65,13 +65,19 @@ async function uploadAttachmentFile(file) {
 
     // Replace temporary chip with confirmed uploaded file
     removeAttachmentChipUI(tempId);
+    const fileId = (data.file && data.file.id) ? data.file.id : (data.id || tempId);
+    const fileName = (data.file && data.file.original_filename) ? data.file.original_filename : (data.filename || file.name);
+    const fileUrl = (data.file && data.file.id) ? `${CONFIG.API_BASE}/files/${data.file.id}/download` : (data.url || "");
+    const mimeType = (data.file && data.file.mime_type) ? data.file.mime_type : (file.type || "");
+
     AppState.pendingFiles.push({
-      id: data.id || data.file_id || tempId,
-      name: data.filename || file.name,
-      url: data.url
+      id: fileId,
+      name: fileName,
+      url: fileUrl,
+      type: mimeType
     });
-    addAttachmentChipUI({ id: data.id || tempId, name: file.name, isUploading: false });
-    showToast(`Attached: ${file.name}`, "success");
+    addAttachmentChipUI({ id: fileId, name: fileName, isUploading: false });
+    showToast(`Attached: ${fileName}`, "success");
   } catch (err) {
     removeAttachmentChipUI(tempId);
     showToast(`Failed to upload ${file.name}: ${err.message}`, "error");

@@ -90,9 +90,12 @@ class CascadeLLMEngine:
         self.gemini_url_template = "https://generativelanguage.googleapis.com/v1beta/models/{model}:streamGenerateContent?alt=sse&key={key}"
 
     def _build_payload_messages(
-        self, messages: List[Dict[str, str]], system_prompt: Optional[str] = None
-    ) -> List[Dict[str, str]]:
-        """Construct standard message payload with Rhynia system prompt and live IST time."""
+        self,
+        messages: List[Dict[str, str]],
+        system_prompt: Optional[str] = None,
+        attachments: Optional[List[Dict]] = None,
+    ) -> List[Dict]:
+        """Construct standard message payload with Rhynia system prompt, live IST time, and optional vision content."""
         base_prompt = system_prompt or RHYNIA_SYSTEM_PROMPT
 
         # Inject real-time Indian Standard Time (IST - UTC+05:30)
@@ -118,12 +121,37 @@ class CascadeLLMEngine:
             if role not in ["user", "system", "model"]:
                 role = "user"
             formatted.append({"role": role, "content": m.get("content", "")})
+
+        # Inject vision attachments into the last user message for vision-capable models
+        if attachments:
+            last_user_idx = None
+            for i in range(len(formatted) - 1, -1, -1):
+                if formatted[i]["role"] == "user":
+                    last_user_idx = i
+                    break
+            if last_user_idx is not None:
+                orig_text = formatted[last_user_idx]["content"]
+                multi_content = [{"type": "text", "text": orig_text}]
+                for att in attachments:
+                    if att.get("type") == "image" and att.get("data"):
+                        mime = att.get("mime_type", "image/jpeg")
+                        multi_content.append({
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:{mime};base64,{att['data']}"
+                            }
+                        })
+                formatted[last_user_idx]["content"] = multi_content
+
         return formatted
 
     def _build_gemini_payload(
-        self, messages: List[Dict[str, str]], system_prompt: Optional[str] = None
+        self,
+        messages: List[Dict[str, str]],
+        system_prompt: Optional[str] = None,
+        attachments: Optional[List[Dict]] = None,
     ) -> Dict:
-        """Construct Google Gemini native contents and systemInstruction payload."""
+        """Construct Google Gemini native contents and systemInstruction payload with inlineData support."""
         base_prompt = system_prompt or RHYNIA_SYSTEM_PROMPT
 
         try:
@@ -147,23 +175,47 @@ class CascadeLLMEngine:
         contents = []
         for m in messages:
             role = m.get("role", "user")
-            content = m.get("content", "").strip()
-            if not content:
+            content = m.get("content", "")
+            if isinstance(content, str):
+                content_str = content.strip()
+            else:
+                content_str = str(content)
+            if not content_str:
                 continue
             gemini_role = "model" if role in ["model", "assistant"] else "user"
 
             # Avoid consecutive same-role messages by combining text
             if contents and contents[-1]["role"] == gemini_role:
-                contents[-1]["parts"][0]["text"] += f"\n\n{content}"
+                contents[-1]["parts"][0]["text"] += f"\n\n{content_str}"
             else:
-                contents.append({"role": gemini_role, "parts": [{"text": content}]})
+                contents.append({"role": gemini_role, "parts": [{"text": content_str}]})
 
         # Gemini contents must start with 'user'
         if contents and contents[0]["role"] != "user":
             contents.pop(0)
 
         if not contents:
-            contents = [{"role": "user", "parts": [{"text": "Hello"}]}]
+            contents = [{"role": "user", "parts": [{"text": "कृपया इस फ़ोटो या फ़ाइल का विस्तृत विश्लेषण करें।"}]}]
+
+        # Inject attachments (images / PDF) into the last user message
+        if attachments:
+            last_user = None
+            for item in reversed(contents):
+                if item["role"] == "user":
+                    last_user = item
+                    break
+            if not last_user:
+                last_user = {"role": "user", "parts": [{"text": "कृपया इस फ़ोटो या फ़ाइल का विश्लेषण करें।"}]}
+                contents.append(last_user)
+
+            for att in attachments:
+                if att.get("data") and att.get("mime_type"):
+                    last_user["parts"].append({
+                        "inlineData": {
+                            "mimeType": att["mime_type"],
+                            "data": att["data"]
+                        }
+                    })
 
         return {
             "contents": contents,
@@ -241,17 +293,20 @@ class CascadeLLMEngine:
         system_prompt: Optional[str] = None,
         tier: int = 1,
         web_search: bool = True,
+        attachments: Optional[List[Dict]] = None,
     ) -> AsyncGenerator[str, None]:
         """
         Indestructible 4-Tier Cascade Router:
-        - Tier 1: Google Gemini Ultra-Fast Native API (Primary & Backup Gemini Keys)
+        - Tier 1: Google Gemini Ultra-Fast Native API with Multimodal Vision (Primary & Backup Gemini Keys)
         - Tier 2: OpenRouter Flagship Models (Llama 3.3 70B & DeepSeek via Primary OpenRouter Key)
         - Tier 3: OpenRouter Free Models (Liquid, Dots, Nex-mini via Backup Key)
         - Tier 4: Guaranteed Educational Synthesis Engine (Local / Zero-Failure Offline)
         """
-        gemini_payload = self._build_gemini_payload(messages, system_prompt)
-        openrouter_messages = self._build_payload_messages(messages, system_prompt)
+        gemini_payload = self._build_gemini_payload(messages, system_prompt, attachments=attachments)
+        openrouter_messages = self._build_payload_messages(messages, system_prompt, attachments=attachments)
         last_user_query = messages[-1]["content"] if messages else "Hello"
+        if not isinstance(last_user_query, str):
+            last_user_query = str(last_user_query)
 
         # Catalog all 4 keys from settings or environment
         gemini_keys = [
@@ -261,16 +316,15 @@ class CascadeLLMEngine:
             ] if k
         ]
         gemini_models = [
-            "gemini-flash-lite-latest",
-            "gemini-3.5-flash-lite",
-            "gemini-3.8-flash",
+            "gemini-2.5-flash",
             "gemini-flash-latest",
+            "gemini-flash-lite-latest",
         ]
 
         openrouter_key = settings.OPENROUTER_API_KEY or os.environ.get("OPENROUTER_API_KEY")
         openrouter_backup_key = settings.OPENROUTER_BACKUP_KEY or os.environ.get("OPENROUTER_BACKUP_KEY") or openrouter_key
 
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=45.0) as client:
             # ====================================================
             # TIER 1: Google Gemini Ultra-Fast Native API (Keys 1 & 2)
             # ====================================================
@@ -342,12 +396,15 @@ class CascadeLLMEngine:
         messages: List[Dict[str, str]],
         system_prompt: Optional[str] = None,
         web_search: bool = True,
+        attachments: Optional[List[Dict]] = None,
     ) -> Tuple[str, str, int]:
         """
         Generate complete text response and return (content, model_tier, token_count).
         """
         chunks = []
-        async for token in self.generate_stream(messages, system_prompt, web_search=web_search):
+        async for token in self.generate_stream(
+            messages, system_prompt, web_search=web_search, attachments=attachments
+        ):
             chunks.append(token)
         full_content = "".join(chunks)
         # Approximate token count
