@@ -100,11 +100,16 @@ def sanitize_response_images(text: str, verified_diagrams: Optional[List[Dict[st
         text
     )
 
-    # 3. Intercept hallucinated non-wikimedia image tags
+    # 3. Intercept hallucinated non-verified image tags
+    verified_urls = {v.get("url", "") for v in (verified_diagrams or [])}
+
     def _clean_img_match(match):
         caption = match.group(1)
         url = match.group(2)
-        if "wikimedia.org" in url or "wikipedia.org" in url or "/api/v1/proxy-image" in url:
+        if "wikimedia.org" in url or "wikipedia.org" in url or "/api/v1/proxy-image" in url or "pinimg.com" in url:
+            return match.group(0)
+        # Allow any verified URL from our visual search
+        if url in verified_urls:
             return match.group(0)
         if verified_diagrams:
             v = verified_diagrams[0]

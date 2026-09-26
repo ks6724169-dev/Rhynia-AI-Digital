@@ -630,6 +630,13 @@ class EducationalImageService:
             "pura", "step by step", "विस्तार", "गहराई"
         ])
 
+        # Check if user explicitly asked for Pinterest
+        prefer_pinterest = any(w in low for w in ["pinterest", "पिनट्रेस्ट", "पिनटेरेस्ट"])
+        if prefer_pinterest:
+            p_images = await self.search_web_and_pinterest_images(query, limit=default_limit if wants_multiple else 3)
+            if p_images:
+                return p_images
+
         # 1. Check if query matches a rich concept subtopics mapping (STEM)
         for concept_key in sorted(CONCEPT_SUBTOPICS.keys(), key=len, reverse=True):
             if self._matches_concept(concept_key, low):
@@ -664,7 +671,66 @@ class EducationalImageService:
         if universal_images:
             return universal_images
 
+        # 4. Open Web & Pinterest Image Grounding (Fallback when Wikipedia has no images or user requests Pinterest/Art)
+        web_images = await self.search_web_and_pinterest_images(query, limit=limit)
+        if web_images:
+            return web_images
+
         return []
+
+    async def search_web_and_pinterest_images(self, query: str, limit: int = 3) -> List[Dict[str, str]]:
+        """
+        Tier 3 Open Web & Pinterest Grounding:
+        Searches Pinterest, Google indexed images, and open web visual sources via Bing Image Index
+        when Wikipedia doesn't have images for the requested topic.
+        """
+        clean_q = re.sub(
+            r"(?i)\b(ko|ka|ki|ke|kya|hai|hain|karo|samjhao|explain|in|detail|batao|bataiye|please|dikhao|dikhaiye|draw|give|me|about|what|is|how|does|work|the|a|an|with|diagram|chitra|chitr|picture|photo|photos|image|images|art|wallpapers?|pinterest|google|search)\b|(?:\b|\s)(?:के\s+बारे\s+में|बताओ|बताइए|दिखाओ|दिखाइए|समझाओ|और|भी|का|की|के|को|क्या|है|हैं|चित्र|तस्वीर|फोटो|डायग्राम|सचित्र|विस्तार\s+से|जी|पिनट्रेस्ट|पिनटेरेस्ट|गूगल|सर्च)(?:\b|\s)",
+            " ",
+            f" {query} "
+        )
+        clean_q = re.sub(r"[^\w\s]", " ", clean_q).strip()
+        clean_q = re.sub(r"\s+", " ", clean_q)
+        if not clean_q:
+            clean_q = query.strip()
+
+        low = query.lower()
+        prefer_pinterest = any(w in low for w in ["pinterest", "पिनट्रेस्ट", "पिनटेरेस्ट"])
+        if prefer_pinterest:
+            search_query = f"{clean_q} site:pinterest.com/pin/"
+        else:
+            search_query = f"{clean_q} hd image"
+
+        url = f"https://www.bing.com/images/search?q={urllib.parse.quote(search_query)}&first=1"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        }
+
+        results: List[Dict[str, str]] = []
+        seen = set()
+        try:
+            async with httpx.AsyncClient(headers=headers, timeout=6.0, follow_redirects=True) as client:
+                res = await client.get(url)
+                if res.status_code == 200:
+                    html = res.text
+                    matches = re.findall(r'murl&quot;:&quot;(https?://[^&"]+)&quot;', html)
+                    if not matches:
+                        matches = re.findall(r'"murl":"(https?://[^"]+)"', html)
+                    titles = re.findall(r't1&quot;:&quot;([^&"]+)&quot;', html)
+
+                    for i, u in enumerate(matches):
+                        clean_u = u.split("?")[0].lower()
+                        if clean_u not in seen and any(clean_u.endswith(ext) for ext in [".jpg", ".jpeg", ".png", ".webp"]):
+                            seen.add(clean_u)
+                            t = titles[i] if i < len(titles) else clean_q
+                            results.append({"title": t, "url": u})
+                            if len(results) >= limit:
+                                break
+        except Exception as e:
+            logger.warning(f"Open Web & Pinterest image search error for '{query}': {e}")
+
+        return results[:limit]
 
     def format_diagram_context(self, diagrams: List[Dict[str, str]]) -> str:
         """Format retrieved diagram and entity image URLs into balanced placement instructions."""

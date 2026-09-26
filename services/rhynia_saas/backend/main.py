@@ -109,9 +109,12 @@ async def proxy_image(url: str):
         )
 
     headers = {
-        "User-Agent": "RhyniaIntelligence/1.0 (https://rhynia.com; contact@rhynia.com)",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
         "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+        "Referer": "https://www.google.com/",
     }
+    if "wikimedia.org" in clean_url or "wikipedia.org" in clean_url:
+        headers["User-Agent"] = "RhyniaIntelligence/1.0 (https://rhynia.com; contact@rhynia.com)"
     try:
         async with httpx.AsyncClient(headers=headers, follow_redirects=True, timeout=15.0) as client:
             resp = await client.get(clean_url)
