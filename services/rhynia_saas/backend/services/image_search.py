@@ -505,32 +505,36 @@ class EducationalImageService:
         of entities: People, Historical Figures, Deities, Characters, TV Shows, Movies,
         Products, Technology, Monuments, and Places.
         """
+        # Remove conversational filler words (Latin and Devanagari)
         clean_q = re.sub(
-            r"(?i)\b(ko|ka|ki|ke|kya|hai|karo|samjhao|explain|in|detail|batao|please|dikhao|draw|give|me|about|what|is|how|does|work|the|a|an|with|diagram|chitra|chitr|picture|photo|photos|image|images|art|wallpapers?)\b",
+            r"(?i)\b(ko|ka|ki|ke|kya|hai|hain|karo|samjhao|explain|in|detail|batao|bataiye|please|dikhao|dikhaiye|draw|give|me|about|what|is|how|does|work|the|a|an|with|diagram|chitra|chitr|picture|photo|photos|image|images|art|wallpapers?)\b|(?:\b|\s)(?:के\s+बारे\s+में|बताओ|बताइए|दिखाओ|दिखाइए|समझाओ|और|भी|का|की|के|को|क्या|है|हैं|चित्र|तस्वीर|फोटो|डायग्राम|सचित्र|विस्तार\s+से|जी)(?:\b|\s)",
             " ",
-            query
+            f" {query} "
         )
         clean_q = re.sub(r"[^\w\s]", " ", clean_q).strip()
+        clean_q = re.sub(r"\s+", " ", clean_q)
         if not clean_q:
             clean_q = query.strip()
 
         search_terms = [clean_q]
-        low = clean_q.lower()
-        if any(r in low for r in ["lord ram", "ram ji", "shri ram", "rama", "bhagwan ram", "ram"]):
-            search_terms = ["Rama", "Ram Mandir", "Ayodhya Ram"]
-        elif "shaktimaan" in low or "shaktiman" in low:
+        low = f"{clean_q} {query}".lower()
+        if any(r in low for r in ["lord ram", "ram ji", "shri ram", "rama", "bhagwan ram", "श्री राम", "राम जी", "भगवान राम", "श्रीराम", "राम"]):
+            search_terms = ["Rama", "Lord Rama", "Ram Mandir", "Ayodhya Ram"]
+        elif any(s in low for s in ["shaktimaan", "shaktiman", "शक्तिमान"]):
             search_terms = ["Shaktimaan", "Mukesh Khanna"]
-        elif "modi" in low:
+        elif any(m in low for m in ["modi", "मोदी"]):
             search_terms = ["Narendra Modi"]
-        elif "gandhi" in low:
+        elif any(g in low for g in ["gandhi", "गांधी"]):
             search_terms = ["Mahatma Gandhi"]
+        elif any(k in low for k in ["krishna", "कृष्ण"]):
+            search_terms = ["Krishna", "Lord Krishna"]
+        elif any(s in low for s in ["shiva", "shiv", "शिव", "भोलेनाथ"]):
+            search_terms = ["Shiva", "Lord Shiva"]
 
         results: List[Dict[str, str]] = []
         seen_urls = set()
 
-        domains = ["en.wikipedia.org"]
-        if re.search(r"[\u0900-\u097F]", query):
-            domains.insert(0, "hi.wikipedia.org")
+        domains = ["en.wikipedia.org", "hi.wikipedia.org"]
 
         async with httpx.AsyncClient(timeout=4.5) as client:
             for term in search_terms:
@@ -556,8 +560,9 @@ class EducationalImageService:
                             pages = data.get("query", {}).get("pages", {})
                             for pid, p in pages.items():
                                 title = p.get("title", "")
+                                title_l = title.lower()
                                 # Filter out obvious unrelated collisions
-                                if "edi rama" in title.lower() or "rama duwaji" in title.lower():
+                                if any(x in title_l for x in ["edi rama", "rama duwaji", "gurmeet ram", "devanagari", "bengali", "संयुक्ताक्षर"]):
                                     continue
                                 thumb = p.get("thumbnail", {}).get("source", "")
                                 if thumb:

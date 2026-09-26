@@ -4,6 +4,7 @@ Rhynia Intelligence SaaS — Core Chat & Streaming Inference Router
 
 import asyncio
 import json
+import re
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
