@@ -77,6 +77,17 @@ def enforce_daily_quota(user: User, db: Session) -> int:
     return limit
 
 
+def sanitize_wikimedia_thumbs(text: str) -> str:
+    """Sanitize any hallucinated or malformed Wikimedia thumb URLs into direct canonical image links."""
+    if not text:
+        return ""
+    return re.sub(
+        r"https?://upload\.wikimedia\.org/wikipedia/commons/thumb/([^/\s\)\"\']+)/([^/\s\)\"\']+)/([^/\s\)\"\']+)/[^\s\)\"\']+",
+        r"https://upload.wikimedia.org/wikipedia/commons/\1/\2/\3",
+        text
+    )
+
+
 # ==========================================
 # POST /api/v1/chat (STREAMING & JSON)
 # ==========================================
@@ -207,6 +218,9 @@ async def send_chat_message(
             else:
                 reply_content = f"{reply_content}{g1_block}{g2_block}"
 
+        # Clean any malformed /thumb/ URLs
+        reply_content = sanitize_wikimedia_thumbs(reply_content)
+
         # Persist Rhynia reply
         rhynia_msg = ChatMessage(
             session_id=session_id,
@@ -267,6 +281,9 @@ async def send_chat_message(
                 token_event = json.dumps({"type": "token", "content": img_block})
                 yield f"data: {token_event}\n\n"
                 full_reply += img_block
+
+            # Clean any malformed /thumb/ URLs in final persisted reply
+            full_reply = sanitize_wikimedia_thumbs(full_reply)
 
             rhynia_msg = ChatMessage(
                 session_id=session_id,

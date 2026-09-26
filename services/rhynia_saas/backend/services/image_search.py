@@ -105,6 +105,15 @@ CONCEPT_MAP: Dict[str, str] = {
     "electric circuit": "electric circuit diagram",
     "विद्युत परिपथ": "electric circuit diagram",
 
+    # Botany & Plant Biology (Leaf, Stoma, Xylem, Chloroplast)
+    "leaf anatomy": "leaf anatomy cross section diagram",
+    "leaf structure": "leaf anatomy cross section diagram",
+    "leaf": "leaf anatomy cross section diagram",
+    "leaves": "leaf anatomy cross section diagram",
+    "patti": "leaf anatomy cross section diagram",
+    "पत्ती": "leaf anatomy cross section diagram",
+    "पत्ते": "leaf anatomy cross section diagram",
+
     # Geography & Earth Science
     "water cycle": "water cycle diagram",
     "जल चक्र": "water cycle diagram",
@@ -113,7 +122,14 @@ CONCEPT_MAP: Dict[str, str] = {
     "solar system": "solar system diagram",
     "सौर मंडल": "solar system diagram",
     "earth structure": "internal structure of earth diagram",
+    "earth's internal structure": "internal structure of earth diagram",
+    "internal structure of earth": "internal structure of earth diagram",
+    "earrth": "internal structure of earth diagram",
+    "earth": "internal structure of earth diagram",
     "पृथ्वी की आंतरिक संरचना": "internal structure of earth diagram",
+    "पृथ्वी की संरचना": "internal structure of earth diagram",
+    "पृथ्वी": "internal structure of earth diagram",
+    "prithvi": "internal structure of earth diagram",
     "layers of earth": "internal structure of earth diagram",
     "volcano": "volcano diagram",
     "ज्वालामुखी": "volcano diagram",
@@ -292,6 +308,43 @@ CONCEPT_SUBTOPICS: Dict[str, List[str]] = {
         "atom structure diagram",
         "bohr model atom diagram",
         "electron shell orbital diagram"
+    ],
+    "earth": [
+        "internal structure of earth diagram",
+        "Earth Internal Structure diagram",
+        "layers of earth crust mantle core diagram",
+        "plate tectonics diagram"
+    ],
+    "earrth": [
+        "internal structure of earth diagram",
+        "Earth Internal Structure diagram",
+        "layers of earth crust mantle core diagram"
+    ],
+    "पृथ्वी": [
+        "internal structure of earth diagram",
+        "Earth Internal Structure diagram",
+        "layers of earth crust mantle core diagram"
+    ],
+    "prithvi": [
+        "internal structure of earth diagram",
+        "Earth Internal Structure diagram",
+        "layers of earth crust mantle core diagram"
+    ],
+    "leaf": [
+        "leaf anatomy cross section diagram",
+        "leaf diagram",
+        "stoma plant diagram",
+        "chloroplast diagram"
+    ],
+    "पत्ती": [
+        "leaf anatomy cross section diagram",
+        "leaf diagram",
+        "stoma plant diagram"
+    ],
+    "patti": [
+        "leaf anatomy cross section diagram",
+        "leaf diagram",
+        "stoma plant diagram"
     ]
 }
 
@@ -303,14 +356,35 @@ class EducationalImageService:
         self.api_url = "https://commons.wikimedia.org/w/api.php"
         self.headers = {"User-Agent": "RhyniaIntelligence/1.0 (https://rhynia.com; contact@rhynia.com)"}
 
+    @staticmethod
+    def clean_wikimedia_url(url: str) -> str:
+        """Sanitize any hallucinated or malformed Wikimedia thumb URLs into canonical direct links."""
+        if not url:
+            return ""
+        if "/wikipedia/commons/thumb/" in url:
+            parts = url.split("/wikipedia/commons/thumb/")[1].split("/")
+            if len(parts) >= 3:
+                return f"https://upload.wikimedia.org/wikipedia/commons/{parts[0]}/{parts[1]}/{parts[2]}"
+        return url
+
+    @staticmethod
+    def _matches_concept(concept_key: str, text: str) -> bool:
+        """Check if concept matches as a whole word (for Latin) or substring (for Devanagari)."""
+        if re.search(r"[a-zA-Z]", concept_key):
+            return bool(re.search(rf"\b{re.escape(concept_key)}\b", text))
+        return concept_key in text
+
     def extract_subject(self, query: str) -> Optional[str]:
         """Extract the core educational topic from user prompt (supporting English, Hindi, Hinglish)."""
         low = query.lower().strip()
+        # Automatic spelling normalization for common typos
+        low = re.sub(r"\bearrth\b", "earth", low)
+        low = re.sub(r"\bstructur\b", "structure", low)
 
-        # 1. Direct concept mapping check
-        for concept_key, search_term in CONCEPT_MAP.items():
-            if concept_key in low:
-                return search_term
+        # 1. Direct concept mapping check (sorted by key length descending)
+        for concept_key in sorted(CONCEPT_MAP.keys(), key=len, reverse=True):
+            if self._matches_concept(concept_key, low):
+                return CONCEPT_MAP[concept_key]
 
         # 2. Check if the user is asking for a diagram or explanation of a scientific noun
         visual_triggers = [
@@ -321,7 +395,7 @@ class EducationalImageService:
 
         # 3. Clean query by stripping conversational filler words
         cleaned = re.sub(
-            r"(?i)\b(ko|ka|ki|ke|kya|hai|karo|samjhao|explain|in|detail|batao|please|dikhao|draw|give|me|about|what|is|how|does|work|the|a|an|with|diagram|chitra|chitr|picture|image)\b",
+            r"(?i)\b(ko|ka|ki|ke|kya|hai|karo|samjhao|explain|in|detail|batao|please|dikhao|draw|give|me|about|what|is|how|does|work|the|a|an|with|diagram|chitra|chitr|picture|image|o)\b",
             " ",
             query
         )
@@ -371,7 +445,8 @@ class EducationalImageService:
                         if not img_url:
                             continue
 
-                        clean_path = img_url.split("?")[0].lower()
+                        clean_url = self.clean_wikimedia_url(img_url)
+                        clean_path = clean_url.split("?")[0].lower()
                         # Only accept high-quality graphic formats
                         if any(clean_path.endswith(ext) for ext in [".svg", ".png", ".jpg", ".jpeg", ".webp"]):
                             raw_title = p.get("title", "").replace("File:", "")
@@ -390,7 +465,7 @@ class EducationalImageService:
                             if len(title) > 3:
                                 candidates.append({
                                     "title": title,
-                                    "url": img_url,
+                                    "url": clean_url,
                                     "score": score
                                 })
 
@@ -408,6 +483,19 @@ class EducationalImageService:
         except Exception as e:
             logger.warning(f"Wikimedia educational image search error for '{query}': {e}")
 
+        # Smart fallback if multi-word query returned 0 results
+        if not results:
+            tokens = [w for w in clean_q.lower().split() if len(w) > 3 and w not in ["diagram", "structure", "internal", "external", "system", "about"]]
+            for t in tokens:
+                fallback_q = f"{t} diagram"
+                if fallback_q != search_query:
+                    try:
+                        fallback_res = await self.search_diagrams(fallback_q, limit=limit)
+                        if fallback_res:
+                            return fallback_res
+                    except Exception:
+                        pass
+
         return results[:limit]
 
     async def search_smart_diagrams(self, query: str, default_limit: int = 5) -> List[Dict[str, str]]:
@@ -416,6 +504,8 @@ class EducationalImageService:
         For detailed or multi-image requests, concurrently queries specific sub-aspects.
         """
         low = query.lower()
+        low = re.sub(r"\bearrth\b", "earth", low)
+        low = re.sub(r"\bstructur\b", "structure", low)
 
         # Check if user specifically asks for multiple or detailed diagrams
         wants_multiple = any(k in low for k in [
@@ -425,11 +515,11 @@ class EducationalImageService:
         ])
 
         # Check if query matches a rich concept subtopics mapping
-        for concept_key, subtopics in CONCEPT_SUBTOPICS.items():
-            if concept_key in low:
+        for concept_key in sorted(CONCEPT_SUBTOPICS.keys(), key=len, reverse=True):
+            if self._matches_concept(concept_key, low):
                 target_count = default_limit if wants_multiple else 3
                 # Fetch subtopics concurrently
-                tasks = [self.search_diagrams(sub, limit=1) for sub in subtopics[:target_count + 1]]
+                tasks = [self.search_diagrams(sub, limit=1) for sub in CONCEPT_SUBTOPICS[concept_key][:target_count + 1]]
                 results = await asyncio.gather(*tasks)
                 flat = [img for r in results for img in r]
 
