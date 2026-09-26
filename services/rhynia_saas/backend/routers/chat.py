@@ -5,7 +5,7 @@ Rhynia Intelligence SaaS — Core Chat & Streaming Inference Router
 import asyncio
 import json
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -77,15 +77,41 @@ def enforce_daily_quota(user: User, db: Session) -> int:
     return limit
 
 
-def sanitize_wikimedia_thumbs(text: str) -> str:
-    """Sanitize any hallucinated or malformed Wikimedia thumb URLs into direct canonical image links."""
+def sanitize_response_images(text: str, verified_diagrams: Optional[List[Dict[str, str]]] = None) -> str:
+    """
+    Ensures 100% image integrity:
+    1. Converts any malformed Wikimedia thumbnail URLs to canonical direct links.
+    2. Intercepts hallucinated external image links (e.g. fake unsplash, pexels, imgur URLs).
+    3. Replaces hallucinated images with verified images if available, or removes them.
+    """
     if not text:
         return ""
-    return re.sub(
+    # 1. Sanitize standard upload.wikimedia.org thumb URLs
+    text = re.sub(
         r"https?://upload\.wikimedia\.org/wikipedia/commons/thumb/([^/\s\)\"\']+)/([^/\s\)\"\']+)/([^/\s\)\"\']+)/[^\s\)\"\']+",
         r"https://upload.wikimedia.org/wikipedia/commons/\1/\2/\3",
         text
     )
+    # 2. Sanitize thumb.wikimedia.org URLs
+    text = re.sub(
+        r"https?://thumb\.wikimedia\.org/wikipedia/commons/thumb/([^/\s\)\"\']+)/([^/\s\)\"\']+)/([^/\s\)\"\']+)/[^\s\)\"\']+",
+        r"https://upload.wikimedia.org/wikipedia/commons/\1/\2/\3",
+        text
+    )
+
+    # 3. Intercept hallucinated non-wikimedia image tags
+    def _clean_img_match(match):
+        caption = match.group(1)
+        url = match.group(2)
+        if "wikimedia.org" in url or "wikipedia.org" in url or "/api/v1/proxy-image" in url:
+            return match.group(0)
+        if verified_diagrams:
+            v = verified_diagrams[0]
+            return f"![{v['title']}]({v['url']})"
+        return ""
+
+    text = re.sub(r"!\[(.*?)\]\((https?://[^\s\)]+)\)", _clean_img_match, text)
+    return text
 
 
 # ==========================================
@@ -218,8 +244,8 @@ async def send_chat_message(
             else:
                 reply_content = f"{reply_content}{g1_block}{g2_block}"
 
-        # Clean any malformed /thumb/ URLs
-        reply_content = sanitize_wikimedia_thumbs(reply_content)
+        # Clean any malformed /thumb/ URLs and sanitize images
+        reply_content = sanitize_response_images(reply_content, diagrams)
 
         # Persist Rhynia reply
         rhynia_msg = ChatMessage(
@@ -282,8 +308,8 @@ async def send_chat_message(
                 yield f"data: {token_event}\n\n"
                 full_reply += img_block
 
-            # Clean any malformed /thumb/ URLs in final persisted reply
-            full_reply = sanitize_wikimedia_thumbs(full_reply)
+            # Clean any malformed /thumb/ URLs and sanitize images in final persisted reply
+            full_reply = sanitize_response_images(full_reply, diagrams)
 
             rhynia_msg = ChatMessage(
                 session_id=session_id,

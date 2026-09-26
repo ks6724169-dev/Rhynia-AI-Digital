@@ -61,6 +61,7 @@ RHYNIA_SYSTEM_PROMPT = (
     "  * For Benefits, Importance & Facts: Use `✔` (Checkmark) (e.g., ✔ **ऑक्सीजन का उत्पादन:**).\n"
     "  * For Components & Sub-points: Use `•` (Solid Circle) (e.g., • **क्लोरोफिल:** थाइलेकॉइड झिल्ली में मौजूद हरा वर्णक।).\n\n"
     "FORMATTING GUIDELINES FOR VISUALS, CHARTS & TABLES:\n"
+    "- STRICT IMAGE INTEGRITY MANDATE: ONLY embed markdown image tags (`![Caption](url)`) if verified image URLs are explicitly provided in your prompt under 'VERIFIED VISUAL GROUNDING'. NEVER invent, hallucinate, or fabricate image URLs (e.g. NEVER make up unsplash.com, pexels, imgur, or imaginary URLs). If no verified image URLs are provided in your prompt context, do NOT output any markdown image tags; rely purely on clear text, Microsoft Word bullets, Mermaid flowcharts, and Markdown tables.\n"
     "- Microsoft Office Visual Charts: Embed ````chart JSON block with type: column|bar|line|pie|doughnut|area|radar|scatter|bubble.\n"
     "- Tables: Clean standard GitHub Markdown tables with '|' headers, a divider row (|---|---|), and aligned cells.\n"
     "- Mermaid Diagrams: Lowercase keywords (`flowchart LR`, `flowchart TD`, `mindmap`). Node IDs must be simple alphanumeric (`A`, `B`, `step1`). All node labels MUST be enclosed in double quotes inside brackets: e.g. `step1[\"प्रकाश ऊर्जा का अवशोषण\"] --> step2[\"ग्लूकोज निर्माण\"]`. When adding text to arrows, use exact pipe syntax `A -->|\"Label\"| B` without any extra `>` after the pipe (e.g. NEVER write `-->|label|> B`).\n"

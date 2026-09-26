@@ -498,10 +498,121 @@ class EducationalImageService:
 
         return results[:limit]
 
+    async def search_universal_images(self, query: str, limit: int = 3) -> List[Dict[str, str]]:
+        """
+        Universal Visual Grounding:
+        Searches English and Hindi Wikipedia + Wikimedia Commons for authentic, high-res images
+        of entities: People, Historical Figures, Deities, Characters, TV Shows, Movies,
+        Products, Technology, Monuments, and Places.
+        """
+        clean_q = re.sub(
+            r"(?i)\b(ko|ka|ki|ke|kya|hai|karo|samjhao|explain|in|detail|batao|please|dikhao|draw|give|me|about|what|is|how|does|work|the|a|an|with|diagram|chitra|chitr|picture|photo|photos|image|images|art|wallpapers?)\b",
+            " ",
+            query
+        )
+        clean_q = re.sub(r"[^\w\s]", " ", clean_q).strip()
+        if not clean_q:
+            clean_q = query.strip()
+
+        search_terms = [clean_q]
+        low = clean_q.lower()
+        if any(r in low for r in ["lord ram", "ram ji", "shri ram", "rama", "bhagwan ram", "ram"]):
+            search_terms = ["Rama", "Ram Mandir", "Ayodhya Ram"]
+        elif "shaktimaan" in low or "shaktiman" in low:
+            search_terms = ["Shaktimaan", "Mukesh Khanna"]
+        elif "modi" in low:
+            search_terms = ["Narendra Modi"]
+        elif "gandhi" in low:
+            search_terms = ["Mahatma Gandhi"]
+
+        results: List[Dict[str, str]] = []
+        seen_urls = set()
+
+        domains = ["en.wikipedia.org"]
+        if re.search(r"[\u0900-\u097F]", query):
+            domains.insert(0, "hi.wikipedia.org")
+
+        async with httpx.AsyncClient(timeout=4.5) as client:
+            for term in search_terms:
+                if len(results) >= limit:
+                    break
+                for dom in domains:
+                    if len(results) >= limit:
+                        break
+                    url = f"https://{dom}/w/api.php"
+                    params = {
+                        "action": "query",
+                        "generator": "search",
+                        "gsrsearch": term,
+                        "gsrlimit": limit * 2,
+                        "prop": "pageimages",
+                        "pithumbsize": 1000,
+                        "format": "json"
+                    }
+                    try:
+                        res = await client.get(url, params=params, headers=self.headers)
+                        if res.status_code == 200:
+                            data = res.json()
+                            pages = data.get("query", {}).get("pages", {})
+                            for pid, p in pages.items():
+                                title = p.get("title", "")
+                                # Filter out obvious unrelated collisions
+                                if "edi rama" in title.lower() or "rama duwaji" in title.lower():
+                                    continue
+                                thumb = p.get("thumbnail", {}).get("source", "")
+                                if thumb:
+                                    cu = self.clean_wikimedia_url(thumb)
+                                    u_base = cu.split("?")[0].lower()
+                                    if u_base not in seen_urls and any(u_base.endswith(ext) for ext in [".jpg", ".jpeg", ".png", ".svg", ".webp"]):
+                                        seen_urls.add(u_base)
+                                        results.append({
+                                            "title": title or term,
+                                            "url": cu
+                                        })
+                                        if len(results) >= limit:
+                                            break
+                    except Exception as e:
+                        logger.warning(f"Universal image search error for '{term}' on {dom}: {e}")
+
+        # Fallback to direct Wikimedia Commons image search (without forcing 'diagram')
+        if not results:
+            try:
+                async with httpx.AsyncClient(timeout=4.5) as client:
+                    params = {
+                        "action": "query",
+                        "generator": "search",
+                        "gsrsearch": clean_q,
+                        "gsrnamespace": 6,
+                        "gsrlimit": limit * 2,
+                        "prop": "imageinfo",
+                        "iiprop": "url|mime",
+                        "format": "json",
+                    }
+                    res = await client.get(self.api_url, params=params, headers=self.headers)
+                    if res.status_code == 200:
+                        pages = res.json().get("query", {}).get("pages", {})
+                        for pid, p in pages.items():
+                            info = p.get("imageinfo", [{}])[0]
+                            img_url = info.get("url", "")
+                            if img_url:
+                                clean_u = self.clean_wikimedia_url(img_url)
+                                u_base = clean_u.split("?")[0].lower()
+                                if u_base not in seen_urls and any(u_base.endswith(ext) for ext in [".jpg", ".jpeg", ".png", ".svg", ".webp"]):
+                                    seen_urls.add(u_base)
+                                    raw_title = p.get("title", "").replace("File:", "").replace("_", " ").rsplit(".", 1)[0]
+                                    results.append({"title": raw_title, "url": clean_u})
+                                    if len(results) >= limit:
+                                        break
+            except Exception as e:
+                logger.warning(f"Wikimedia general fallback search error for '{clean_q}': {e}")
+
+        return results[:limit]
+
     async def search_smart_diagrams(self, query: str, default_limit: int = 5) -> List[Dict[str, str]]:
         """
-        Dynamically retrieves 1 to 6 diagrams depending on user requirement and topic depth.
-        For detailed or multi-image requests, concurrently queries specific sub-aspects.
+        Dynamically retrieves 1 to 6 diagrams or verified entity images.
+        Supports both STEM scientific concepts (via Wikimedia diagrams)
+        and Universal entities (People, TV Shows, Movies, Deities, Products, Places via Wikipedia/Wikimedia).
         """
         low = query.lower()
         low = re.sub(r"\bearrth\b", "earth", low)
@@ -510,20 +621,18 @@ class EducationalImageService:
         # Check if user specifically asks for multiple or detailed diagrams
         wants_multiple = any(k in low for k in [
             "5-6", "5", "6", "multiple", "all", "sabhi", "saare", "images", "photos",
-            "diagrams", "तस्वीर", "चित्र", "डायग्राम", "detail", "detailed", "acche se",
+            "diagrams", "तस्वीर", "चित्र", "डायग्राम", "फोटो", "detail", "detailed", "acche se",
             "pura", "step by step", "विस्तार", "गहराई"
         ])
 
-        # Check if query matches a rich concept subtopics mapping
+        # 1. Check if query matches a rich concept subtopics mapping (STEM)
         for concept_key in sorted(CONCEPT_SUBTOPICS.keys(), key=len, reverse=True):
             if self._matches_concept(concept_key, low):
                 target_count = default_limit if wants_multiple else 3
-                # Fetch subtopics concurrently
                 tasks = [self.search_diagrams(sub, limit=1) for sub in CONCEPT_SUBTOPICS[concept_key][:target_count + 1]]
                 results = await asyncio.gather(*tasks)
                 flat = [img for r in results for img in r]
 
-                # Deduplicate by clean url
                 seen_urls = set()
                 unique: List[Dict[str, str]] = []
                 for item in flat:
@@ -536,16 +645,24 @@ class EducationalImageService:
                 if unique:
                     return unique
 
-        # Fallback: single concept extract and search
+        # 2. Check single concept extract (STEM diagrams)
         extracted = self.extract_subject(query)
         if extracted:
             limit = default_limit if wants_multiple else 2
-            return await self.search_diagrams(extracted, limit=limit)
+            diagrams = await self.search_diagrams(extracted, limit=limit)
+            if diagrams:
+                return diagrams
+
+        # 3. Universal Visual Search (Persons, TV Shows, Deities, Products, Monuments, Places, Culture)
+        limit = default_limit if wants_multiple else 3
+        universal_images = await self.search_universal_images(query, limit=limit)
+        if universal_images:
+            return universal_images
 
         return []
 
     def format_diagram_context(self, diagrams: List[Dict[str, str]]) -> str:
-        """Format retrieved diagram URLs into balanced 2-group placement instructions."""
+        """Format retrieved diagram and entity image URLs into balanced placement instructions."""
         if not diagrams:
             return ""
 
@@ -564,25 +681,26 @@ class EducationalImageService:
         g2_tags = "\n".join([f"![{d['title']}]({d['url']})" for d in g2]) if g2 else ""
 
         lines = [
-            f"\nVERIFIED EDUCATIONAL SCIENTIFIC DIAGRAMS RETRIEVED ({len(diagrams)} सत्यापित शैक्षणिक चित्र - अनिवार्य संतुलित लेआउट):",
-            "Embed these verified diagrams following the rhythmic, balanced structure requested by the user:",
-            "\n➤ GROUP 1: शुरुआती 1-2/3 लाइन पैराग्राफ के ठीक नीचे (Top Overview Gallery - 2-3 Diagrams):",
+            f"\nVERIFIED VISUAL GROUNDING & IMAGES RETRIEVED ({len(diagrams)} सत्यापित उच्च-गुणवत्ता चित्र - अनिवार्य संतुलित लेआउट):",
+            "Embed these verified images following the rhythmic, balanced structure requested by the user:",
+            "\n➤ GROUP 1: शुरुआती 1-2/3 लाइन परिचयात्मक पैराग्राफ के ठीक नीचे (Top Overview Gallery):",
             g1_tags,
-            "Instruction: Place these Group 1 diagrams right after your opening 1-2/3 line introductory paragraph.",
+            "Instruction: Place these Group 1 images right after your opening 1-2/3 line introductory paragraph.",
         ]
 
         if g2_tags:
             lines.extend([
-                "\n➤ GROUP 2: मुख्य पॉइंट्स या पैराग्राफ के बीच में (In-Between Sub-Topic Diagrams - 1-2 Diagrams):",
+                "\n➤ GROUP 2: मुख्य विवरण/पॉइंट्स के बीच में (In-Between Visuals):",
                 g2_tags,
-                "Instruction: Place these Group 2 diagrams inside your detailed breakdown section alongside the relevant sub-process or organelle (e.g. Chloroplast interior, Calvin cycle, Heart valves) so theory and visuals work in perfect synergy.",
+                "Instruction: Place these Group 2 images inside your detailed section alongside the relevant point or sub-topic so theory and visuals work in perfect synergy.",
             ])
 
         lines.extend([
-            "\nCRITICAL EMBEDDING RULES (अनिवार्य नियम):",
-            "1. DO NOT dump all diagrams at the very end in a single clump. Follow the balanced rhythm (Intro -> 2-3 Images -> Points -> 1-2 Images -> Smart Diagram -> Table -> Conclusion -> Recommended Questions).",
-            "2. DO NOT modify, shorten, or invent image URLs. Use the exact markdown tags provided above.",
-            "3. Multiple image tags placed consecutively automatically render into a clean, responsive gallery in the UI."
+            "\nCRITICAL IMAGE INTEGRITY MANDATES (अनिवार्य नियम):",
+            "1. ONLY use the exact verified markdown image tags provided above.",
+            "2. STRICTLY FORBIDDEN: NEVER invent, hallucinate, or construct unverified external image links (e.g., NEVER generate images.unsplash.com, pexels, imgur, or imaginary URLs).",
+            "3. If no verified images are provided in this context, DO NOT output any markdown image tags (![...](...)).",
+            "4. Multiple image tags placed consecutively automatically render into a clean, responsive gallery in the UI."
         ])
         return "\n".join(lines)
 
