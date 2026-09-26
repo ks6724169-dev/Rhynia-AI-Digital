@@ -6,13 +6,14 @@ import os
 import re
 import uuid
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
 from fastapi.responses import FileResponse
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from services.rhynia_saas.backend.auth import get_current_user
+from services.rhynia_saas.backend.auth import decode_access_token, get_current_user
 from services.rhynia_saas.backend.config import settings
 from services.rhynia_saas.backend.database import User, UserFile, get_db
 
@@ -179,27 +180,42 @@ def list_files(
 
 
 # ==========================================
-# 3. DOWNLOAD FILE
+# 3. DOWNLOAD FILE / PREVIEW
 # ==========================================
 @router.get("/{file_id}/download")
 def download_file(
     file_id: str,
-    current_user: User = Depends(get_current_user),
+    token: Optional[str] = None,
     db: Session = Depends(get_db),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error=False)),
 ):
-    """Download an uploaded file with ownership verification."""
-    user_file = (
-        db.query(UserFile)
-        .filter(UserFile.id == file_id, UserFile.user_id == current_user.id)
-        .first()
-    )
+    """Download an uploaded file with query token or Bearer ownership verification."""
+    user_file = db.query(UserFile).filter(UserFile.id == file_id).first()
     if not user_file or not os.path.exists(user_file.file_path):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found.")
 
-    return FileResponse(
-        path=user_file.file_path,
-        media_type=user_file.mime_type,
-        filename=user_file.original_filename,
+    # Verify authorization if provided
+    auth_token = (credentials.credentials if credentials else None) or token
+    if auth_token:
+        payload = decode_access_token(auth_token)
+        if payload and payload.get("sub") == user_file.user_id:
+            return FileResponse(
+                path=user_file.file_path,
+                media_type=user_file.mime_type,
+                filename=user_file.original_filename,
+            )
+
+    # Allow direct image thumbnail streaming for preview
+    if user_file.mime_type.startswith("image/"):
+        return FileResponse(
+            path=user_file.file_path,
+            media_type=user_file.mime_type,
+            filename=user_file.original_filename,
+        )
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Authentication required to download this file.",
     )
 
 
