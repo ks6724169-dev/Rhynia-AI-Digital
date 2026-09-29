@@ -9,6 +9,9 @@ const CONFIG = {
     ? "http://127.0.0.1:8000/api/v1"
     : "/api/v1",
 
+  // Google OAuth 2.0 Web Client ID
+  GOOGLE_CLIENT_ID: "1001346913265-qbdhpbb69gen2mvcjtu56jepn1sld8os.apps.googleusercontent.com",
+
   // App Identity
   APP_NAME: "Rhynia",
   VERSION: "1.0.0",

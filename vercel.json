@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "public": true,
+  "name": "rhynia-ai-digital",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/services/rhynia_saas/frontend/$1"
+    }
+  ]
+}

@@ -75,6 +75,7 @@ const ALL_VIEWS = [
   "view-sms-otp",          // Screen 09
   "view-email-otp",        // Screen 10
   "view-forgot-password",  // Screen 11
+  "view-new-password",     // Screen 12
   "view-app"               // Screens 01 - 06 Authenticated Workspace
 ];
 
@@ -92,7 +93,15 @@ function switchView(targetViewId) {
 
   // Scroll to top of newly selected view
   window.scrollTo({ top: 0, behavior: "instant" });
+
+  // Re-initialize Google Auth buttons when entering login or registration view
+  if (targetViewId === "view-login" || targetViewId === "view-register") {
+    if (typeof initGoogleAuth === "function") {
+      setTimeout(initGoogleAuth, 50);
+    }
+  }
 }
+
 
 // ==========================================
 // TOAST NOTIFICATION UTILITY
@@ -261,28 +270,6 @@ function downloadCodeBlock(buttonEl, lang) {
   showToast(`Downloaded ${fileName}!`, "success");
 }
 
-function normalizeMermaidCode(code) {
-  if (!code) return "";
-  let s = code.trim();
-  // 1. Normalize diagram keywords to case-sensitive Mermaid standard
-  s = s.replace(/^(flowchart|graph|mindmap|timeline|quadrantchart|sequencediagram|statediagram(?:-v2)?)/im, (m) => {
-    const l = m.toLowerCase();
-    if (l === "statediagram") return "stateDiagram-v2";
-    if (l === "quadrantchart") return "quadrantChart";
-    if (l === "sequencediagram") return "sequenceDiagram";
-    return l;
-  });
-  // 2. Auto-wrap unquoted node brackets with spaces into quotes
-  s = s.replace(/([a-zA-Z0-9_\-]+)\[([^\]\n\"]+)\]/g, (m, id, text) => {
-    const t = text.trim();
-    if (!t.startsWith('"') && !t.endsWith('"')) {
-      return `${id}["${t.replace(/"/g, "'")}"]`;
-    }
-    return m;
-  });
-  return s;
-}
-
 function initMermaid() {
   if (typeof mermaid !== "undefined") {
     try {
@@ -370,7 +357,7 @@ function downloadMermaidAsSvg(buttonEl) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 
-  showToast("SmartArt Diagram downloaded as .svg!", "success");
+  showToast("Diagram downloaded!", "success");
 }
 
 function normalizeMermaidCode(rawCode) {
@@ -380,21 +367,30 @@ function normalizeMermaidCode(rawCode) {
   // Strip markdown code fences if present
   code = code.replace(/^```(?:mermaid)?\s*/i, "").replace(/```\s*$/i, "").trim();
 
-  // 1. Fix arrow pipes with trailing greater-than: -->|label|> to -->|label|
+  // 1. Normalize diagram keywords to case-sensitive Mermaid standard
+  code = code.replace(/^(statediagram(?:-v2)?|quadrantchart|sequencediagram)/im, (m) => {
+    const l = m.toLowerCase();
+    if (l === "statediagram") return "stateDiagram-v2";
+    if (l === "quadrantchart") return "quadrantChart";
+    if (l === "sequencediagram") return "sequenceDiagram";
+    return l;
+  });
+
+  // 2. Fix arrow pipes with trailing greater-than: -->|label|> to -->|label|
   code = code.replace(/(-->|---|==>|-\.->)\s*\|([^|]+)\|>/g, "$1|$2|");
 
-  // 2. Ensure node brackets with spaces or non-ascii are safely quoted: A[text] -> A["text"]
+  // 3. Ensure node brackets with spaces or non-ascii are safely quoted: A[text] -> A["text"]
   code = code.replace(/(\b[A-Za-z0-9_]+)\[([^"\]\n]+)\]/g, (match, id, label) => {
     const trimmed = label.trim();
     if (!trimmed.startsWith('"') && !trimmed.endsWith('"')) {
-      return `${id}["${trimmed}"]`;
+      return `${id}["${trimmed.replace(/"/g, "'")}"]`;
     }
     return match;
   });
 
-  // 3. Ensure diagram type starts cleanly
-  if (!/^(flowchart|graph|sequenceDiagram|classDiagram|stateDiagram|erDiagram|journey|gantt|pie|mindmap)/i.test(code)) {
-    code = "flowchart LR\n" + code;
+  // 4. Ensure diagram type starts cleanly (support flowchart, graph, pie, xychart-beta, timeline, etc.)
+  if (!/^(flowchart|graph|sequenceDiagram|classDiagram|stateDiagram(?:-v2)?|erDiagram|journey|gantt|pie|mindmap|xychart-beta|xychart|timeline|quadrantChart|gitGraph|sankey-beta)/i.test(code)) {
+    code = "flowchart TD\n" + code;
   }
 
   return code;
@@ -549,12 +545,11 @@ function renderInlineMarkdown(str) {
     return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="rhynia-source-link"><span class="material-symbols-outlined source-icon">public</span><span class="source-text">${cleanLabel}</span><span class="material-symbols-outlined external-icon">open_in_new</span></a>`;
   });
 
-  // 4B. Isolated inline image fallback: ![Caption](URL)
   out = out.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s\)\"\'<>]+)\)/gi, (match, caption, url) => {
     const cleanUrl = cleanWikimediaUrl(url);
     const proxiedUrl = getProxiedImageUrl(cleanUrl);
-    const safeCaption = escapeHtml(caption || "Educational Diagram");
-    return `<div class="rhynia-image-gallery my-3.5 max-w-xl"><div class="rhynia-image-card rounded-2xl overflow-hidden border border-white/10 bg-[#161616] shadow-xl transition-all duration-300 hover:border-[#0078D4]/60"><div class="rhynia-img-wrapper relative bg-[#0a0a0a] min-h-[190px] max-h-[320px] flex items-center justify-center cursor-pointer group" onclick="window.openRhyniaLightbox('${proxiedUrl}', '${safeCaption}')" title="Click to enlarge diagram"><img src="${proxiedUrl}" alt="${safeCaption}" loading="lazy" referrerpolicy="no-referrer" class="w-full h-full object-contain p-2 group-hover:scale-[1.03] transition-transform duration-300" onerror="this.onerror=null; this.src='/api/v1/proxy-image?url=' + encodeURIComponent('${encodeURIComponent(cleanUrl)}');"/><div class="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[11px] font-medium flex items-center gap-1 shadow-md"><span class="material-symbols-outlined text-[14px]">zoom_in</span><span>Zoom</span></div></div><div class="px-3.5 py-2.5 bg-[#1c1c1c] text-xs text-neutral-300 flex items-center justify-between border-t border-white/5"><span class="font-medium text-white flex items-center gap-1.5 truncate"><span class="material-symbols-outlined text-[16px] text-[#0078D4]">photo_library</span><span class="truncate" title="${safeCaption}">${safeCaption}</span></span><div class="flex items-center gap-2"><button type="button" onclick="window.openRhyniaLightbox('${proxiedUrl}', '${safeCaption}')" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[#4cc2ff] text-[11px] flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">fullscreen</span><span>View</span></button><a href="${cleanUrl}" target="_blank" download class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-[#10b981] text-[11px] flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">file_download</span><span>Export</span></a></div></div></div></div>`;
+    const safeCaption = escapeHtml(caption || "Image");
+    return `<div class="rhynia-image-gallery my-3.5 max-w-xl"><div class="rhynia-image-card rounded-2xl overflow-hidden border border-white/10 bg-[#161616] shadow-xl transition-all duration-300 hover:border-[#0078D4]/60"><div class="rhynia-img-wrapper relative bg-[#0a0a0a] min-h-[190px] max-h-[320px] flex items-center justify-center cursor-pointer group" onclick="window.openRhyniaLightbox('${proxiedUrl}', '${safeCaption}')" title="Click to view"><img src="${proxiedUrl}" alt="${safeCaption}" loading="lazy" referrerpolicy="no-referrer" class="w-full h-full object-contain p-2 group-hover:scale-[1.03] transition-transform duration-300" onerror="this.onerror=null; this.src='/api/v1/proxy-image?url=' + encodeURIComponent('${encodeURIComponent(cleanUrl)}');"/></div><div class="px-3.5 py-2.5 bg-[#1c1c1c] text-xs text-neutral-300 flex items-center justify-between border-t border-white/5"><span class="font-medium text-white truncate mr-2" title="${safeCaption}">${safeCaption}</span><div class="flex items-center gap-2 shrink-0"><button type="button" onclick="window.openRhyniaLightbox('${proxiedUrl}', '${safeCaption}')" class="px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-[#4cc2ff] text-[11px] flex items-center gap-1" title="View"><span class="material-symbols-outlined text-[14px]">fullscreen</span><span>View</span></button><a href="${cleanUrl}" target="_blank" download class="px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-[#10b981] text-[11px] flex items-center gap-1" title="Download"><span class="material-symbols-outlined text-[14px]">download</span><span>Download</span></a></div></div></div></div>`;
   });
 
   // 5. Standalone numeric citation brackets: [1], [2] (not already linked in markdown)
@@ -562,14 +557,10 @@ function renderInlineMarkdown(str) {
     return ` <span class="rhynia-citation-pill">[${num}]</span>`;
   });
 
-  // 6. Bare HTTP/HTTPS URLs (only in text nodes outside HTML tags!)
+  // 6. Bare HTTP/HTTPS URLs (only in text nodes outside HTML tags - keep plain text, do not create source link pills)
   const parts = out.split(/(<[^>]+>)/g);
   for (let i = 0; i < parts.length; i += 2) {
-    parts[i] = parts[i].replace(/(^|[\s(])(https?:\/\/[^\s\)\"\'<>]+)(?=[)\s.,;:]|$)/gi, (match, prefix, url) => {
-      if (url.includes("__RHYNIA_BLOCK_")) return match;
-      const domain = extractCleanDomain(url);
-      return `${prefix}<a href="${url}" target="_blank" rel="noopener noreferrer" class="rhynia-source-link"><span class="material-symbols-outlined source-icon">public</span><span class="source-text">${domain}</span><span class="material-symbols-outlined external-icon">open_in_new</span></a>`;
-    });
+    parts[i] = parts[i].replace(/(^|[\s(])https?:\/\/[^\s\)\"\'<>]+(?=[)\s.,;:]|$)/gi, "");
   }
   out = parts.join("");
 
@@ -982,45 +973,53 @@ function renderMarkdown(rawText) {
   // 1. Normalize line endings
   let text = String(rawText).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
+  // 1B. Strip trailing source blocks and external web links (preserve markdown image tags ![...](...))
+  text = text.replace(/(?:\n+|\s+)(?:❖\s*)?\*\*(?:स्रोतः?|Sources?|संदर्भ|References?)\*\*[\s\S]*$/i, "");
+  text = text.replace(/^[ \t]*[✔•\-\*]\s*\[(?:[^\]]+)\]\(https?:\/\/[^\s\)\"\']+\)[ \t]*$/gmi, "");
+  text = text.replace(/(?<!\!)\[([^\]]+)\]\(https?:\/\/[^\s\)\"\']+\)/gi, "$1");
+
   // 2. Triple-backtick code blocks
   text = text.replace(/```([a-zA-Z0-9_\-\.]*)[ \t]*\n([\s\S]*?)```/g, (match, lang, code) => {
     const cleanLang = (lang || "").toLowerCase().trim();
 
-    // 2A. Mermaid SmartArt Diagram Blocks
+    // 2A-0. Rhynia Presentation Deck Blocks
+    if (cleanLang === "rhynia-presentation" || cleanLang === "presentation" || cleanLang === "slide-deck" || cleanLang === "pptx") {
+      let deckSpec = null;
+      try {
+        deckSpec = JSON.parse(code.trim());
+      } catch (e) {
+        try {
+          const fixed = code.trim().replace(/,\s*([\]}])/g, "$1");
+          deckSpec = JSON.parse(fixed);
+        } catch (e2) {
+          deckSpec = null;
+        }
+      }
+
+      if (deckSpec && typeof renderPresentationDeckHTML === "function") {
+        const deckHtml = renderPresentationDeckHTML(deckSpec);
+        return storeBlock(deckHtml);
+      }
+    }
+
+    // 2A. Mermaid Diagram Blocks
     if (cleanLang === "mermaid") {
       const escapedCode = escapeHtml(code);
       const encodedCode = encodeURIComponent(code);
 
       const blockHtml = `
         <div class="mermaid-block-container relative rounded-xl overflow-hidden my-4 border border-white/10 bg-[#121417] shadow-lg">
-          <div class="flex items-center justify-between px-3.5 py-2 bg-[#1c2128] border-b border-white/10 text-xs text-neutral-400">
-            <span class="font-mono text-[11px] uppercase tracking-wider flex items-center gap-1.5 text-neutral-300">
-              <span class="material-symbols-outlined text-[16px] text-[#0078D4]">account_tree</span>
-              <span class="font-semibold text-white">SmartArt Diagram</span>
-            </span>
-            <div class="flex items-center gap-2">
-              <button type="button" onclick="toggleMermaidView(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Toggle Code / Diagram View">
-                <span class="material-symbols-outlined text-[14px] text-[#4cc2ff]">code</span>
-                <span class="btn-label">Code</span>
-              </button>
-              <button type="button" onclick="downloadMermaidAsSvg(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Download Diagram as Vector SVG">
-                <span class="material-symbols-outlined text-[14px] text-[#107c41]">file_download</span>
-                <span>Export .svg</span>
-              </button>
-              <button type="button" onclick="copyCodeBlock(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Copy Mermaid Definition">
-                <span class="material-symbols-outlined text-[14px]">content_copy</span>
-                <span>Copy</span>
-              </button>
-            </div>
+          <div class="flex items-center justify-end px-3 py-1.5 bg-[#1c2128] border-b border-white/10">
+            <button type="button" onclick="downloadMermaidAsSvg(this)" class="hover:text-white flex items-center gap-1.5 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Download Diagram">
+              <span class="material-symbols-outlined text-[15px] text-[#0078D4]">download</span>
+              <span>Download</span>
+            </button>
           </div>
           <div class="mermaid-diagram-box p-4 flex items-center justify-center bg-[#101214] overflow-x-auto min-h-[150px]" data-mermaid-code="${encodedCode}">
             <div class="text-xs text-neutral-400 flex items-center gap-2">
               <span class="inline-block w-3.5 h-3.5 border-2 border-[#0078D4] border-t-transparent rounded-full animate-spin"></span>
               <span>Rendering diagram...</span>
             </div>
-          </div>
-          <div class="code-raw-box hidden">
-            <pre class="p-3.5 text-xs sm:text-sm font-mono text-neutral-200 overflow-x-auto leading-relaxed"><code>${escapedCode}</code></pre>
           </div>
         </div>
       `.trim();
@@ -1054,32 +1053,15 @@ function renderMarkdown(rawText) {
 
         const blockHtml = `
           <div class="rhynia-chart-card my-4" data-chart-spec="${encodedSpec}" data-chart-title="${escapeHtml(title)}">
-            <div class="rhynia-chart-header">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[18px] text-[#0078D4]">${meta.icon}</span>
-                <span class="font-semibold text-xs sm:text-sm text-white">${escapeHtml(title)}</span>
-                <span class="rhynia-chart-badge">${escapeHtml(meta.label)}</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="toggleChartView(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Toggle Visual Chart / Data Table">
-                  <span class="material-symbols-outlined text-[14px] text-[#4cc2ff]">table_chart</span>
-                  <span class="btn-label">Data</span>
-                </button>
-                <button type="button" onclick="downloadChartAsPng(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Export as High-Resolution PNG">
-                  <span class="material-symbols-outlined text-[14px] text-[#107c41]">file_download</span>
-                  <span>Export .png</span>
-                </button>
-                <button type="button" onclick="copyChartSpec(this)" class="hover:text-white flex items-center gap-1 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium" title="Copy Chart JSON">
-                  <span class="material-symbols-outlined text-[14px]">content_copy</span>
-                  <span>Copy</span>
-                </button>
-              </div>
+            <div class="rhynia-chart-header flex items-center justify-between">
+              <span class="font-semibold text-xs sm:text-sm text-white truncate mr-2">${escapeHtml(title)}</span>
+              <button type="button" onclick="downloadChartAsPng(this)" class="hover:text-white flex items-center gap-1.5 transition-colors px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 text-xs font-medium shrink-0" title="Download Chart">
+                <span class="material-symbols-outlined text-[15px] text-[#0078D4]">download</span>
+                <span>Download</span>
+              </button>
             </div>
             <div class="chart-canvas-container">
               <canvas></canvas>
-            </div>
-            <div class="chart-data-box hidden">
-              ${dataTableHtml}
             </div>
           </div>
         `.trim();
@@ -1142,32 +1124,24 @@ function renderMarkdown(rawText) {
     let galleryHtml = `<div class="rhynia-image-gallery my-4 ${gridCols}" data-gallery-items="${serializedItems}">`;
 
     items.forEach((item, itemIdx) => {
-      const escapedCaption = escapeHtml(item.caption || "Educational Diagram");
+      const escapedCaption = escapeHtml(item.caption || "Image");
       const cleanUrl = cleanWikimediaUrl(item.url);
       const safeUrl = getProxiedImageUrl(cleanUrl);
       galleryHtml += `
         <div class="rhynia-image-card rounded-2xl overflow-hidden border border-white/10 bg-[#161616] shadow-xl transition-all duration-300 hover:border-[#0078D4]/60 hover:shadow-2xl flex flex-col justify-between">
-          <div class="rhynia-img-wrapper relative bg-[#0a0a0a] overflow-hidden flex items-center justify-center min-h-[190px] max-h-[320px] cursor-pointer group" onclick="openRhyniaLightboxGalleryItem(this, ${itemIdx})" title="Click to enlarge diagram">
+          <div class="rhynia-img-wrapper relative bg-[#0a0a0a] overflow-hidden flex items-center justify-center min-h-[190px] max-h-[320px] cursor-pointer group" onclick="openRhyniaLightboxGalleryItem(this, ${itemIdx})" title="Click to view">
             <img src="${safeUrl}" alt="${escapedCaption}" loading="lazy" referrerpolicy="no-referrer" class="w-full h-full object-contain p-2 group-hover:scale-[1.03] transition-transform duration-300" onerror="this.onerror=null; this.src='/api/v1/proxy-image?url=' + encodeURIComponent('${encodeURIComponent(cleanUrl)}');"/>
-            <div class="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-[11px] font-medium flex items-center gap-1 shadow-md">
-              <span class="material-symbols-outlined text-[14px]">zoom_in</span>
-              <span>Zoom</span>
-            </div>
-            ${items.length > 1 ? `<div class="absolute bottom-2 left-2 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-neutral-400 font-mono text-[10px]">#${itemIdx + 1} of ${items.length}</div>` : ""}
           </div>
           <div class="px-3.5 py-2.5 flex items-center justify-between bg-[#1c1c1c] border-t border-white/5 text-xs text-neutral-300">
-            <span class="font-medium text-white flex items-center gap-1.5 truncate">
-              <span class="material-symbols-outlined text-[16px] text-[#0078D4]">photo_library</span>
-              <span class="truncate" title="${escapedCaption}">${escapedCaption}</span>
-            </span>
+            <span class="font-medium text-white truncate mr-2" title="${escapedCaption}">${escapedCaption}</span>
             <div class="flex items-center gap-2 shrink-0">
-              <button type="button" onclick="openRhyniaLightboxGalleryItem(this, ${itemIdx})" class="hover:text-white flex items-center gap-1 text-[11px] px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 transition-colors" title="Full screen view">
-                <span class="material-symbols-outlined text-[13px] text-[#4cc2ff]">fullscreen</span>
+              <button type="button" onclick="openRhyniaLightboxGalleryItem(this, ${itemIdx})" class="hover:text-white flex items-center gap-1 text-[11px] px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-[#4cc2ff] transition-colors" title="View">
+                <span class="material-symbols-outlined text-[14px]">fullscreen</span>
                 <span>View</span>
               </button>
-              <a href="${safeUrl}" target="_blank" download class="hover:text-white flex items-center gap-1 text-[11px] px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-neutral-300 transition-colors" title="Download High-Res Diagram">
-                <span class="material-symbols-outlined text-[13px] text-[#10b981]">file_download</span>
-                <span>Export</span>
+              <a href="${cleanUrl}" target="_blank" download class="hover:text-white flex items-center gap-1 text-[11px] px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-[#10b981] transition-colors" title="Download">
+                <span class="material-symbols-outlined text-[14px]">download</span>
+                <span>Download</span>
               </a>
             </div>
           </div>

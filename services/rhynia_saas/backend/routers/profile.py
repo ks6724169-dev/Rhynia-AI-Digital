@@ -29,6 +29,7 @@ MAX_AVATAR_SIZE_BYTES = 5 * 1024 * 1024  # 5 MB
 class ProfileUpdateRequest(BaseModel):
     display_name: Optional[str] = Field(None, max_length=100)
     username: Optional[str] = Field(None, min_length=3, max_length=50)
+    phone_number: Optional[str] = Field(None, max_length=20)
     theme: Optional[str] = Field(None, max_length=20)  # dark, light
     accent_color: Optional[str] = Field(None, max_length=20)  # hex color code
 
@@ -132,6 +133,23 @@ def update_profile(
 
     if req.display_name is not None:
         current_user.display_name = req.display_name.strip()
+
+    if req.phone_number:
+        clean_p = re.sub(r"[^\d+]", "", req.phone_number.strip())
+        digits = re.sub(r"[^\d]", "", clean_p)
+        if len(digits) < 10:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Please provide a valid 10-digit mobile number.",
+            )
+        last10 = digits[-10:]
+        existing_p = db.query(User).filter(User.phone_number.like(f"%{last10}%")).first()
+        if existing_p and existing_p.id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This mobile number is already in use by another account.",
+            )
+        current_user.phone_number = last10
 
     if req.theme and req.theme.lower() in ["dark", "light"]:
         current_user.theme = req.theme.lower()

@@ -518,7 +518,21 @@ class EducationalImageService:
 
         search_terms = [clean_q]
         low = f"{clean_q} {query}".lower()
-        if any(r in low for r in ["lord ram", "ram ji", "shri ram", "rama", "bhagwan ram", "श्री राम", "राम जी", "भगवान राम", "श्रीराम", "राम"]):
+        if any(c in low for c in ["chandrayaan", "चंद्रयान", "चन्द्रयान"]):
+            search_terms = ["Chandrayaan-3", "Chandrayaan-2", "ISRO"]
+        elif any(t in low for t in ["taj mahal", "ताजमहल", "ताज महल"]):
+            search_terms = ["Taj Mahal", "Agra Taj Mahal"]
+        elif any(r in low for r in ["red fort", "लाल किला", "लालकिला"]):
+            search_terms = ["Red Fort", "Lal Qila Delhi"]
+        elif any(q in low for q in ["qutub minar", "कुतुब मीनार", "कुतुबमीनार"]):
+            search_terms = ["Qutb Minar", "Qutub Minar"]
+        elif any(e in low for e in ["eiffel", "एफिल", "एफिल टॉवर", "एफिल टावर"]):
+            search_terms = ["Eiffel Tower"]
+        elif any(s in low for s in ["solar system", "सौर मंडल", "सौरमंडल"]):
+            search_terms = ["Solar System"]
+        elif any(b in low for b in ["black hole", "ब्लैक होल", "ब्लैकहोल"]):
+            search_terms = ["Black hole"]
+        elif any(r in low for r in ["lord ram", "ram ji", "shri ram", "rama", "bhagwan ram", "श्री राम", "राम जी", "भगवान राम", "श्रीराम", "राम"]):
             search_terms = ["Rama", "Lord Rama", "Ram Mandir", "Ayodhya Ram"]
         elif any(s in low for s in ["shaktimaan", "shaktiman", "शक्तिमान"]):
             search_terms = ["Shaktimaan", "Mukesh Khanna"]
@@ -562,7 +576,7 @@ class EducationalImageService:
                                 title = p.get("title", "")
                                 title_l = title.lower()
                                 # Filter out obvious unrelated collisions
-                                if any(x in title_l for x in ["edi rama", "rama duwaji", "gurmeet ram", "devanagari", "bengali", "संयुक्ताक्षर"]):
+                                if any(x in title_l for x in ["edi rama", "rama duwaji", "gurmeet ram", "devanagari", "देवनागरी", "bengali", "संयुक्ताक्षर", "वर्णमाला"]):
                                     continue
                                 thumb = p.get("thumbnail", {}).get("source", "")
                                 if thumb:
@@ -664,6 +678,27 @@ class EducationalImageService:
                 if re.search(rf"\b{re.escape(concept_key)}\b", low):
                     return True
             elif concept_key in low:
+                return True
+
+        # 3. Recognizable real-world entities, space missions, monuments, geography & astronomy
+        entity_visual_topics = [
+            "chandrayaan", "mangalyaan", "isro", "nasa", "apollo", "james webb", "hubble",
+            "चंद्रयान", "मंगलयान", "इसरो", "नासा", "सौर मंडल", "solar system", "black hole", "ब्लैक होल",
+            "taj mahal", "ताजमहल", "red fort", "लाल किला", "qutub minar", "कुतुब मीनार",
+            "eiffel tower", "एफिल टॉवर", "pyramid", "पिरामिड", "hawa mahal", "हवा महल",
+            "india gate", "इंडिया गेट", "statue of unity", "स्टैच्यू ऑफ यूनिटी",
+            "mount everest", "everest", "एवरेस्ट", "himalaya", "himalayas", "हिमालय",
+            "volcano", "ज्वालामुखी", "water cycle", "जल चक्र", "carbon cycle", "nitrogen cycle",
+            "solar eclipse", "सूर्य ग्रहण", "lunar eclipse", "चंद्र ग्रहण", "rainbow", "इंद्रधनुष",
+            "telescope", "दूरबीन", "satellite", "उपग्रह", "rover", "रोवर", "vikram lander", "प्रज्ञान", "pragyan"
+        ]
+        low_compact = re.sub(r"\s+", "", low)
+        for topic in entity_visual_topics:
+            topic_compact = re.sub(r"\s+", "", topic)
+            if re.search(r"[a-zA-Z]", topic):
+                if re.search(rf"\b{re.escape(topic)}\b", low) or topic_compact in low_compact:
+                    return True
+            elif topic in low or topic_compact in low_compact:
                 return True
 
         # By default, do NOT pollute answers with random images

@@ -13,7 +13,7 @@ import httpx
 
 from services.rhynia_saas.backend.config import settings
 from services.rhynia_saas.backend.database import init_db
-from services.rhynia_saas.backend.routers import auth, chat, feedback, files, notifications, profile, sessions
+from services.rhynia_saas.backend.routers import auth, chat, feedback, files, notifications, ppt, profile, sessions
 from services.rhynia_saas.backend.services.image_search import EducationalImageService
 
 
@@ -39,6 +39,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -47,12 +48,19 @@ app.add_middleware(
 
 @app.middleware("http")
 async def security_headers_middleware(request: Request, call_next):
-    """Ensure strict branding and security headers on every response."""
+    """Ensure strict branding, security headers, and zero-cache for frontend assets."""
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Server"] = "Rhynia"
+
+    # Aggressive No-Cache for frontend to prevent mobile Chrome 304 stale cache
+    if request.url.path.startswith("/app") or request.url.path == "/":
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+
     return response
 
 
@@ -64,6 +72,7 @@ app.include_router(files.router)
 app.include_router(profile.router)
 app.include_router(feedback.router)
 app.include_router(notifications.router)
+app.include_router(ppt.router)
 
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles

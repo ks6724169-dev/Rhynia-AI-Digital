@@ -147,6 +147,10 @@ async function sendChatMessage() {
               if (msgEl) {
                 msgEl.dataset.messageId = parsed.message_id;
               }
+              if (parsed.content) {
+                fullResponse = parsed.content;
+                textContainer.innerHTML = renderMarkdown(fullResponse);
+              }
               continue;
             }
             const token = parsed.token || parsed.delta || parsed.content || "";
@@ -232,9 +236,10 @@ function appendUserMessageUI(text, files) {
       `</div>`;
   }
 
+  msgDiv.className = "flex flex-col items-end gap-1.5 w-full pl-6 sm:pl-24 py-2 animate-fade-in";
   msgDiv.innerHTML = `
     ${filesHtml}
-    <div class="text-[16px] sm:text-[17px] text-white font-medium text-right leading-relaxed tracking-tight max-w-2xl py-1">
+    <div class="user-bubble inline-block bg-[#262626] text-white px-7 py-5 rounded-[34px] rounded-br-[12px] text-[24px] sm:text-[25px] font-normal text-left leading-[1.65] tracking-tight max-w-[92%] sm:max-w-2xl border border-white/[0.06] shadow-sm">
       ${escapeHtml(text)}
     </div>
   `;
@@ -255,30 +260,30 @@ function appendRhyniaPlaceholderUI(existingMessageId) {
   if (existingMessageId) {
     msgDiv.dataset.messageId = existingMessageId;
   }
-  msgDiv.className = "flex flex-col gap-3 w-full pr-2 sm:pr-8 py-4 animate-fade-in border-b border-white/[0.04]";
+  msgDiv.className = "flex flex-col gap-3.5 w-full pr-1 sm:pr-8 py-5 animate-fade-in border-b border-white/[0.04]";
 
   msgDiv.innerHTML = `
     <!-- Response Markdown Content -->
-    <div class="ai-text-body markdown-body space-y-3 text-[#d0d0d0] text-[15px] leading-relaxed">
-      <span class="inline-block w-2 h-4 bg-[#0078d4] animate-pulse rounded-sm"></span>
+    <div class="ai-text-body markdown-body space-y-5 text-[#e5e5e5] text-[24px] sm:text-[25px] leading-[1.8]">
+      <span class="inline-block w-3 h-5 bg-[#0078d4] animate-pulse rounded-sm"></span>
     </div>
 
     <!-- Response Action Bar (5 Icons: Copy, Speaker, Good, Bad, Share) -->
-    <div class="ai-actions-bar hidden items-center gap-1.5 pt-2 text-neutral-400">
-      <button onclick="copyResponseText(this)" aria-label="Copy response" title="Copy response" class="w-8 h-8 rounded-md inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[17px]">content_copy</span>
+    <div class="ai-actions-bar hidden items-center gap-3.5 sm:gap-2.5 pt-3.5 text-neutral-400">
+      <button onclick="copyResponseText(this)" aria-label="Copy response" title="Copy response" class="w-12 h-12 sm:w-11 sm:h-11 rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[26px] sm:text-[24px]">content_copy</span>
       </button>
-      <button onclick="speakResponseText(this)" aria-label="Read aloud" title="Read aloud" class="w-8 h-8 rounded-md inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[17px]">volume_up</span>
+      <button onclick="speakResponseText(this)" aria-label="Read aloud" title="Read aloud" class="w-12 h-12 sm:w-11 sm:h-11 rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[26px] sm:text-[24px]">volume_up</span>
       </button>
-      <button onclick="feedbackResponse(this, true)" aria-label="Good response" title="Good response" class="w-8 h-8 rounded-md inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[17px]">thumb_up</span>
+      <button onclick="feedbackResponse(this, true)" aria-label="Good response" title="Good response" class="w-12 h-12 sm:w-11 sm:h-11 rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[26px] sm:text-[24px]">thumb_up</span>
       </button>
-      <button onclick="feedbackResponse(this, false)" aria-label="Poor response" title="Poor response" class="w-8 h-8 rounded-md inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[17px]">thumb_down</span>
+      <button onclick="feedbackResponse(this, false)" aria-label="Poor response" title="Poor response" class="w-12 h-12 sm:w-11 sm:h-11 rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[26px] sm:text-[24px]">thumb_down</span>
       </button>
-      <button onclick="shareResponseSnippet(this)" aria-label="Share snippet" title="Share snippet" class="w-8 h-8 rounded-md inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[17px]">share</span>
+      <button onclick="shareResponseSnippet(this)" aria-label="Share snippet" title="Share snippet" class="w-12 h-12 sm:w-11 sm:h-11 rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[26px] sm:text-[24px]">share</span>
       </button>
     </div>
   `;

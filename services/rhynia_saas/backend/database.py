@@ -22,13 +22,17 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship, Session
 from services.rhynia_saas.backend.config import settings
 
 # Database Engine Configuration
+db_url = settings.DATABASE_URL
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+
 connect_args = {}
-if settings.DATABASE_URL.startswith("sqlite"):
+if db_url.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
     # Ensure database folder exists
     import re
     from pathlib import Path
-    db_match = re.search(r"sqlite:///(.*)", settings.DATABASE_URL)
+    db_match = re.search(r"sqlite:///(.*)", db_url)
     if db_match:
         db_path = Path(db_match.group(1))
         if db_path.parent and not db_path.parent.exists():
@@ -37,7 +41,7 @@ else:
     connect_args = {"connect_timeout": 15}
 
 engine = create_engine(
-    settings.DATABASE_URL,
+    db_url,
     connect_args=connect_args,
     pool_pre_ping=True,
     pool_recycle=300,
@@ -116,6 +120,20 @@ class PhoneOTP(Base):
     created_at = Column(DateTime(timezone=True), default=get_utc_now, nullable=False)
 
     __table_args__ = (Index("ix_phone_otps_lookup", "phone_number", "is_used"),)
+
+
+class EmailOTP(Base):
+    __tablename__ = "email_otps"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    email = Column(String(255), index=True, nullable=False)
+    otp_code = Column(String(6), nullable=False)
+    is_used = Column(Boolean, default=False, nullable=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now, nullable=False)
+
+    __table_args__ = (Index("ix_email_otps_lookup", "email", "is_used"),)
+
 
 
 # ==========================================

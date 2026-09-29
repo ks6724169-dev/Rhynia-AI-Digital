@@ -3,6 +3,7 @@ Rhynia Intelligence SaaS — Authentication & Security Engine
 """
 
 import random
+import re
 import string
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -14,7 +15,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from services.rhynia_saas.backend.config import settings
-from services.rhynia_saas.backend.database import PhoneOTP, User, get_db
+from services.rhynia_saas.backend.database import EmailOTP, PhoneOTP, User, get_db
+
 
 # HTTP Bearer token extractor
 security_bearer = HTTPBearer(auto_error=False)
@@ -73,18 +75,28 @@ def generate_numeric_otp(length: int = 4) -> str:
     return "".join(random.choices(string.digits, k=length))
 
 
+def normalize_phone(phone: str) -> str:
+    """Normalize phone number to last 10 digits for consistent OTP matching."""
+    if not phone:
+        return ""
+    digits = re.sub(r"[^\d]", "", phone)
+    return digits[-10:] if len(digits) >= 10 else digits
+
+
 def store_phone_otp(db: Session, phone_number: str) -> str:
-    """Generate, store, and return an OTP for a phone number."""
+    """Generate, store, and return a 6-digit OTP for a phone number."""
+    norm_phone = normalize_phone(phone_number)
+
     # Mark prior unused OTPs for this number as used
     db.query(PhoneOTP).filter(
-        PhoneOTP.phone_number == phone_number, PhoneOTP.is_used == False
+        PhoneOTP.phone_number == norm_phone, PhoneOTP.is_used == False
     ).update({"is_used": True})
 
-    code = generate_numeric_otp(4)
+    code = generate_numeric_otp(6)
     expires_at = datetime.now(timezone.utc) + timedelta(seconds=settings.OTP_EXPIRE_SECONDS)
 
     otp_record = PhoneOTP(
-        phone_number=phone_number,
+        phone_number=norm_phone,
         otp_code=code,
         expires_at=expires_at,
         is_used=False,
@@ -95,14 +107,15 @@ def store_phone_otp(db: Session, phone_number: str) -> str:
     return code
 
 
-def verify_phone_otp(db: Session, phone_number: str, otp_code: str) -> bool:
-    """Validate a submitted phone OTP."""
+def verify_phone_otp(db: Session, phone_number: str, otp_code: str, mark_used: bool = True) -> bool:
+    """Validate a submitted phone OTP against normalized phone number."""
+    norm_phone = normalize_phone(phone_number)
     now = datetime.now(timezone.utc)
     otp_record = (
         db.query(PhoneOTP)
         .filter(
-            PhoneOTP.phone_number == phone_number,
-            PhoneOTP.otp_code == otp_code,
+            PhoneOTP.phone_number == norm_phone,
+            PhoneOTP.otp_code == otp_code.strip(),
             PhoneOTP.is_used == False,
             PhoneOTP.expires_at > now,
         )
@@ -112,9 +125,60 @@ def verify_phone_otp(db: Session, phone_number: str, otp_code: str) -> bool:
     if not otp_record:
         return False
 
-    otp_record.is_used = True
-    db.commit()
+    if mark_used:
+        otp_record.is_used = True
+        db.commit()
     return True
+
+
+def store_email_otp(db: Session, email: str) -> str:
+    """Generate, store, and return a 6-digit OTP for an email address."""
+    clean_email = email.strip().lower()
+
+    # Mark prior unused OTPs for this email as used
+    db.query(EmailOTP).filter(
+        EmailOTP.email == clean_email, EmailOTP.is_used == False
+    ).update({"is_used": True})
+
+    code = generate_numeric_otp(6)
+    expires_at = datetime.now(timezone.utc) + timedelta(seconds=settings.OTP_EXPIRE_SECONDS)
+
+    otp_record = EmailOTP(
+        email=clean_email,
+        otp_code=code,
+        expires_at=expires_at,
+        is_used=False,
+    )
+    db.add(otp_record)
+    db.commit()
+    db.refresh(otp_record)
+    return code
+
+
+def verify_email_otp(db: Session, email: str, otp_code: str, mark_used: bool = True) -> bool:
+    """Validate a submitted email OTP."""
+    clean_email = email.strip().lower()
+    now = datetime.now(timezone.utc)
+    otp_record = (
+        db.query(EmailOTP)
+        .filter(
+            EmailOTP.email == clean_email,
+            EmailOTP.otp_code == otp_code.strip(),
+            EmailOTP.is_used == False,
+            EmailOTP.expires_at > now,
+        )
+        .first()
+    )
+
+    if not otp_record:
+        return False
+
+    if mark_used:
+        otp_record.is_used = True
+        db.commit()
+    return True
+
+
 
 
 # ==========================================

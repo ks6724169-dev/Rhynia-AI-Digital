@@ -1,3 +1,1 @@
-"""
-Rhynia Intelligence SaaS — Backend Package
-"""
+"""Rhynia SaaS Backend package."""

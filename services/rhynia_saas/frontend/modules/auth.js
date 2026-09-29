@@ -122,7 +122,13 @@ async function handleLoginSubmit(event) {
 
     const data = await res.json();
     if (!res.ok) {
-      throw new Error(data.detail || "Authentication failed");
+      let errMsg = "Authentication failed";
+      if (typeof data.detail === "string") {
+        errMsg = data.detail;
+      } else if (Array.isArray(data.detail)) {
+        errMsg = data.detail.map(e => e.msg || e.detail).join(", ");
+      }
+      throw new Error(errMsg);
     }
 
     // Store JWT Token
@@ -159,13 +165,21 @@ async function handleRegisterSubmit(event) {
   const phone = phoneInput ? phoneInput.value.trim() : "";
   const password = pwdInput ? pwdInput.value : "";
 
-  if (!displayName || !email || !password) {
-    showToast("Please fill in all required fields", "error");
+  if (!displayName || !email || !password || !phone) {
+    showToast("Please fill in all mandatory fields (Name, Gmail, Mobile, Password)", "error");
+    return;
+  }
+
+  const rawPhone = phone.replace(/\D/g, "");
+  if (rawPhone.length < 10) {
+    showToast("Please enter a valid 10-digit mobile number", "error");
+    if (phoneInput) phoneInput.focus();
     return;
   }
 
   if (password.length < 8) {
     showToast("Password must be at least 8 characters long", "error");
+    if (pwdInput) pwdInput.focus();
     return;
   }
 
@@ -186,13 +200,19 @@ async function handleRegisterSubmit(event) {
         email: email,
         username: cleanUsername,
         password: password,
-        phone_number: phone || null
+        phone_number: rawPhone.slice(-10)
       })
     });
 
     const data = await res.json();
     if (!res.ok) {
-      throw new Error(data.detail || "Registration failed");
+      let errMsg = "Registration failed";
+      if (typeof data.detail === "string") {
+        errMsg = data.detail;
+      } else if (Array.isArray(data.detail)) {
+        errMsg = data.detail.map(e => e.msg || e.detail).join(", ");
+      }
+      throw new Error(errMsg);
     }
 
     AppState.token = data.access_token;
@@ -214,6 +234,7 @@ async function handleRegisterSubmit(event) {
   } catch (err) {
     showToast(err.message, "error");
   } finally {
+
     if (submitBtn) {
       submitBtn.disabled = false;
       submitBtn.innerHTML = `<span>Create Account</span><span class="material-symbols-outlined text-[18px]">arrow_forward</span>`;
@@ -340,9 +361,80 @@ function startCountdownTimer(channel) {
   }
 }
 
-function resendOtpCode(channel) {
-  showToast(`New verification code sent via ${channel.toUpperCase()}`, "success");
-  startCountdownTimer(channel);
+/**
+ * Start Phone Login Flow (Screen 07 -> Screen 09)
+ */
+function startPhoneLogin() {
+  const currentPhone = AppState.pendingPhoneNumber || "";
+  const phone = prompt("Enter your 10-digit mobile number for SMS verification:", currentPhone || "+91 ");
+  if (!phone || !phone.trim()) return;
+  requestPhoneOtp(phone.trim());
+}
+
+/**
+ * Request Phone OTP via Fast2SMS API
+ */
+async function requestPhoneOtp(phoneNumber) {
+  showToast("Dispatching SMS code via Fast2SMS...", "info");
+  try {
+    const res = await fetch(`${CONFIG.API_BASE}/auth/phone/send-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone_number: phoneNumber })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.detail || "Failed to send SMS code");
+    }
+
+    AppState.pendingPhoneNumber = data.phone_number;
+    AppState.isPasswordResetFlow = false;
+    switchView("view-sms-otp");
+
+    const targetEl = document.getElementById("sms-phone-target");
+    if (targetEl) targetEl.textContent = `Sent to ${data.phone_number}`;
+
+    if (data.dev_code) {
+      console.log(`[RHYNIA FAST2SMS OTP] ${data.phone_number} -> ${data.dev_code}`);
+    }
+
+    if (data.sms_delivered) {
+      showToast("Verification SMS sent to your phone!", "success");
+    } else {
+      showToast(data.message || "OTP code generated!", "info");
+    }
+
+    startCountdownTimer("sms");
+  } catch (err) {
+    showToast(err.message || "Failed to send SMS", "error");
+  }
+}
+
+async function resendOtpCode(channel) {
+  if (channel === "sms") {
+    if (AppState.pendingPhoneNumber) {
+      await requestPhoneOtp(AppState.pendingPhoneNumber);
+    } else {
+      startPhoneLogin();
+    }
+  } else {
+    const targetEmail = AppState.pendingResetEmail || (AppState.user && AppState.user.email);
+    if (targetEmail) {
+      try {
+        await fetch(`${CONFIG.API_BASE}/auth/email/send-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: targetEmail })
+        });
+        showToast(`New verification code sent to ${targetEmail}`, "success");
+      } catch (e) {
+        showToast("Failed to resend email code", "error");
+      }
+    } else {
+      showToast(`New verification code sent via ${channel.toUpperCase()}`, "success");
+    }
+    startCountdownTimer(channel);
+  }
 }
 
 /**
@@ -360,15 +452,70 @@ async function verifySmsOtp() {
     return;
   }
 
+  const phone = AppState.pendingPhoneNumber;
+  if (!phone) {
+    const enteredPhone = prompt("Please confirm your registered mobile phone number:", "+91 ");
+    if (!enteredPhone) return;
+    AppState.pendingPhoneNumber = enteredPhone.trim();
+  }
+
   showToast("Verifying SMS code...", "info");
-  setTimeout(async () => {
-    showToast("SMS verification successful!", "success");
-    if (!AppState.token) {
-      switchView("view-login");
-    } else {
-      await initializeWorkspace();
+
+  try {
+    // If this is password reset flow:
+    if (AppState.isPasswordResetFlow) {
+      const verifyRes = await fetch(`${CONFIG.API_BASE}/auth/forgot-password/verify-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone_number: AppState.pendingPhoneNumber,
+          otp_code: code
+        })
+      });
+
+      const verifyData = await verifyRes.json();
+      if (!verifyRes.ok) {
+        throw new Error(verifyData.detail || "Invalid or expired SMS code");
+      }
+
+      AppState.pendingResetCode = code;
+      showToast("Code verified! Please create your new password.", "success");
+
+      const targetInfo = document.getElementById("new-password-target-info");
+      if (targetInfo) targetInfo.textContent = `Account: ${AppState.pendingPhoneNumber}`;
+
+      switchView("view-new-password");
+      return;
     }
-  }, 800);
+
+    // Standard Phone Login Flow:
+    const res = await fetch(`${CONFIG.API_BASE}/auth/phone/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone_number: AppState.pendingPhoneNumber,
+        otp_code: code
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.detail || "SMS verification failed");
+    }
+
+    AppState.token = data.access_token;
+    localStorage.setItem(CONFIG.TOKEN_KEY, data.access_token);
+    if (data.user) {
+      AppState.user = data.user;
+      localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(data.user));
+    }
+
+    showToast("Phone verification successful! Welcome to Rhynia.", "success");
+    await initializeWorkspace();
+
+  } catch (err) {
+    showToast(err.message || "Invalid or expired code", "error");
+  }
 }
 
 /**
@@ -386,15 +533,70 @@ async function verifyEmailOtp() {
     return;
   }
 
+  const email = AppState.pendingResetEmail || (AppState.user && AppState.user.email);
+  if (!email && AppState.isPasswordResetFlow) {
+    const enteredEmail = prompt("Please confirm your registered email address:");
+    if (!enteredEmail) return;
+    AppState.pendingResetEmail = enteredEmail.trim();
+  }
+
   showToast("Verifying email code...", "info");
-  setTimeout(async () => {
-    showToast("Email verified successfully!", "success");
-    if (!AppState.token) {
-      switchView("view-login");
-    } else {
-      await initializeWorkspace();
+
+  try {
+    // If this is password reset flow:
+    if (AppState.isPasswordResetFlow) {
+      const verifyRes = await fetch(`${CONFIG.API_BASE}/auth/forgot-password/verify-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: AppState.pendingResetEmail,
+          otp_code: code
+        })
+      });
+
+      const verifyData = await verifyRes.json();
+      if (!verifyRes.ok) {
+        throw new Error(verifyData.detail || "Invalid or expired email verification code");
+      }
+
+      AppState.pendingResetCode = code;
+      showToast("Code verified! Please create your new password.", "success");
+
+      const targetInfo = document.getElementById("new-password-target-info");
+      if (targetInfo) targetInfo.textContent = `Account: ${AppState.pendingResetEmail}`;
+
+      switchView("view-new-password");
+      return;
     }
-  }, 800);
+
+    // Standard Email Verification Flow:
+    const res = await fetch(`${CONFIG.API_BASE}/auth/email/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        otp_code: code
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.detail || "Email verification failed");
+    }
+
+    AppState.token = data.access_token;
+    localStorage.setItem(CONFIG.TOKEN_KEY, data.access_token);
+    if (data.user) {
+      AppState.user = data.user;
+      localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(data.user));
+    }
+
+    showToast("Email verified successfully! Welcome to Rhynia.", "success");
+    await initializeWorkspace();
+
+  } catch (err) {
+    showToast(err.message || "Invalid or expired code", "error");
+  }
 }
 
 /**
@@ -417,15 +619,42 @@ async function handleForgotSubmit(event) {
       submitBtn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span> <span>Sending Code...</span>`;
     }
 
-    await new Promise(r => setTimeout(r, 900));
-    showToast("Password reset instructions sent to your email/phone!", "success");
+    const res = await fetch(`${CONFIG.API_BASE}/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identifier: val })
+    });
 
-    setTimeout(() => {
-      switchView("view-login");
-    }, 1500);
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.detail || "Failed to dispatch reset code");
+    }
+
+    if (data.phone_number) {
+      AppState.pendingPhoneNumber = data.phone_number;
+      AppState.isPasswordResetFlow = true;
+
+      showToast(data.message || "Verification code sent to your phone!", "success");
+      switchView("view-sms-otp");
+
+      const targetEl = document.getElementById("sms-phone-target");
+      if (targetEl) targetEl.textContent = `Reset code sent to ${data.phone_number}`;
+      startCountdownTimer("sms");
+    } else {
+      const email = data.email || val;
+      AppState.pendingResetEmail = email;
+      AppState.isPasswordResetFlow = true;
+
+      showToast(data.message || "Verification code sent to your email!", "success");
+      switchView("view-email-otp");
+
+      const targetEl = document.getElementById("email-otp-target");
+      if (targetEl) targetEl.textContent = `Reset code sent to ${email}`;
+      startCountdownTimer("email");
+    }
 
   } catch (err) {
-    showToast(err.message, "error");
+    showToast(err.message || "Password reset failed", "error");
   } finally {
     if (submitBtn) {
       submitBtn.disabled = false;
@@ -434,10 +663,355 @@ async function handleForgotSubmit(event) {
   }
 }
 
-// Initialize OTP slot listeners and countdown on page load
+/**
+ * Handle Set New Password Submission (Screen 12)
+ */
+async function handleNewPasswordSubmit(event) {
+  event.preventDefault();
+  const pwdInput = document.getElementById("reset-new-password-input");
+  const confirmInput = document.getElementById("reset-confirm-password-input");
+  const submitBtn = document.getElementById("btn-save-new-password");
+
+  const pwd = pwdInput ? pwdInput.value : "";
+  const confirmPwd = confirmInput ? confirmInput.value : "";
+
+  if (!pwd || pwd.length < 8) {
+    showToast("Password must be at least 8 characters long", "error");
+    if (pwdInput) pwdInput.focus();
+    return;
+  }
+
+  if (pwd !== confirmPwd) {
+    showToast("Passwords do not match. Please re-check.", "error");
+    if (confirmInput) confirmInput.focus();
+    return;
+  }
+
+  const payload = {
+    otp_code: AppState.pendingResetCode,
+    new_password: pwd
+  };
+
+  if (AppState.pendingResetEmail) {
+    payload.email = AppState.pendingResetEmail;
+  } else if (AppState.pendingPhoneNumber) {
+    payload.phone_number = AppState.pendingPhoneNumber;
+  } else {
+    showToast("Reset session expired. Please start over.", "error");
+    switchView("view-forgot-password");
+    return;
+  }
+
+  try {
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span> <span>Updating Password...</span>`;
+    }
+
+    const res = await fetch(`${CONFIG.API_BASE}/auth/forgot-password/reset-with-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.detail || "Failed to update password");
+    }
+
+    // Reset flow completed successfully
+    AppState.isPasswordResetFlow = false;
+    AppState.pendingResetCode = null;
+    AppState.pendingResetEmail = null;
+    AppState.pendingPhoneNumber = null;
+
+    AppState.token = data.access_token;
+    localStorage.setItem(CONFIG.TOKEN_KEY, data.access_token);
+    if (data.user) {
+      AppState.user = data.user;
+      localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(data.user));
+    }
+
+    showToast("Password updated successfully! Welcome back to Rhynia.", "success");
+    await initializeWorkspace();
+
+  } catch (err) {
+    showToast(err.message || "Failed to update password", "error");
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `<span>Update Password & Sign In</span><span class="material-symbols-outlined text-[18px]">arrow_forward</span>`;
+    }
+  }
+}
+
+/**
+ * Toggle Password Visibility (Eye Icon)
+ */
+function togglePasswordVisibility(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const isPassword = input.type === "password";
+  input.type = isPassword ? "text" : "password";
+
+  const btn = input.parentElement ? input.parentElement.querySelector("button") : null;
+  if (btn) {
+    const icon = btn.querySelector(".material-symbols-outlined");
+    if (icon) {
+      icon.textContent = isPassword ? "visibility_off" : "visibility";
+    }
+  }
+}
+
+/**
+ * Cancel Password Reset Flow
+ */
+function cancelPasswordReset() {
+  AppState.isPasswordResetFlow = false;
+  AppState.pendingResetCode = null;
+  AppState.pendingResetEmail = null;
+  AppState.pendingPhoneNumber = null;
+  switchView("view-login");
+}
+
+window.handleNewPasswordSubmit = handleNewPasswordSubmit;
+window.togglePasswordVisibility = togglePasswordVisibility;
+window.cancelPasswordReset = cancelPasswordReset;
+
+
+// ==========================================
+// GOOGLE OAUTH 2.0 (GIS) INTEGRATION
+// ==========================================
+let googleTokenClient = null;
+let googleAuthInitialized = false;
+
+/**
+ * Initialize Google Identity Services (GIS)
+ */
+function initGoogleAuth() {
+  if (typeof google === "undefined" || !google.accounts || !google.accounts.id) {
+    // Retry when GIS SDK finishes loading
+    setTimeout(initGoogleAuth, 350);
+    return;
+  }
+
+  const clientId = (typeof CONFIG !== "undefined" && CONFIG.GOOGLE_CLIENT_ID)
+    ? CONFIG.GOOGLE_CLIENT_ID
+    : "1001346913265-qbdhpbb69gen2mvcjtu56jepn1sld8os.apps.googleusercontent.com";
+
+  try {
+    // 1. Initialize Google ID Token flow (GIS)
+    google.accounts.id.initialize({
+      client_id: clientId,
+      callback: handleGoogleCredentialResponse,
+      auto_select: false,
+      cancel_on_tap_outside: true,
+    });
+
+    // 2. Render Google Button on Login Screen
+    const loginContainer = document.getElementById("google-login-btn-container");
+    if (loginContainer) {
+      loginContainer.innerHTML = "";
+      google.accounts.id.renderButton(loginContainer, {
+        type: "standard",
+        theme: "filled_black",
+        size: "large",
+        text: "continue_with",
+        shape: "rectangular",
+        logo_alignment: "left",
+        width: 380,
+      });
+    }
+
+    // 3. Render Google Button on Register Screen
+    const regContainer = document.getElementById("google-register-btn-container");
+    if (regContainer) {
+      regContainer.innerHTML = "";
+      google.accounts.id.renderButton(regContainer, {
+        type: "standard",
+        theme: "filled_black",
+        size: "large",
+        text: "signup_with",
+        shape: "rectangular",
+        logo_alignment: "left",
+        width: 380,
+      });
+    }
+
+    // 4. Initialize OAuth2 Token Client for fallback button clicks
+    if (google.accounts.oauth2) {
+      googleTokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: "email profile openid",
+        callback: handleGoogleTokenResponse,
+      });
+    }
+
+    googleAuthInitialized = true;
+  } catch (err) {
+    console.error("Google Auth initialization error:", err);
+    // Show fallback buttons if GIS render had any constraint issue
+    const customLoginBtn = document.getElementById("google-login-custom-btn");
+    if (customLoginBtn) customLoginBtn.classList.remove("hidden");
+    const customRegBtn = document.getElementById("google-register-custom-btn");
+    if (customRegBtn) customRegBtn.classList.remove("hidden");
+  }
+}
+
+/**
+ * Trigger Google Login manually
+ */
+function triggerGoogleLogin() {
+  if (googleTokenClient) {
+    googleTokenClient.requestAccessToken();
+  } else if (typeof google !== "undefined" && google.accounts && google.accounts.id) {
+    google.accounts.id.prompt();
+  } else {
+    showToast("Connecting to Google Services...", "info");
+    initGoogleAuth();
+  }
+}
+
+/**
+ * Handle Google ID Token Credential Response
+ */
+async function handleGoogleCredentialResponse(response) {
+  if (!response || !response.credential) {
+    showToast("Google sign in was cancelled or failed", "error");
+    return;
+  }
+  await processGoogleAuthPayload(response.credential);
+}
+
+/**
+ * Handle Google OAuth2 Access Token Response
+ */
+async function handleGoogleTokenResponse(tokenResponse) {
+  if (!tokenResponse || !tokenResponse.access_token) {
+    showToast("Google sign in was cancelled or failed", "error");
+    return;
+  }
+  await processGoogleAuthPayload(tokenResponse.access_token);
+}
+
+/**
+ * Send Token to Rhynia Backend for Authentication / Registration
+ */
+async function processGoogleAuthPayload(tokenOrCredential) {
+  showToast("Signing in with Google...", "info");
+
+  try {
+    const res = await fetch(`${CONFIG.API_BASE}/auth/google`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ credential: tokenOrCredential }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      let errMsg = "Google authentication failed";
+      if (typeof data.detail === "string") {
+        errMsg = data.detail;
+      } else if (Array.isArray(data.detail)) {
+        errMsg = data.detail.map(e => e.msg || e.detail).join(", ");
+      }
+      throw new Error(errMsg);
+    }
+
+    AppState.token = data.access_token;
+    localStorage.setItem(CONFIG.TOKEN_KEY, data.access_token);
+
+    if (data.user) {
+      AppState.user = data.user;
+      localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(data.user));
+    }
+
+    // Check if phone number is required (MANDATORY for all accounts)
+    if (data.needs_phone || !data.user || !data.user.phone_number) {
+      const modal = document.getElementById("modal-google-phone");
+      if (modal) {
+        modal.classList.remove("hidden");
+        const phoneInput = document.getElementById("google-phone-input");
+        if (phoneInput) phoneInput.focus();
+        showToast("Mobile number is mandatory. Please enter your 10-digit number.", "info");
+        return;
+      }
+    }
+
+    showToast(`Welcome ${data.user?.display_name || "to Rhynia"}!`, "success");
+    await initializeWorkspace();
+
+  } catch (err) {
+    console.error("Google authentication error:", err);
+    showToast(err.message || "Google sign in failed", "error");
+  }
+}
+
+/**
+ * Handle Mandatory Phone Submission for Google Sign-In
+ */
+async function submitGooglePhoneNumber(event) {
+  event.preventDefault();
+  const phoneInput = document.getElementById("google-phone-input");
+  const submitBtn = document.getElementById("btn-submit-google-phone");
+  const phone = phoneInput ? phoneInput.value.trim() : "";
+
+  const rawDigits = phone.replace(/\D/g, "");
+  if (rawDigits.length < 10) {
+    showToast("Please enter a valid 10-digit mobile number", "error");
+    if (phoneInput) phoneInput.focus();
+    return;
+  }
+
+  try {
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span> <span>Saving Number...</span>`;
+    }
+
+    const res = await fetch(`${CONFIG.API_BASE}/auth/set-phone`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${AppState.token}`
+      },
+      body: JSON.stringify({ phone_number: rawDigits.slice(-10) })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.detail || "Failed to save mobile number");
+    }
+
+    if (AppState.user) {
+      AppState.user.phone_number = data.phone_number;
+      localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(AppState.user));
+    }
+
+    const modal = document.getElementById("modal-google-phone");
+    if (modal) modal.classList.add("hidden");
+
+    showToast("Mobile number registered successfully! Welcome to Rhynia.", "success");
+    await initializeWorkspace();
+
+  } catch (err) {
+    showToast(err.message || "Failed to set mobile number", "error");
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `<span>Complete Sign In</span><span class="material-symbols-outlined text-[18px]">arrow_forward</span>`;
+    }
+  }
+}
+
+window.submitGooglePhoneNumber = submitGooglePhoneNumber;
+
+// Initialize OTP slot listeners, Google Auth and countdown on page load
 document.addEventListener("DOMContentLoaded", () => {
   setupOtpSlotInputs("sms");
   setupOtpSlotInputs("email");
   startCountdownTimer("sms");
   startCountdownTimer("email");
+  initGoogleAuth();
 });
+

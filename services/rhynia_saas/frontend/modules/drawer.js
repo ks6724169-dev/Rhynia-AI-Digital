@@ -116,44 +116,44 @@ function renderDrawerSessionLists(sessionList) {
   pinnedContainer.innerHTML = pinned.map(s => {
     const isActive = s.id === AppState.activeSessionId;
     return `
-      <div class="rounded-lg bg-[#272727] border ${isActive ? 'border-[#0078D4]/50' : 'border-[#383838]'} p-1.5 shadow-sm space-y-1 mb-2">
+      <div class="rounded-2xl bg-[#272727] border ${isActive ? 'border-[#0078D4]/60 shadow-lg shadow-[#0078D4]/20' : 'border-[#383838]'} p-2 shadow-sm space-y-1.5 mb-2.5">
         <!-- Active Chat Item Row with Azure vertical indicator -->
-        <div onclick="openSession('${s.id}')" class="relative flex items-center justify-between px-2.5 py-2 rounded-md ${isActive ? 'bg-[#303030] text-white' : 'hover:bg-[#303030] text-neutral-200'} cursor-pointer transition-colors group">
-          ${isActive ? `<div class="absolute left-0 top-1.5 bottom-1.5 w-1 bg-[#0078D4] rounded-r-full"></div>` : ""}
-          <div class="flex items-center gap-2.5 pl-1.5 overflow-hidden">
-            <span class="material-symbols-outlined text-base ${isActive ? 'text-[#0078D4]' : 'text-neutral-400'}" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
-            <span class="text-xs font-medium truncate">${escapeHtml(s.title || "Untitled Chat")}</span>
+        <div onclick="openSession('${s.id}')" class="relative flex items-center justify-between px-3 py-2.5 rounded-xl ${isActive ? 'bg-[#303030] text-white' : 'hover:bg-[#303030] text-neutral-200'} cursor-pointer transition-colors group min-h-[58px]">
+          ${isActive ? `<div class="absolute left-0 top-2 bottom-2 w-1.5 bg-[#0078D4] rounded-r-full"></div>` : ""}
+          <div class="flex items-center gap-3.5 pl-2 overflow-hidden">
+            <span class="material-symbols-outlined text-[28px] ${isActive ? 'text-[#0078D4]' : 'text-neutral-400'} flex-shrink-0" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+            <span class="text-[21px] font-semibold truncate leading-snug">${escapeHtml(s.title || "Untitled Chat")}</span>
           </div>
-          <span class="w-1.5 h-1.5 rounded-full ${isActive ? 'bg-[#0078D4]' : 'bg-transparent'} flex-shrink-0"></span>
+          <span class="w-2 h-2 rounded-full ${isActive ? 'bg-[#0078D4]' : 'bg-transparent'} flex-shrink-0"></span>
         </div>
 
         <!-- Action Buttons (Pinned, Rename, Delete) matching Screen 04 card layout -->
         ${isActive ? `
-          <div class="pt-1 pb-0.5 px-0.5 flex flex-col gap-0.5 bg-[#202020] rounded-md border border-[#2d2d2d]">
-            <button onclick="togglePinSessionById('${s.id}')" class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs font-medium text-[#0078D4] hover:bg-[#0078D4]/10 active:bg-[#0078D4]/20 transition-colors text-left" title="Unpin from top">
-              <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">keep</span>
+          <div class="pt-1.5 pb-1 px-1 flex flex-col gap-1 bg-[#202020] rounded-xl border border-[#2d2d2d]">
+            <button onclick="togglePinSessionById('${s.id}')" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold text-[#0078D4] hover:bg-[#0078D4]/10 active:bg-[#0078D4]/20 transition-colors text-left" title="Unpin from top">
+              <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">keep</span>
               <span>Pinned</span>
             </button>
-            <button onclick="renameSessionById('${s.id}')" class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs font-medium text-[#e5e2e1] hover:bg-[#2e2e2e] active:bg-[#383838] transition-colors text-left" title="Rename Chat">
-              <span class="material-symbols-outlined text-sm text-[#8a919e]">edit</span>
+            <button onclick="renameSessionById('${s.id}')" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold text-[#e5e2e1] hover:bg-[#2e2e2e] active:bg-[#383838] transition-colors text-left" title="Rename Chat">
+              <span class="material-symbols-outlined text-[20px] text-[#8a919e]">edit</span>
               <span>Rename</span>
             </button>
-            <div class="h-px bg-[#2d2d2d] my-0.5 mx-1"></div>
-            <button onclick="deleteSessionById('${s.id}')" class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs font-medium text-[#ff7b7b] hover:bg-[#93000a]/20 active:bg-[#93000a]/30 transition-colors text-left" title="Delete Chat">
-              <span class="material-symbols-outlined text-sm text-[#ff7b7b]">delete</span>
+            <div class="h-px bg-[#2d2d2d] my-1 mx-1.5"></div>
+            <button onclick="deleteSessionById('${s.id}')" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold text-[#ff7b7b] hover:bg-[#93000a]/20 active:bg-[#93000a]/30 transition-colors text-left" title="Delete Chat">
+              <span class="material-symbols-outlined text-[20px] text-[#ff7b7b]">delete</span>
               <span>Delete</span>
             </button>
           </div>
         ` : `
-          <div class="flex items-center justify-end gap-1 px-1 py-0.5 text-neutral-400">
-            <button onclick="togglePinSessionById('${s.id}')" class="p-1 hover:text-white rounded hover:bg-white/10" title="Unpin">
-              <span class="material-symbols-outlined text-xs">keep</span>
+          <div class="flex items-center justify-end gap-1.5 px-2 py-1 text-neutral-400">
+            <button onclick="togglePinSessionById('${s.id}')" class="p-1.5 hover:text-white rounded-lg hover:bg-white/10" title="Unpin">
+              <span class="material-symbols-outlined text-[19px]">keep</span>
             </button>
-            <button onclick="renameSessionById('${s.id}')" class="p-1 hover:text-white rounded hover:bg-white/10" title="Rename">
-              <span class="material-symbols-outlined text-xs">edit</span>
+            <button onclick="renameSessionById('${s.id}')" class="p-1.5 hover:text-white rounded-lg hover:bg-white/10" title="Rename">
+              <span class="material-symbols-outlined text-[19px]">edit</span>
             </button>
-            <button onclick="deleteSessionById('${s.id}')" class="p-1 hover:text-red-400 rounded hover:bg-white/10" title="Delete">
-              <span class="material-symbols-outlined text-xs">delete</span>
+            <button onclick="deleteSessionById('${s.id}')" class="p-1.5 hover:text-red-400 rounded-lg hover:bg-white/10" title="Delete">
+              <span class="material-symbols-outlined text-[19px]">delete</span>
             </button>
           </div>
         `}
@@ -164,7 +164,7 @@ function renderDrawerSessionLists(sessionList) {
   // 2. Render Recent List
   if (recent.length === 0 && pinned.length === 0) {
     recentContainer.innerHTML = `
-      <div class="px-3 py-6 text-center text-xs text-neutral-500">
+      <div class="px-4 py-8 text-center text-sm text-neutral-500">
         No conversations yet. Start a new chat!
       </div>
     `;
@@ -174,17 +174,17 @@ function renderDrawerSessionLists(sessionList) {
   recentContainer.innerHTML = recent.map(s => {
     const isActive = s.id === AppState.activeSessionId;
     return `
-      <div class="group relative flex items-center justify-between rounded-md ${isActive ? 'bg-[#2a2a2a] text-white' : 'text-[#c0c7d4] hover:text-white hover:bg-[#2a2a2a]'} transition-colors">
-        <button onclick="openSession('${s.id}')" class="w-full flex items-center gap-2.5 px-2.5 py-2 text-left overflow-hidden">
-          <span class="material-symbols-outlined text-base ${isActive ? 'text-[#0078D4]' : 'text-[#8a919e]'} flex-shrink-0">chat_bubble_outline</span>
-          <span class="text-xs truncate font-normal">${escapeHtml(s.title || "Untitled Chat")}</span>
+      <div class="group relative flex items-center justify-between rounded-xl min-h-[58px] ${isActive ? 'bg-[#2a2a2a] text-white' : 'text-[#c0c7d4] hover:text-white hover:bg-[#2a2a2a]'} transition-colors mb-1">
+        <button onclick="openSession('${s.id}')" class="w-full flex items-center gap-3.5 px-3 py-3 text-left overflow-hidden">
+          <span class="material-symbols-outlined text-[28px] ${isActive ? 'text-[#0078D4]' : 'text-[#8a919e]'} flex-shrink-0">chat_bubble_outline</span>
+          <span class="text-[21px] truncate font-medium leading-snug">${escapeHtml(s.title || "Untitled Chat")}</span>
         </button>
-        <div class="opacity-0 group-hover:opacity-100 flex items-center pr-1 transition-opacity">
-          <button onclick="togglePinSessionById('${s.id}')" class="p-1 text-neutral-400 hover:text-[#0078D4] rounded" title="Pin to top">
-            <span class="material-symbols-outlined text-xs">keep</span>
+        <div class="opacity-0 group-hover:opacity-100 flex items-center pr-2 transition-opacity">
+          <button onclick="togglePinSessionById('${s.id}')" class="p-1.5 text-neutral-400 hover:text-[#0078D4] rounded-lg" title="Pin to top">
+            <span class="material-symbols-outlined text-[19px]">keep</span>
           </button>
-          <button onclick="deleteSessionById('${s.id}')" class="p-1 text-neutral-400 hover:text-red-400 rounded" title="Delete">
-            <span class="material-symbols-outlined text-xs">delete</span>
+          <button onclick="deleteSessionById('${s.id}')" class="p-1.5 text-neutral-400 hover:text-red-400 rounded-lg" title="Delete">
+            <span class="material-symbols-outlined text-[19px]">delete</span>
           </button>
         </div>
       </div>

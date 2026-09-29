@@ -53,7 +53,21 @@ class Settings(BaseSettings):
     JWT_SECRET: str = "rhynia_super_secure_jwt_secret_key_2026_horizon_luminescent"
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_DAYS: int = 7
-    OTP_EXPIRE_SECONDS: int = 300  # 5 minutes
+    OTP_EXPIRE_SECONDS: int = 600  # 10 minutes for relaxed user entry
+
+    # Google OAuth 2.0 Credentials
+    GOOGLE_CLIENT_ID: Optional[str] = "1001346913265-qbdhpbb69gen2mvcjtu56jepn1sld8os.apps.googleusercontent.com"
+    GOOGLE_CLIENT_SECRET: Optional[str] = "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"
+
+    # Fast2SMS Gateway Configuration
+    FAST2SMS_API_KEY: Optional[str] = "ZREic30HSxnBehfXKM29VdCrTFjaDNogkz4J1ylAQqpU5mIwG8NvBRVM3ueYnICoQ0UEchZkHtT6b48z"
+
+    # Gmail SMTP Configuration
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 465
+    SMTP_USER: Optional[str] = "mk6611236@gmail.com"
+    SMTP_PASSWORD: Optional[str] = "nldgbrmonepawpqw"
+    SMTP_FROM_NAME: str = "Rhynia Intelligence"
 
     # AI Model Cascade (Multi-Provider Engine)
     OPENROUTER_API_KEY: Optional[str] = None

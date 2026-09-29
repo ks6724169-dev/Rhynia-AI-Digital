@@ -20,9 +20,13 @@ secrets/
 *.key
 
 # Database
+database/
 *.db
 *.sqlite
 *.sqlite3
+
+# Vercel
+.vercel/
 
 # Large ML Weights, Models & Datasets (Hosted on HuggingFace/Cloud)
 *.safetensors

@@ -1775,3 +1775,839 @@ html.light .rhynia-followup-pill:hover .material-symbols-outlined {
   color: #0078D4 !important;
 }
 
+/* ========================================================= */
+/* RHYNIA EXECUTIVE PRESENTATION PLAYER & SLIDE DECK         */
+/* ========================================================= */
+.rhynia-deck-wrapper {
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rhynia-deck-wrapper:hover {
+  box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.5);
+}
+
+#rhynia-presentation-fs-stage {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+html.light .rhynia-deck-wrapper {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light .rhynia-deck-wrapper .bg-black\/40,
+html.light .rhynia-deck-wrapper .bg-black\/30 {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .rhynia-deck-wrapper .text-white {
+  color: #0f172a !important;
+}
+
+html.light .rhynia-deck-wrapper .text-neutral-300,
+html.light .rhynia-deck-wrapper .text-neutral-200 {
+  color: #334155 !important;
+}
+
+html.light .rhynia-deck-wrapper .text-neutral-400 {
+  color: #64748b !important;
+}
+
+html.light .rhynia-deck-wrapper tr.bg-white\/10 {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+html.light .rhynia-deck-wrapper .bg-white\/5 {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* ========================================================= */
+/* MOBILE RESPONSIVE OPTIMIZATION SYSTEM (ChatGPT-Grade UI)  */
+/* ========================================================= */
+.user-bubble {
+  word-break: break-word;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+html.light .user-bubble {
+  background: #f1edfb !important;
+  color: #1e1b4b !important;
+  border-color: rgba(99, 102, 241, 0.12) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 1024px) {
+  /* Prevent horizontal scrolling & mobile viewport clipping */
+  html, body {
+    width: 100%;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
+  }
+
+  /* Main Container: Safe Area Awareness & 20px Side Padding */
+  #main-chat-container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-bottom: calc(140px + env(safe-area-inset-bottom, 24px)) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Top Navigation Bar: Extra-Large Height ~92px & 20px Side Padding */
+  header {
+    height: 92px !important;
+    min-height: 92px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  /* ☰ Menu button: 72 × 72 px Touch Target, 38px Icon */
+  #btn-hamburger-menu {
+    width: 72px !important;
+    height: 72px !important;
+    min-width: 72px !important;
+    min-height: 72px !important;
+    border-radius: 9999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  #btn-hamburger-menu .material-symbols-outlined {
+    font-size: 38px !important;
+  }
+
+  /* ✏️ New Chat Button: 72 × 72 px Touch Target, 36px Icon */
+  header button[onclick="startNewChat()"] {
+    width: 72px !important;
+    height: 72px !important;
+    min-width: 72px !important;
+    min-height: 72px !important;
+    border-radius: 9999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  header button[onclick="startNewChat()"] .material-symbols-outlined {
+    font-size: 36px !important;
+  }
+
+  /* ⋮ More Button: 72 × 72 px Touch Target, 36px Icon */
+  #btn-three-dots-trigger {
+    width: 72px !important;
+    height: 72px !important;
+    min-width: 72px !important;
+    min-height: 72px !important;
+    border-radius: 9999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  #btn-three-dots-trigger .material-symbols-outlined {
+    font-size: 36px !important;
+  }
+
+  /* 3-Dots Flyout Menu Positioned Comfortably Below Top Bar */
+  #three-dots-menu {
+    top: 88px !important;
+    right: 18px !important;
+    width: 280px !important;
+    border-radius: 20px !important;
+  }
+
+  #three-dots-menu button {
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+    font-size: 16px !important;
+  }
+
+  /* Bottom Composer Wrapper: Floating Above Android Navigation Bar / Gesture Pill */
+  #view-app > div.fixed.bottom-0,
+  div:has(> .fluent-composer-pill) {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 24px)) !important;
+  }
+
+  /* Bottom Input Bar (Stadium Capsule Pill): Extra-Large ~88 px Height */
+  .fluent-composer-pill {
+    min-height: 88px !important;
+    height: auto !important;
+    padding: 14px 20px !important;
+    gap: 14px !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55) !important;
+  }
+
+  /* ➕ Attachment Button: 66 × 66 px Touch Target, 38px Icon */
+  #plusToggle {
+    width: 66px !important;
+    height: 66px !important;
+    min-width: 66px !important;
+    min-height: 66px !important;
+    border-radius: 9999px !important;
+  }
+
+  #plusToggle .material-symbols-outlined {
+    font-size: 38px !important;
+  }
+
+  /* Input Text Field: 20 px Font, Smooth Line Height */
+  #chat-input {
+    font-size: 20px !important;
+    line-height: 1.5 !important;
+    padding: 14px 10px !important;
+  }
+
+  /* 🎙️ Microphone Voice Dictation Button: 66 × 66 px Touch Target, 36px Icon */
+  #micBtn {
+    width: 66px !important;
+    height: 66px !important;
+    min-width: 66px !important;
+    min-height: 66px !important;
+    border-radius: 9999px !important;
+  }
+
+  #micBtn .material-symbols-outlined {
+    font-size: 36px !important;
+  }
+
+  /* 🟣 Voice / Send Button: 66 × 66 px Touch Target, 34px Icon */
+  #btn-send-message {
+    width: 66px !important;
+    height: 66px !important;
+    min-width: 66px !important;
+    min-height: 66px !important;
+    border-radius: 9999px !important;
+  }
+
+  #btn-send-message .material-symbols-outlined {
+    font-size: 34px !important;
+  }
+
+  /* Chat Messages: User Bubble (Height ~80 px, 24px font, rounded pill bubble) */
+  .user-bubble {
+    font-size: 24px !important;
+    min-height: 80px !important;
+    padding: 20px 32px !important;
+    border-radius: 36px 36px 12px 36px !important;
+    max-width: 92% !important;
+    line-height: 1.65 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  /* AI Message Text: 24px Font, 1.8 Line Height */
+  .ai-text-body,
+  .ai-text-body p,
+  .ai-text-body li {
+    font-size: 24px !important;
+    line-height: 1.8 !important;
+  }
+
+  .ai-text-body strong {
+    font-size: 24px !important;
+  }
+
+  .ai-text-body code {
+    font-size: 20px !important;
+  }
+
+  .ai-text-body pre {
+    font-size: 19px !important;
+  }
+
+  /* Action Buttons Bar: 56 px Touch Area, 30 px Icons, 16 px Spacing */
+  .ai-actions-bar {
+    gap: 16px !important;
+    padding-top: 18px !important;
+  }
+
+  .ai-actions-bar button {
+    width: 56px !important;
+    height: 56px !important;
+    min-width: 56px !important;
+    min-height: 56px !important;
+    border-radius: 16px !important;
+  }
+
+  .ai-actions-bar .material-symbols-outlined {
+    font-size: 30px !important;
+  }
+
+  /* Empty State Hero on Big Display */
+  #screen-empty-state {
+    padding-top: 4rem !important;
+    padding-bottom: 3rem !important;
+  }
+
+  #screen-empty-state img {
+    width: 260px !important;
+    height: 260px !important;
+  }
+
+  #screen-empty-state h2 {
+    font-size: 2.6rem !important;
+  }
+
+  /* Navigation Drawer on Mobile: Exactly 90% (90vw) of the screen to cover 90% of chat screen */
+  #sidebar-drawer {
+    width: 90vw !important;
+    max-width: 90vw !important;
+    min-width: 90vw !important;
+  }
+
+  /* Code Blocks & Tables Touch Scrolling */
+  .markdown-body table {
+    display: block !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    font-size: 16px !important;
+  }
+
+  .markdown-body pre {
+    padding: 18px !important;
+    font-size: 16px !important;
+    border-radius: 18px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* ========================================================= */
+  /* SCREEN 04: NAVIGATION DRAWER (Same Large Scale as Chat)   */
+  /* ========================================================= */
+  #sidebar-drawer > div:first-child {
+    height: 84px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  #sidebar-drawer > div:first-child img {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  #sidebar-drawer > div:first-child span.text-base {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+  }
+
+  /* Drawer Top Action Buttons: 64 × 64 px Touch Targets, 36px Icons */
+  #sidebar-drawer > div:first-child button {
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px !important;
+    min-height: 64px !important;
+    border-radius: 9999px !important;
+  }
+
+  #sidebar-drawer > div:first-child button .material-symbols-outlined {
+    font-size: 36px !important;
+  }
+
+  #drawer-search-container {
+    padding: 12px 16px !important;
+  }
+
+  #drawer-search-input {
+    min-height: 56px !important;
+    height: 56px !important;
+    font-size: 17px !important;
+    border-radius: 14px !important;
+    padding-left: 48px !important;
+    padding-right: 48px !important;
+  }
+
+  #drawer-search-container .material-symbols-outlined {
+    font-size: 30px !important;
+  }
+
+  #drawer-search-container button {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  #drawer-pinned-section span.material-symbols-outlined,
+  #drawer-recent-section span.material-symbols-outlined {
+    font-size: 24px !important;
+  }
+
+  #drawer-pinned-section span,
+  #drawer-recent-section span {
+    font-size: 14px !important;
+  }
+
+  #drawer-pinned-list span.truncate,
+  #drawer-recent-list span.truncate {
+    font-size: 21.5px !important;
+    font-weight: 600 !important;
+    line-height: 1.35 !important;
+  }
+
+  #drawer-pinned-list button,
+  #drawer-recent-list button {
+    min-height: 62px !important;
+    padding: 14px 18px !important;
+    font-size: 21.5px !important;
+    border-radius: 16px !important;
+  }
+
+  #drawer-pinned-list .material-symbols-outlined,
+  #drawer-recent-list .material-symbols-outlined {
+    font-size: 28px !important;
+  }
+
+  #sidebar-drawer > div:last-child {
+    min-height: 88px !important;
+    padding: 16px 20px !important;
+  }
+
+  /* Bottom New Chat Button: 60px Height, 34px Add Icon */
+  #sidebar-drawer > div:last-child button[onclick="startNewChat()"] {
+    height: 60px !important;
+    min-height: 60px !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    border-radius: 16px !important;
+    padding: 0 22px !important;
+    gap: 12px !important;
+  }
+
+  #sidebar-drawer > div:last-child button[onclick="startNewChat()"] .material-symbols-outlined {
+    font-size: 34px !important;
+  }
+
+  /* Drawer User Avatar Button: 64 × 64 px */
+  #drawer-user-avatar-btn {
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px !important;
+    min-height: 64px !important;
+    border-radius: 9999px !important;
+  }
+
+  #drawer-user-avatar-btn .user-avatar-initial {
+    font-size: 22px !important;
+  }
+
+  /* ========================================================= */
+  /* SCREEN 05: SETTINGS & PROFILE PANEL (Same Large Scale)    */
+  /* ========================================================= */
+  #screen-settings-panel {
+    padding: 16px 18px 80px !important;
+  }
+
+  /* Back to Chat Button: 64px Touch Target, 34px Icon */
+  #screen-settings-panel button[onclick="closeSettingsPanel()"] {
+    min-height: 60px !important;
+    height: 60px !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    padding: 0 20px !important;
+    border-radius: 18px !important;
+    gap: 14px !important;
+  }
+
+  #screen-settings-panel button[onclick="closeSettingsPanel()"] .material-symbols-outlined {
+    font-size: 34px !important;
+  }
+
+  /* Profile Avatar: 120 × 120 px, 48px Initial */
+  #screen-settings-panel .w-32.h-32 {
+    width: 120px !important;
+    height: 120px !important;
+    min-width: 120px !important;
+    min-height: 120px !important;
+  }
+
+  #screen-settings-panel .user-avatar-initial {
+    font-size: 48px !important;
+    line-height: 1 !important;
+  }
+
+  /* Profile Edit Pencil Badge: 48 × 48 px, 26px Icon */
+  #screen-settings-panel section button[onclick="toggleEditProfileModal(true)"] {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    border-radius: 9999px !important;
+  }
+
+  #screen-settings-panel section button[onclick="toggleEditProfileModal(true)"] .material-symbols-outlined {
+    font-size: 26px !important;
+  }
+
+  /* Settings Cards: Luxurious Large Padding & Rounded Corners */
+  #screen-settings-panel .fluent-mica-card {
+    padding: 24px 20px !important;
+    border-radius: 24px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  #screen-settings-panel .fluent-mica-card h3 {
+    font-size: 19px !important;
+    font-weight: 700 !important;
+  }
+
+  #screen-settings-panel .fluent-mica-card p {
+    font-size: 16px !important;
+  }
+
+  /* Settings Header Category Icon Badges: 48 × 48 px with 28px Icons */
+  #screen-settings-panel .fluent-mica-card .w-12.h-12 {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    border-radius: 14px !important;
+  }
+
+  #screen-settings-panel .fluent-mica-card .w-12.h-12 .material-symbols-outlined {
+    font-size: 28px !important;
+  }
+
+  /* Option Item Icon Badges: 52 × 52 px with 30px Icons */
+  #screen-settings-panel .fluent-mica-card .w-14.h-14 {
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
+    border-radius: 16px !important;
+  }
+
+  #screen-settings-panel .fluent-mica-card .w-14.h-14 .material-symbols-outlined {
+    font-size: 30px !important;
+  }
+
+  /* Inner Option Rows: Generous Padding */
+  #screen-settings-panel .fluent-mica-card .p-4 {
+    padding: 16px 18px !important;
+    border-radius: 18px !important;
+  }
+
+  /* Large Toggle Switches: 52 × 30 px with 22px Knob */
+  #screen-settings-panel .w-12.h-7 {
+    width: 52px !important;
+    height: 30px !important;
+  }
+
+  #screen-settings-panel .w-5.h-5 {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  /* Accent Color Swatch Buttons */
+  #accent-color-picker-flyout button {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  /* Log Out Button: 64px Height, 30px Icon, 18px Bold Font */
+  #btn-logout {
+    min-height: 64px !important;
+    height: 64px !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    border-radius: 18px !important;
+    gap: 12px !important;
+  }
+
+  #btn-logout .material-symbols-outlined {
+    font-size: 30px !important;
+  }
+
+  /* ========================================================= */
+  /* SCREENS 07 - 11: AUTH & ONBOARDING (Same Large Scale)     */
+  /* ========================================================= */
+  #view-login main,
+  #view-register main,
+  #view-sms-otp main,
+  #view-email-otp main,
+  #view-forgot-password main {
+    max-width: 460px !important;
+    padding: 28px 22px !important;
+    border-radius: 28px !important;
+  }
+
+  /* Auth Header Back Circular Buttons: 64 × 64 px Touch Target, 36px Icon */
+  #view-register header button,
+  #view-sms-otp header button,
+  #view-email-otp header button,
+  #view-forgot-password header button {
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px !important;
+    min-height: 64px !important;
+    border-radius: 9999px !important;
+  }
+
+  #view-register header button .material-symbols-outlined,
+  #view-sms-otp header button .material-symbols-outlined,
+  #view-email-otp header button .material-symbols-outlined,
+  #view-forgot-password header button .material-symbols-outlined {
+    font-size: 36px !important;
+  }
+
+  /* Hero Section Icon Badges (OTP & Reset): 76 × 76 px, 40px Icon */
+  #view-sms-otp section .w-14.h-14,
+  #view-email-otp section .w-14.h-14,
+  #view-forgot-password section .w-14.h-14 {
+    width: 76px !important;
+    height: 76px !important;
+    min-width: 76px !important;
+    min-height: 76px !important;
+    border-radius: 22px !important;
+  }
+
+  #view-sms-otp section .w-14.h-14 .material-symbols-outlined,
+  #view-email-otp section .w-14.h-14 .material-symbols-outlined,
+  #view-forgot-password section .w-14.h-14 .material-symbols-outlined {
+    font-size: 40px !important;
+  }
+
+  /* Auth Input Fields: 62px Height, 18px Font, 32px Material Icons */
+  #view-login .fluent-input,
+  #view-register .fluent-input,
+  #view-forgot-password .fluent-input {
+    min-height: 62px !important;
+    height: 62px !important;
+    border-radius: 16px !important;
+    padding: 0 18px !important;
+  }
+
+  #view-login .fluent-input input,
+  #view-register .fluent-input input,
+  #view-forgot-password .fluent-input input {
+    font-size: 18px !important;
+  }
+
+  #view-login .fluent-input .material-symbols-outlined,
+  #view-register .fluent-input .material-symbols-outlined,
+  #view-forgot-password .fluent-input .material-symbols-outlined {
+    font-size: 32px !important;
+  }
+
+  /* Password Toggle Visibility Button */
+  #login-password-eye-btn,
+  #register-password-eye-btn {
+    width: 48px !important;
+    height: 48px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  #login-password-eye-btn .material-symbols-outlined,
+  #register-password-eye-btn .material-symbols-outlined {
+    font-size: 30px !important;
+  }
+
+  /* Primary Submit Buttons: 64px Height, 18px Font, 34px Arrow Icon */
+  #login-submit-btn,
+  #register-submit-btn,
+  #btn-verify-sms-otp,
+  #btn-verify-email-otp,
+  #btn-send-reset-otp {
+    min-height: 64px !important;
+    height: 64px !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    border-radius: 16px !important;
+    gap: 12px !important;
+  }
+
+  #login-submit-btn .material-symbols-outlined,
+  #register-submit-btn .material-symbols-outlined,
+  #btn-verify-sms-otp .material-symbols-outlined,
+  #btn-verify-email-otp .material-symbols-outlined,
+  #btn-send-reset-otp .material-symbols-outlined {
+    font-size: 34px !important;
+  }
+
+  /* Social Auth Buttons (Google, Mobile): 60px Height, 32px Icons */
+  #view-login section button.h-10,
+  #view-login section button[onclick*="showToast"],
+  #view-login section button[onclick*="switchView"] {
+    min-height: 60px !important;
+    height: 60px !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    border-radius: 14px !important;
+    padding: 0 20px !important;
+  }
+
+  #view-login section button.h-10 .material-symbols-outlined,
+  #view-login section button[onclick*="showToast"] .material-symbols-outlined,
+  #view-login section button[onclick*="switchView"] .material-symbols-outlined {
+    font-size: 32px !important;
+  }
+
+  /* OTP Slots: Large 54 × 66 px Touch-Friendly Boxes, 28px Font */
+  #view-sms-otp input[id^="otp-"],
+  #view-email-otp input[id^="otp-"] {
+    width: 54px !important;
+    height: 66px !important;
+    font-size: 28px !important;
+    border-radius: 16px !important;
+  }
+
+  /* OTP Paste from Clipboard Button: 48px Height, 28px Icon */
+  button[onclick*="pasteOtpFromClipboard"] {
+    min-height: 48px !important;
+    padding: 10px 20px !important;
+    font-size: 15px !important;
+    gap: 10px !important;
+  }
+
+  button[onclick*="pasteOtpFromClipboard"] .material-symbols-outlined {
+    font-size: 28px !important;
+  }
+
+  /* ========================================================= */
+  /* SCREEN 06: EDIT PROFILE MODAL (Same Large Scale)          */
+  /* ========================================================= */
+  #edit-profile-modal > div {
+    border-radius: 32px 32px 0 0 !important;
+    padding: 26px 22px !important;
+  }
+
+  #edit-profile-modal header button {
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 9999px !important;
+  }
+
+  #edit-profile-modal header .material-symbols-outlined {
+    font-size: 32px !important;
+  }
+
+  /* Camera Upload Badge on Profile Modal */
+  #edit-profile-modal button[onclick="triggerAvatarUpload()"] {
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
+    border-radius: 9999px !important;
+  }
+
+  #edit-profile-modal button[onclick="triggerAvatarUpload()"] .material-symbols-outlined {
+    font-size: 28px !important;
+  }
+
+  #edit-profile-modal input {
+    min-height: 58px !important;
+    height: 58px !important;
+    font-size: 17.5px !important;
+    border-radius: 14px !important;
+    padding: 0 18px !important;
+  }
+
+  #edit-profile-modal button[type="submit"],
+  #edit-profile-modal button[onclick*="toggleEditProfileModal(false)"] {
+    min-height: 60px !important;
+    height: 60px !important;
+    font-size: 17.5px !important;
+    font-weight: 600 !important;
+    border-radius: 16px !important;
+    padding: 0 22px !important;
+  }
+
+  #edit-profile-modal button[type="submit"] .material-symbols-outlined {
+    font-size: 32px !important;
+  }
+
+  /* ========================================================= */
+  /* ATTACHMENT MENU & FLYOUTS (Same 36px Icon Standard)       */
+  /* ========================================================= */
+  #attachmentMenu {
+    width: 300px !important;
+    border-radius: 24px !important;
+    padding: 12px !important;
+    bottom: 108px !important;
+    left: 20px !important;
+  }
+
+  #attachmentMenu button {
+    min-height: 66px !important;
+    padding: 14px 18px !important;
+    font-size: 16.5px !important;
+    font-weight: 500 !important;
+    border-radius: 16px !important;
+    gap: 16px !important;
+  }
+
+  #attachmentMenu button div {
+    width: 50px !important;
+    height: 50px !important;
+    min-width: 50px !important;
+    min-height: 50px !important;
+    border-radius: 14px !important;
+  }
+
+  #attachmentMenu button div .material-symbols-outlined {
+    font-size: 34px !important;
+  }
+
+  /* Three-Dots Menu (Context Menu) */
+  #three-dots-menu {
+    width: 300px !important;
+    border-radius: 22px !important;
+    padding: 10px !important;
+  }
+
+  #three-dots-menu button {
+    padding: 16px 18px !important;
+    font-size: 17px !important;
+    border-radius: 14px !important;
+  }
+
+  #three-dots-menu button .material-symbols-outlined:first-child {
+    font-size: 32px !important;
+  }
+
+  #three-dots-menu button .material-symbols-outlined:last-child {
+    font-size: 26px !important;
+  }
+
+  /* Feedback Modal Controls */
+  #feedback-modal-card header button,
+  #feedback-modal-card #feedback-info-toggle-btn {
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 54px !important;
+    min-height: 54px !important;
+    border-radius: 9999px !important;
+  }
+
+  #feedback-modal-card header button .material-symbols-outlined,
+  #feedback-modal-card #feedback-info-toggle-btn .material-symbols-outlined {
+    font-size: 32px !important;
+  }
+
+  /* Presentation Player Controls: 64 × 64 px with 36px Icons */
+  #rhynia-presentation-fs-stage button,
+  .rhynia-deck-wrapper button {
+    min-width: 64px !important;
+    min-height: 64px !important;
+    width: 64px !important;
+    height: 64px !important;
+    border-radius: 16px !important;
+  }
+
+  #rhynia-presentation-fs-stage button .material-symbols-outlined,
+  .rhynia-deck-wrapper button .material-symbols-outlined {
+    font-size: 36px !important;
+  }
+}
+
+

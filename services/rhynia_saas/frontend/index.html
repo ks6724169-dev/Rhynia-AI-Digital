@@ -2,7 +2,7 @@
 <html class="dark" lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>Rhynia Intelligence</title>
   <link rel="icon" type="image/png" href="assets/favicon.png"/>
   <link rel="apple-touch-icon" href="assets/icon-192.png"/>
@@ -13,6 +13,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <!-- Material Symbols Outlined -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <!-- Google Identity Services (GIS) Official SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <!-- Early Theme & Accent Detection (Zero FOUC) -->
   <script>
@@ -87,7 +90,7 @@
   <meta http-equiv="Expires" content="0"/>
 
   <!-- Modular Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=19"/>
+  <link rel="stylesheet" href="style.css?v=70"/>
 
   <!-- Mermaid.js v10 for SmartArt & Visual Diagrams -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
@@ -163,22 +166,29 @@
         </div>
 
         <!-- Social Buttons -->
-        <div class="flex flex-col gap-2">
-          <button type="button" onclick="showToast('Connecting with Google...', 'info')" class="w-full h-10 px-3.5 rounded-lg bg-[#1b1c1c] hover:bg-[#252525] border border-white/10 flex items-center justify-between text-neutral-200 text-xs font-medium active:scale-[0.99] transition-all">
+        <div class="flex flex-col gap-2.5">
+          <!-- Google Sign In Container (Rendered by Google GIS) -->
+          <div id="google-login-btn-container" class="w-full flex justify-center min-h-[40px]"></div>
+
+          <!-- Fallback / Direct Trigger Button -->
+          <button id="google-login-custom-btn" type="button" onclick="triggerGoogleLogin()" class="hidden w-full h-10 px-3.5 rounded-lg bg-[#1b1c1c] hover:bg-[#252525] border border-white/10 flex items-center justify-between text-neutral-200 text-xs font-medium active:scale-[0.99] transition-all">
             <div class="flex items-center gap-2.5">
-              <span class="material-symbols-outlined text-[18px] text-[#8ecdff]">language</span>
+              <svg class="w-4 h-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"></path></svg>
               <span>Continue with Google</span>
             </div>
             <span class="material-symbols-outlined text-neutral-500 text-[16px]">chevron_right</span>
           </button>
-          <button type="button" onclick="switchView('view-sms-otp')" class="w-full h-10 px-3.5 rounded-lg bg-[#1b1c1c] hover:bg-[#252525] border border-white/10 flex items-center justify-between text-neutral-200 text-xs font-medium active:scale-[0.99] transition-all">
+
+          <button type="button" onclick="startPhoneLogin()" class="w-full h-10 px-3.5 rounded-lg bg-[#1b1c1c] hover:bg-[#252525] border border-white/10 flex items-center justify-between text-neutral-200 text-xs font-medium active:scale-[0.99] transition-all">
             <div class="flex items-center gap-2.5">
               <span class="material-symbols-outlined text-[18px] text-[#0078D4]">smartphone</span>
               <span>Continue with Mobile Number</span>
             </div>
             <span class="material-symbols-outlined text-neutral-500 text-[16px]">chevron_right</span>
           </button>
+
         </div>
+
       </section>
 
       <!-- Bottom Account Switcher -->
@@ -233,12 +243,12 @@
           </div>
         </div>
 
-        <!-- Mobile Number (Optional) -->
+        <!-- Mobile Number (Mandatory) -->
         <div class="space-y-1">
-          <label class="block text-xs font-medium text-neutral-300 select-none" for="register-phone-input">Mobile Phone (Optional)</label>
+          <label class="block text-xs font-medium text-neutral-300 select-none" for="register-phone-input">Mobile Phone Number (Required / अनिवार्य) <span class="text-red-400">*</span></label>
           <div class="fluent-input flex items-center bg-[#1E1E1E] border border-white/10 rounded-lg h-11 px-3">
             <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">phone_iphone</span>
-            <input id="register-phone-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none" placeholder="+1 (555) 000-0000" type="tel"/>
+            <input id="register-phone-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none" placeholder="10-digit mobile number (e.g. 9876543210)" required type="tel"/>
           </div>
         </div>
 
@@ -275,7 +285,29 @@
         </button>
       </form>
 
-      <footer class="mt-4 pt-3 border-t border-white/10 text-center">
+      <!-- Divider -->
+      <div class="relative my-3 flex items-center justify-center">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-white/10"></div>
+        </div>
+        <div class="relative px-3 bg-[#0e0e0e] text-neutral-500 text-[11px] tracking-wider uppercase font-semibold">
+          OR SIGN UP WITH
+        </div>
+      </div>
+
+      <!-- Google Sign Up Container (Rendered by Google GIS) -->
+      <div id="google-register-btn-container" class="w-full flex justify-center min-h-[40px]"></div>
+
+      <!-- Fallback Register Button -->
+      <button id="google-register-custom-btn" type="button" onclick="triggerGoogleLogin()" class="hidden w-full h-10 px-3.5 rounded-lg bg-[#1b1c1c] hover:bg-[#252525] border border-white/10 flex items-center justify-between text-neutral-200 text-xs font-medium active:scale-[0.99] transition-all">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-4 h-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"></path></svg>
+          <span>Sign up with Google</span>
+        </div>
+        <span class="material-symbols-outlined text-neutral-500 text-[16px]">chevron_right</span>
+      </button>
+
+      <footer class="mt-3 pt-3 border-t border-white/10 text-center">
         <p class="text-xs text-neutral-400">
           Already have an account?
           <button type="button" onclick="switchView('view-login')" class="text-[#0078D4] font-semibold hover:underline ml-1">
@@ -306,6 +338,9 @@
         <p class="text-xs text-neutral-400 mt-1 max-w-[280px] leading-relaxed">
           Enter the 6-digit verification code sent to your registered mobile phone.
         </p>
+        <div id="sms-phone-target" class="text-xs text-[#0078D4] font-medium font-mono mt-1.5"></div>
+        <button type="button" onclick="startPhoneLogin()" class="text-[11px] text-neutral-400 hover:text-white underline mt-0.5">Change phone number</button>
+
 
         <!-- 6 OTP Slots -->
         <div class="flex items-center justify-center gap-2 mt-6 mb-4">
@@ -360,6 +395,7 @@
         <p class="text-xs text-neutral-400 mt-1 max-w-[280px] leading-relaxed">
           Enter the 6-digit confirmation code sent to your registered email inbox.
         </p>
+        <div id="email-otp-target" class="text-xs text-[#0078D4] font-medium font-mono mt-1.5"></div>
 
         <!-- 6 OTP Slots -->
         <div class="flex items-center justify-center gap-2 mt-6 mb-4">
@@ -443,53 +479,125 @@
   </div>
 
   <!-- ========================================================= -->
+  <!-- SCREEN 12: CREATE / SET NEW PASSWORD VIEW                 -->
+  <!-- ========================================================= -->
+  <div id="view-new-password" class="hidden min-h-screen flex items-center justify-center p-4 relative">
+    <main class="w-full max-w-md min-h-[580px] rounded-2xl flex flex-col justify-between p-6 bg-[#0e0e0e]/90 backdrop-blur-2xl border border-white/10 shadow-2xl relative">
+      <header class="h-10 flex items-center justify-between mb-2">
+        <button type="button" onclick="switchView('view-login')" class="w-9 h-9 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        </button>
+        <span class="text-xs text-neutral-500 font-mono">NEW CREDENTIALS</span>
+      </header>
+
+      <section class="flex flex-col items-center text-center my-auto py-2">
+        <div class="w-14 h-14 rounded-2xl bg-[#0078D4]/20 border border-[#0078D4]/40 text-[#0078D4] flex items-center justify-center mb-3">
+          <span class="material-symbols-outlined text-3xl">key</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight text-white font-headline">Create New Password</h1>
+        <p class="text-xs text-neutral-400 mt-1 max-w-[300px] leading-relaxed">
+          Your identity has been verified. Choose a strong new password of at least 8 characters.
+        </p>
+        <div id="new-password-target-info" class="text-xs text-[#0078D4] font-medium font-mono mt-1.5"></div>
+
+        <form id="new-password-form" class="w-full space-y-3 mt-5" onsubmit="handleNewPasswordSubmit(event)">
+          <!-- New Password Input -->
+          <div class="space-y-1 text-left">
+            <label class="block text-xs font-medium text-neutral-300 select-none" for="reset-new-password-input">New Password</label>
+            <div class="fluent-input flex items-center bg-[#1E1E1E] border border-white/10 rounded-lg h-11 px-3">
+              <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">lock</span>
+              <input id="reset-new-password-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none" placeholder="Enter new password (min. 8 chars)" required type="password" minlength="8"/>
+              <button type="button" onclick="togglePasswordVisibility('reset-new-password-input')" class="text-neutral-400 hover:text-white p-1 ml-1">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Confirm Password Input -->
+          <div class="space-y-1 text-left">
+            <label class="block text-xs font-medium text-neutral-300 select-none" for="reset-confirm-password-input">Confirm New Password</label>
+            <div class="fluent-input flex items-center bg-[#1E1E1E] border border-white/10 rounded-lg h-11 px-3">
+              <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">lock_reset</span>
+              <input id="reset-confirm-password-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none" placeholder="Re-enter your new password" required type="password" minlength="8"/>
+              <button type="button" onclick="togglePasswordVisibility('reset-confirm-password-input')" class="text-neutral-400 hover:text-white p-1 ml-1">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Password Requirement Hint -->
+          <div class="text-[11px] text-neutral-500 text-left flex items-center gap-1.5 px-1 pt-1">
+            <span class="material-symbols-outlined text-[14px] text-[#0078D4]">check_circle</span>
+            <span>Minimum 8 characters with letters & numbers recommended</span>
+          </div>
+
+          <!-- Submit Button -->
+          <button id="btn-save-new-password" type="submit" class="w-full h-11 rounded-lg bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white font-medium text-sm flex items-center justify-center gap-2 border border-white/15 shadow-md active:scale-[0.98] transition-all mt-4">
+            <span>Update Password & Sign In</span>
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </button>
+        </form>
+      </section>
+
+      <footer class="pt-4 border-t border-white/10 text-center">
+        <p class="text-xs text-neutral-400">
+          Want to cancel?
+          <button type="button" onclick="switchView('view-login')" class="text-[#0078D4] font-semibold hover:underline ml-1">
+            Back to Sign In
+          </button>
+        </p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ========================================================= -->
   <!-- SCREENS 01 - 06: AUTHENTICATED MAIN WORKSPACE             -->
   <!-- ========================================================= -->
   <div id="view-app" class="hidden min-h-screen flex flex-col justify-between relative bg-[#131313]">
 
     <!-- Top Navigation Header (Screen 01 & 02) -->
-    <header class="sticky top-0 z-30 h-14 border-b border-[#2d2d2d] bg-[#1a1a1a]/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between">
-      <!-- Left: Hamburger Drawer Menu Button -->
+    <header class="sticky top-0 z-30 min-h-[92px] h-[92px] md:h-14 border-b border-[#2d2d2d] bg-[#1a1a1a]/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between">
+      <!-- Left: Hamburger Drawer Menu Button (72x72px touch target) -->
       <div class="flex items-center">
-        <button id="btn-hamburger-menu" type="button" onclick="toggleSidebarDrawer(true)" class="p-2 -ml-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="Open Drawer" data-i18n-title="open_drawer">
-          <span class="material-symbols-outlined text-xl">menu</span>
+        <button id="btn-hamburger-menu" type="button" onclick="toggleSidebarDrawer(true)" class="w-[72px] h-[72px] md:w-9 md:h-9 -ml-1 text-neutral-300 hover:text-white rounded-full md:rounded-md hover:bg-white/10 active:bg-white/15 flex items-center justify-center transition-colors" title="Open Drawer" data-i18n-title="open_drawer">
+          <span class="material-symbols-outlined text-[38px] md:text-xl">menu</span>
         </button>
       </div>
 
-      <!-- Right: Action Buttons (New Chat with edit_square, and 3-Dots More Options) -->
-      <div class="flex items-center gap-1 relative">
-        <button type="button" onclick="startNewChat()" class="p-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="New Chat" data-i18n-title="new_chat">
-          <span class="material-symbols-outlined text-xl">edit_square</span>
+      <!-- Right: Action Buttons (72x72px touch targets) -->
+      <div class="flex items-center gap-2.5 sm:gap-1.5 relative">
+        <button type="button" onclick="startNewChat()" class="w-[72px] h-[72px] md:w-9 md:h-9 text-neutral-300 hover:text-white rounded-full md:rounded-md hover:bg-white/10 active:bg-white/15 flex items-center justify-center transition-colors" title="New Chat" data-i18n-title="new_chat">
+          <span class="material-symbols-outlined text-[36px] md:text-xl">edit_square</span>
         </button>
-        <button id="btn-three-dots-trigger" type="button" onclick="toggle3DotsMenu()" class="p-2 text-neutral-400 hover:text-white rounded-md hover:bg-white/10 transition-colors" title="More Options" data-i18n-title="more_options">
-          <span class="material-symbols-outlined text-xl">more_vert</span>
+        <button id="btn-three-dots-trigger" type="button" onclick="toggle3DotsMenu()" class="w-[72px] h-[72px] md:w-9 md:h-9 text-neutral-300 hover:text-white rounded-full md:rounded-md hover:bg-white/10 active:bg-white/15 flex items-center justify-center transition-colors" title="More Options" data-i18n-title="more_options">
+          <span class="material-symbols-outlined text-[36px] md:text-xl">more_vert</span>
         </button>
 
         <!-- Screen 03: 3-Dots Flyout Menu (Fluent 2 Dark Context Menu: Only Share, Pin, Delete) -->
-        <div id="three-dots-menu" class="hidden absolute top-12 right-0 w-60 fluent-flyout rounded-xl p-1.5 shadow-2xl z-50 divide-y divide-white/5 border border-white/10 bg-[#252525]">
+        <div id="three-dots-menu" class="hidden absolute top-16 right-0 w-68 fluent-flyout rounded-2xl p-2.5 shadow-2xl z-50 divide-y divide-white/5 border border-white/10 bg-[#252525]">
           <div class="py-1">
-            <button type="button" onclick="shareActiveSession()" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-neutral-200 hover:bg-white/10 transition-colors text-xs font-medium">
-              <div class="flex items-center gap-2.5">
-                <span class="material-symbols-outlined text-base text-[#4cc2ff]">share</span>
+            <button type="button" onclick="shareActiveSession()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-left text-neutral-200 hover:bg-white/10 transition-colors text-base font-medium">
+              <div class="flex items-center gap-3.5">
+                <span class="material-symbols-outlined text-xl text-[#4cc2ff]">share</span>
                 <span data-i18n="share_chat">Share Chat</span>
               </div>
-              <span class="material-symbols-outlined text-xs text-neutral-500">chevron_right</span>
+              <span class="material-symbols-outlined text-sm text-neutral-500">chevron_right</span>
             </button>
-            <button type="button" onclick="pinActiveSession()" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-neutral-200 hover:bg-white/10 transition-colors text-xs font-medium">
-              <div class="flex items-center gap-2.5">
-                <span class="material-symbols-outlined text-base text-[#0078D4]">keep</span>
+            <button type="button" onclick="pinActiveSession()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-left text-neutral-200 hover:bg-white/10 transition-colors text-base font-medium">
+              <div class="flex items-center gap-3.5">
+                <span class="material-symbols-outlined text-xl text-[#0078D4]">keep</span>
                 <span data-i18n="pin_chat">Pin Chat</span>
               </div>
-              <span class="material-symbols-outlined text-xs text-neutral-500">chevron_right</span>
+              <span class="material-symbols-outlined text-sm text-neutral-500">chevron_right</span>
             </button>
           </div>
           <div class="py-1">
-            <button type="button" onclick="deleteActiveSession()" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-[#ff7b7b] hover:bg-[#93000a]/20 transition-colors text-xs font-medium">
-              <div class="flex items-center gap-2.5">
-                <span class="material-symbols-outlined text-base text-[#ff7b7b]">delete</span>
+            <button type="button" onclick="deleteActiveSession()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-left text-[#ff7b7b] hover:bg-[#93000a]/20 transition-colors text-base font-medium">
+              <div class="flex items-center gap-3.5">
+                <span class="material-symbols-outlined text-xl text-[#ff7b7b]">delete</span>
                 <span data-i18n="delete_chat">Delete Chat</span>
               </div>
-              <span class="material-symbols-outlined text-xs text-[#ff7b7b]">chevron_right</span>
+              <span class="material-symbols-outlined text-sm text-[#ff7b7b]">chevron_right</span>
             </button>
           </div>
         </div>
@@ -497,32 +605,32 @@
     </header>
 
     <!-- Main Chat Workspace Container -->
-    <div id="main-chat-container" class="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 flex flex-col justify-between relative pb-28">
+    <div id="main-chat-container" class="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 flex flex-col justify-between relative pb-36">
 
       <!-- SCREEN 01: EMPTY STATE (Center Theme Logo & Glowing Welcome Hero) -->
-      <div id="screen-empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-12 sm:py-16 animate-fade-in select-none">
+      <div id="screen-empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-10 sm:py-16 animate-fade-in select-none">
         <!-- Glowing Circular Theme Logo Badge -->
-        <div class="relative group cursor-pointer mb-5" onclick="startNewChat()">
+        <div class="relative group cursor-pointer mb-6" onclick="startNewChat()">
           <!-- Ambient animated radial glow behind badge -->
-          <div class="absolute -inset-3 bg-gradient-to-r from-[#0078D4] via-[#00d2ff] to-[#00ff88] rounded-full blur-2xl opacity-40 group-hover:opacity-75 transition-opacity duration-700 animate-pulse"></div>
-          <img src="assets/chat-center-badge.png" alt="Rhynia Intelligence" class="relative w-44 h-44 sm:w-52 sm:h-52 object-contain rounded-full shadow-2xl transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_0_30px_rgba(0,120,212,0.5)]" />
+          <div class="absolute -inset-5 bg-gradient-to-r from-[#0078D4] via-[#00d2ff] to-[#00ff88] rounded-full blur-2xl opacity-45 group-hover:opacity-80 transition-opacity duration-700 animate-pulse"></div>
+          <img src="assets/chat-center-badge.png" alt="Rhynia Intelligence" class="relative w-64 h-64 sm:w-72 sm:h-72 object-contain rounded-full shadow-2xl transition-transform duration-300 group-hover:scale-105 drop-shadow-[0_0_40px_rgba(0,120,212,0.55)]" />
         </div>
 
         <!-- Greeting with dynamic User Name and Cyan Radiance Spikes -->
-        <div class="flex items-center justify-center gap-2 text-2xl sm:text-3xl font-bold text-white tracking-tight">
-          <span class="text-[#00d2ff] font-light text-xl select-none">˗</span>
-          <h2 class="flex items-center gap-1.5">
+        <div class="flex items-center justify-center gap-2.5 text-4xl sm:text-5xl font-bold text-white tracking-tight">
+          <span class="text-[#00d2ff] font-light text-3xl select-none">˗</span>
+          <h2 class="flex items-center gap-2.5">
             <span>Hello</span>
             <span id="empty-state-username" class="text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-[#00d2ff] font-extrabold"></span>
           </h2>
-          <span class="text-[#00d2ff] font-light text-xl select-none">˗</span>
+          <span class="text-[#00d2ff] font-light text-3xl select-none">˗</span>
         </div>
 
         <!-- Horizontal Neon Gradient Accent Line -->
-        <div class="w-32 sm:w-44 h-1 rounded-full bg-gradient-to-r from-[#0078d4] via-[#00d2ff] to-[#00ff88] my-3.5 shadow-lg shadow-cyan-500/50"></div>
+        <div class="w-40 sm:w-52 h-2 rounded-full bg-gradient-to-r from-[#0078d4] via-[#00d2ff] to-[#00ff88] my-4.5 shadow-lg shadow-cyan-500/50"></div>
 
         <!-- Subtitle -->
-        <p class="text-sm sm:text-base font-medium text-neutral-300 tracking-wide">
+        <p class="text-lg sm:text-xl font-medium text-neutral-200 tracking-wide">
           Welcome to <span class="text-white font-semibold">Rhynia</span> <span class="text-[#00d2ff] font-semibold">intelligence</span>
         </p>
 
@@ -556,7 +664,7 @@
       </div>
 
       <!-- Docked Bottom Persistent Composer (Screens 01 & 02) -->
-      <div class="fixed bottom-0 inset-x-0 z-20 pb-4 pt-2 px-4 max-w-3xl mx-auto pointer-events-none">
+      <div class="fixed bottom-0 inset-x-0 z-20 pb-3 sm:pb-4 pt-1 sm:pt-2 px-3 sm:px-4 max-w-3xl mx-auto pointer-events-none" style="padding-bottom: max(0.85rem, env(safe-area-inset-bottom, 12px));">
         <div class="relative w-full pointer-events-auto">
 
           <!-- Attachment Chips Preview Container -->
@@ -565,15 +673,15 @@
           <!-- Attachment Popover Context Menu -->
           <div id="attachmentMenu" class="hidden absolute bottom-16 left-2 z-40 w-60 fluent-flyout rounded-xl p-1.5 shadow-2xl border border-white/10 bg-[#252525]">
             <div class="flex flex-col gap-0.5">
-              <button type="button" id="btnCameraCapture" onclick="triggerCameraCapture()" class="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-left text-white hover:bg-white/10 transition-colors">
-                <div class="w-7 h-7 rounded-md bg-[#1e1e1e] border border-white/10 flex items-center justify-center text-[#0078D4]">
-                  <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+              <button type="button" id="btnCameraCapture" onclick="triggerCameraCapture()" class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-left text-white hover:bg-white/10 transition-colors">
+                <div class="w-8 h-8 rounded-md bg-[#1e1e1e] border border-white/10 flex items-center justify-center text-[#0078D4]">
+                  <span class="material-symbols-outlined text-[20px]">photo_camera</span>
                 </div>
                 <span data-i18n="camera_capture" class="text-xs font-medium">Camera Capture</span>
               </button>
-              <button type="button" id="btnFileManager" onclick="triggerFileManager()" class="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-left text-white hover:bg-white/10 transition-colors">
-                <div class="w-7 h-7 rounded-md bg-[#1e1e1e] border border-white/10 flex items-center justify-center text-[#0078D4]">
-                  <span class="material-symbols-outlined text-[18px]">folder_open</span>
+              <button type="button" id="btnFileManager" onclick="triggerFileManager()" class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-left text-white hover:bg-white/10 transition-colors">
+                <div class="w-8 h-8 rounded-md bg-[#1e1e1e] border border-white/10 flex items-center justify-center text-[#0078D4]">
+                  <span class="material-symbols-outlined text-[20px]">folder_open</span>
                 </div>
                 <span data-i18n="device_file_manager" class="text-xs font-medium">Device File Manager</span>
               </button>
@@ -585,23 +693,23 @@
           <input id="cameraInput" accept="image/*" capture="environment" type="file" class="hidden" onchange="handleFileSelection(event)"/>
 
           <!-- Continuous Stadium Capsule Pill (rounded-full) -->
-          <div class="fluent-composer-pill rounded-full p-1.5 pl-2.5 flex items-center gap-2 bg-[#1e1e1e]/95 border border-white/10 shadow-2xl backdrop-blur-xl">
-            <!-- (+) Attachment Button -->
-            <button id="plusToggle" type="button" onclick="toggleAttachmentMenu()" aria-label="Add attachment" data-i18n-aria="add_attachment" class="w-9 h-9 rounded-full flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all shrink-0">
-              <span id="plusIcon" class="material-symbols-outlined text-[22px] transition-transform">add</span>
+          <div class="fluent-composer-pill rounded-full p-3.5 pl-5 md:p-1.5 md:pl-2.5 flex items-center gap-3.5 md:gap-2 bg-[#1e1e1e]/95 border border-white/10 shadow-2xl backdrop-blur-xl min-h-[88px] md:min-h-[52px]">
+            <!-- (+) Attachment Button (64x64px touch target) -->
+            <button id="plusToggle" type="button" onclick="toggleAttachmentMenu()" aria-label="Add attachment" data-i18n-aria="add_attachment" class="w-16 h-16 md:w-9 md:h-9 rounded-full flex items-center justify-center text-neutral-300 hover:text-white hover:bg-white/10 active:scale-95 transition-all shrink-0">
+              <span id="plusIcon" class="material-symbols-outlined text-[36px] md:text-[22px] transition-transform">add</span>
             </button>
 
-            <!-- Text Input Field -->
-            <input id="chat-input" type="text" autocomplete="off" oninput="updateSendButtonState()" onkeydown="handleChatInputKeyDown(event)" placeholder="Ask anything or start a project..." data-i18n-placeholder="ask_placeholder" class="flex-1 bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none px-2"/>
+            <!-- Text Input Field (20px font prevents auto-zoom and is super readable) -->
+            <input id="chat-input" type="text" autocomplete="off" oninput="updateSendButtonState()" onkeydown="handleChatInputKeyDown(event)" placeholder="Ask anything or start a project..." data-i18n-placeholder="ask_placeholder" class="flex-1 bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-[20px] md:text-sm focus:ring-0 focus:outline-none px-3.5 py-3"/>
 
-            <!-- Mic Voice Dictation Button -->
-            <button id="micBtn" type="button" onclick="toggleVoiceInput()" aria-label="Voice input" data-i18n-aria="voice_input" class="w-9 h-9 rounded-full flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 active:scale-95 transition-all shrink-0">
-              <span class="material-symbols-outlined text-[20px]">mic</span>
+            <!-- Mic Voice Dictation Button (64x64px touch target) -->
+            <button id="micBtn" type="button" onclick="toggleVoiceInput()" aria-label="Voice input" data-i18n-aria="voice_input" class="w-16 h-16 md:w-9 md:h-9 rounded-full flex items-center justify-center text-neutral-300 hover:text-white hover:bg-white/10 active:scale-95 transition-all shrink-0">
+              <span class="material-symbols-outlined text-[34px] md:text-[20px]">mic</span>
             </button>
 
-            <!-- Azure Blue Send Message Button -->
-            <button id="btn-send-message" type="button" onclick="sendChatMessage()" disabled aria-label="Send message" data-i18n-aria="send_message" class="btn-send-disabled w-9 h-9 rounded-full bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white flex items-center justify-center active:scale-95 transition-all shrink-0 shadow-md shadow-[#0078D4]/30">
-              <span class="material-symbols-outlined text-[19px] transform -rotate-45 ml-0.5">near_me</span>
+            <!-- Azure Blue Send Message Button (64x64px touch target) -->
+            <button id="btn-send-message" type="button" onclick="sendChatMessage()" disabled aria-label="Send message" data-i18n-aria="send_message" class="btn-send-disabled w-16 h-16 md:w-9 md:h-9 rounded-full bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white flex items-center justify-center active:scale-95 transition-all shrink-0 shadow-md shadow-[#0078D4]/30">
+              <span class="material-symbols-outlined text-[32px] md:text-[19px] transform -rotate-45 ml-0.5">near_me</span>
             </button>
           </div>
         </div>
@@ -612,7 +720,7 @@
     <!-- SCREEN 04: NAVIGATION DRAWER                              -->
     <!-- ========================================================= -->
     <div id="drawer-scrim" onclick="toggleSidebarDrawer(false)" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity"></div>
-    <aside id="sidebar-drawer" class="fixed inset-y-0 left-0 z-50 flex flex-col justify-between w-80 max-w-[85vw] bg-[#202020] border-r border-[#333333] shadow-2xl transition-transform duration-300 transform -translate-x-full">
+    <aside id="sidebar-drawer" class="fixed inset-y-0 left-0 z-50 flex flex-col justify-between w-[90vw] max-w-[90vw] md:w-80 md:max-w-xs bg-[#202020] border-r border-[#333333] shadow-2xl transition-transform duration-300 transform -translate-x-full">
       <!-- Drawer Header: Brand + Live Search Toggle -->
       <div class="h-14 px-4 border-b border-[#2d2d2d] flex items-center justify-between bg-[#202020]">
         <div class="flex items-center gap-2.5">
@@ -681,269 +789,272 @@
     <!-- SCREEN 05: FULL SETTINGS & PROFILE PANEL                  -->
     <!-- ========================================================= -->
     <div id="screen-settings-panel" class="hidden fixed inset-0 z-40 bg-[#131313] overflow-y-auto p-4 sm:p-6 animate-fade-in">
-      <div class="max-w-[700px] mx-auto space-y-4 pb-12">
+      <div class="max-w-[720px] mx-auto space-y-6 pb-24">
         <!-- Header with Back to Chat -->
-        <div class="flex items-center justify-between pb-2 border-b border-white/10">
-          <button type="button" onclick="closeSettingsPanel()" class="inline-flex items-center gap-2 text-sm font-medium text-neutral-300 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/10 transition-colors">
-            <span class="material-symbols-outlined text-base">arrow_back</span>
+        <div class="flex items-center justify-between pb-3 border-b border-white/10">
+          <button type="button" onclick="closeSettingsPanel()" class="inline-flex items-center gap-3 text-base sm:text-lg font-bold text-neutral-200 hover:text-white px-4 py-2.5 rounded-2xl hover:bg-white/10 active:bg-white/15 transition-all">
+            <span class="material-symbols-outlined text-[34px]">arrow_back</span>
             <span>Back to Chat</span>
           </button>
-          <span class="text-xs text-neutral-500 font-mono">SETTINGS</span>
+          <span class="text-xs text-neutral-400 font-mono tracking-widest uppercase bg-white/5 px-3 py-1.5 rounded-full border border-white/10">SETTINGS</span>
         </div>
 
         <!-- Profile Section Card -->
-        <section class="fluent-mica-card rounded-xl p-6 flex flex-col items-center text-center relative bg-[#1f1f1f] border border-white/10 shadow-lg">
-          <div class="relative shrink-0 mb-3">
-            <div class="w-24 h-24 rounded-full p-0.5 bg-white/10 ring-1 ring-white/15 shadow-md">
-              <div class="w-full h-full rounded-full overflow-hidden bg-[#282828] flex items-center justify-center text-2xl font-bold text-white">
+        <section class="fluent-mica-card rounded-3xl p-7 sm:p-8 flex flex-col items-center text-center relative bg-[#1f1f1f] border border-white/10 shadow-xl">
+          <div class="relative shrink-0 mb-4">
+            <div class="w-32 h-32 rounded-full p-1 bg-white/10 ring-2 ring-white/20 shadow-2xl">
+              <div class="w-full h-full rounded-full overflow-hidden bg-[#282828] flex items-center justify-center text-5xl font-black text-white">
                 <img id="settings-avatar-img" alt="Profile" class="live-user-avatar w-full h-full object-cover hidden"/>
-                <span class="user-avatar-initial">U</span>
+                <span class="user-avatar-initial text-5xl font-black">U</span>
               </div>
             </div>
             <!-- Edit Pencil Badge -->
-            <button type="button" onclick="toggleEditProfileModal(true)" class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#0078D4] hover:bg-[#1084d9] text-white flex items-center justify-center shadow-lg border-2 border-[#1f1f1f] active:scale-95 transition-all" title="Edit Profile Details">
-              <span class="material-symbols-outlined text-[15px]">edit</span>
+            <button type="button" onclick="toggleEditProfileModal(true)" class="absolute bottom-1 right-1 w-12 h-12 rounded-full bg-[#0078D4] hover:bg-[#1084d9] text-white flex items-center justify-center shadow-xl border-4 border-[#1f1f1f] active:scale-95 transition-all" title="Edit Profile Details">
+              <span class="material-symbols-outlined text-[26px]">edit</span>
             </button>
           </div>
-          <h2 id="settings-user-name" class="text-xl font-semibold text-white tracking-tight font-headline">User</h2>
+          <h2 id="settings-user-name" class="text-2xl font-bold text-white tracking-tight font-headline">User</h2>
         </section>
 
         <!-- Account Details Card -->
-        <section class="fluent-mica-card rounded-xl p-5 space-y-3 bg-[#1f1f1f] border border-white/10 shadow-md">
-          <div class="flex items-center justify-between pb-2 border-b border-white/5">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[#0078D4] text-[20px]">badge</span>
-              <h3 class="text-sm font-semibold text-white">Account Details</h3>
+        <section class="fluent-mica-card rounded-3xl p-6 sm:p-7 space-y-4 bg-[#1f1f1f] border border-white/10 shadow-xl">
+          <div class="flex items-center justify-between pb-3 border-b border-white/10">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-[#0078D4]/20 border border-[#0078D4]/40 text-[#0078D4] flex items-center justify-center shadow-sm">
+                <span class="material-symbols-outlined text-[30px]">badge</span>
+              </div>
+              <h3 class="text-lg font-bold text-white">Account Details</h3>
             </div>
-            <span class="text-xs text-neutral-400 bg-[#282828] px-2 py-0.5 rounded border border-white/5">Credentials</span>
+            <span class="text-xs text-neutral-400 bg-[#282828] px-3 py-1 rounded-lg border border-white/5 font-medium">Credentials</span>
           </div>
-          <div class="flex flex-col gap-2">
-            <div class="p-3 rounded-lg bg-[#282828] border border-white/5">
-              <span class="text-xs text-neutral-400 flex items-center gap-1 mb-1">
-                <span class="material-symbols-outlined text-[14px] text-[#0078D4]">mail</span>Email ID
-              </span>
-              <p id="settings-user-email" class="text-sm font-medium text-white truncate pl-5">user@rhynia.com</p>
+          <div class="flex flex-col gap-3">
+            <div class="p-4 rounded-2xl bg-[#282828] border border-white/5 flex items-center gap-4">
+              <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-[#0078D4] shrink-0">
+                <span class="material-symbols-outlined text-[28px]">mail</span>
+              </div>
+              <div class="min-w-0 flex-1">
+                <span class="text-xs font-semibold text-neutral-400 uppercase tracking-wider block mb-0.5">Email ID</span>
+                <p id="settings-user-email" class="text-base font-semibold text-white truncate">user@rhynia.com</p>
+              </div>
             </div>
-            <div class="p-3 rounded-lg bg-[#282828] border border-white/5">
-              <span class="text-xs text-neutral-400 flex items-center gap-1 mb-1">
-                <span class="material-symbols-outlined text-[14px] text-[#0078D4]">phone_iphone</span>Mobile Number
-              </span>
-              <p id="settings-user-phone" class="text-sm font-medium text-white pl-5">+1 (555) 000-0000</p>
+            <div class="p-4 rounded-2xl bg-[#282828] border border-white/5 flex items-center gap-4">
+              <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-[#0078D4] shrink-0">
+                <span class="material-symbols-outlined text-[28px]">phone_iphone</span>
+              </div>
+              <div class="min-w-0 flex-1">
+                <span class="text-xs font-semibold text-neutral-400 uppercase tracking-wider block mb-0.5">Mobile Number</span>
+                <p id="settings-user-phone" class="text-base font-semibold text-white truncate">+1 (555) 000-0000</p>
+              </div>
             </div>
           </div>
         </section>
 
         <!-- Preferences Card -->
-        <section class="fluent-mica-card rounded-xl p-5 space-y-3 bg-[#1f1f1f] border border-white/10 shadow-md">
-          <div class="flex items-center gap-2 pb-2 border-b border-white/5">
-            <span class="material-symbols-outlined text-[#0078D4] text-[20px]">tune</span>
-            <h3 class="text-sm font-semibold text-white">Preferences</h3>
+        <section class="fluent-mica-card rounded-3xl p-6 sm:p-7 space-y-4 bg-[#1f1f1f] border border-white/10 shadow-xl">
+          <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+            <div class="w-12 h-12 rounded-2xl bg-[#0078D4]/20 border border-[#0078D4]/40 text-[#0078D4] flex items-center justify-center shadow-sm">
+              <span class="material-symbols-outlined text-[30px]">tune</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Preferences</h3>
           </div>
-          <div class="space-y-2">
+          <div class="space-y-3">
             <!-- Appearance Switcher (Fluent Light/Dark Mode) -->
-            <div class="flex items-center justify-between p-3 rounded-lg bg-[#282828] border border-white/5 transition-colors cursor-pointer select-none" onclick="toggleAppearanceTheme()">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[#0078D4]">
-                  <span id="settings-theme-icon" class="material-symbols-outlined text-[18px]">dark_mode</span>
+            <div class="flex items-center justify-between p-4 rounded-2xl bg-[#282828] border border-white/5 transition-colors cursor-pointer select-none" onclick="toggleAppearanceTheme()">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-[#0078D4] shrink-0 shadow-sm">
+                  <span id="settings-theme-icon" class="material-symbols-outlined text-[32px]">dark_mode</span>
                 </div>
                 <div>
-                  <p data-i18n="appearance" class="text-sm font-medium text-white">Appearance</p>
-                  <p id="settings-theme-label" data-i18n="dark_mode" class="text-xs text-neutral-400">Dark Horizon</p>
+                  <p data-i18n="appearance" class="text-base font-bold text-white">Appearance</p>
+                  <p id="settings-theme-label" data-i18n="dark_mode" class="text-xs text-neutral-400 mt-0.5">Dark Horizon</p>
                 </div>
               </div>
-              <div class="flex items-center gap-2.5">
-                <button type="button" class="px-2.5 py-1 rounded bg-[#353535] hover:bg-[#404040] text-xs font-medium text-white transition-colors border border-white/10 pointer-events-none" id="settings-theme-btn-text" data-i18n="switch_to_light">
+              <div class="flex items-center gap-3">
+                <button type="button" class="px-3 py-1.5 rounded-xl bg-[#353535] hover:bg-[#404040] text-xs font-semibold text-white transition-colors border border-white/10 pointer-events-none" id="settings-theme-btn-text" data-i18n="switch_to_light">
                   Switch to Light
                 </button>
                 <div class="relative inline-flex items-center pointer-events-none">
                   <input id="settings-theme-checkbox" type="checkbox" class="sr-only peer">
-                  <div class="w-10 h-5 bg-[#353535] rounded-full peer-checked:bg-[#0078D4] border border-white/10 transition-colors"></div>
-                  <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
+                  <div class="w-12 h-7 bg-[#353535] rounded-full peer-checked:bg-[#0078D4] border border-white/10 transition-colors"></div>
+                  <div class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
                 </div>
               </div>
             </div>
 
             <!-- Accent Color Picker -->
-            <div class="relative flex flex-col p-3 rounded-lg bg-[#282828] border border-white/5 transition-colors">
+            <div class="relative flex flex-col p-4 rounded-2xl bg-[#282828] border border-white/5 transition-colors">
               <div onclick="toggleAccentColorPicker()" class="flex items-center justify-between cursor-pointer select-none">
-                <div class="flex items-center gap-3">
-                  <div id="settings-accent-preview" class="w-8 h-8 rounded bg-[#0078D4] flex items-center justify-center text-white shadow-sm transition-colors">
-                    <span class="material-symbols-outlined text-[18px]">palette</span>
+                <div class="flex items-center gap-4">
+                  <div id="settings-accent-preview" class="w-14 h-14 rounded-2xl bg-[#0078D4] flex items-center justify-center text-white shadow-md shrink-0 transition-colors">
+                    <span class="material-symbols-outlined text-[32px]">palette</span>
                   </div>
                   <div>
-                    <p data-i18n="accent_color" class="text-sm font-medium text-white">Accent Color</p>
-                    <p data-i18n="accent_desc" class="text-xs text-neutral-400">Theme highlights & glow</p>
+                    <p data-i18n="accent_color" class="text-base font-bold text-white">Accent Color</p>
+                    <p data-i18n="accent_desc" class="text-xs text-neutral-400 mt-0.5">Theme highlights & glow</p>
                   </div>
                 </div>
-                <button type="button" class="p-1.5 rounded text-neutral-400 hover:text-white hover:bg-white/10 transition-colors pointer-events-none" title="Select Accent Color">
-                  <span class="material-symbols-outlined text-[18px]">expand_more</span>
+                <button type="button" class="p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-white/10 transition-colors pointer-events-none" title="Select Accent Color">
+                  <span class="material-symbols-outlined text-[28px]">expand_more</span>
                 </button>
               </div>
 
               <!-- Accent Color Palette Swatches (15 Curated Colors) -->
-              <div id="accent-color-picker-flyout" class="hidden mt-3 pt-3 border-t border-white/10 grid grid-cols-5 sm:grid-cols-5 gap-3 justify-items-center p-1">
+              <div id="accent-color-picker-flyout" class="hidden mt-4 pt-4 border-t border-white/10 grid grid-cols-5 gap-3 justify-items-center p-1">
                 <!-- Row 1: Blues & Purples -->
-                <button type="button" onclick="selectAccentColor('#0078D4')" class="w-8 h-8 rounded-full bg-[#0078D4] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Azure Blue"></button>
-                <button type="button" onclick="selectAccentColor('#00A4EF')" class="w-8 h-8 rounded-full bg-[#00A4EF] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Sky Cyan"></button>
-                <button type="button" onclick="selectAccentColor('#4F46E5')" class="w-8 h-8 rounded-full bg-[#4F46E5] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Royal Indigo"></button>
-                <button type="button" onclick="selectAccentColor('#7C5CFF')" class="w-8 h-8 rounded-full bg-[#7C5CFF] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Purple Luminescence"></button>
-                <button type="button" onclick="selectAccentColor('#A855F7')" class="w-8 h-8 rounded-full bg-[#A855F7] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Neon Violet"></button>
+                <button type="button" onclick="selectAccentColor('#0078D4')" class="w-11 h-11 rounded-full bg-[#0078D4] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Azure Blue"></button>
+                <button type="button" onclick="selectAccentColor('#00A4EF')" class="w-11 h-11 rounded-full bg-[#00A4EF] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Sky Cyan"></button>
+                <button type="button" onclick="selectAccentColor('#4F46E5')" class="w-11 h-11 rounded-full bg-[#4F46E5] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Royal Indigo"></button>
+                <button type="button" onclick="selectAccentColor('#7C5CFF')" class="w-11 h-11 rounded-full bg-[#7C5CFF] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Purple Luminescence"></button>
+                <button type="button" onclick="selectAccentColor('#A855F7')" class="w-11 h-11 rounded-full bg-[#A855F7] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Neon Violet"></button>
 
                 <!-- Row 2: Pinks, Reds & Oranges -->
-                <button type="button" onclick="selectAccentColor('#EC4899')" class="w-8 h-8 rounded-full bg-[#EC4899] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Hot Pink"></button>
-                <button type="button" onclick="selectAccentColor('#D93025')" class="w-8 h-8 rounded-full bg-[#D93025] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Ruby Energy"></button>
-                <button type="button" onclick="selectAccentColor('#FF5722')" class="w-8 h-8 rounded-full bg-[#FF5722] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Coral Flame"></button>
-                <button type="button" onclick="selectAccentColor('#EA580C')" class="w-8 h-8 rounded-full bg-[#EA580C] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Sunset Orange"></button>
-                <button type="button" onclick="selectAccentColor('#FFB900')" class="w-8 h-8 rounded-full bg-[#FFB900] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Amber Horizon"></button>
+                <button type="button" onclick="selectAccentColor('#EC4899')" class="w-11 h-11 rounded-full bg-[#EC4899] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Hot Pink"></button>
+                <button type="button" onclick="selectAccentColor('#D93025')" class="w-11 h-11 rounded-full bg-[#D93025] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Ruby Energy"></button>
+                <button type="button" onclick="selectAccentColor('#FF5722')" class="w-11 h-11 rounded-full bg-[#FF5722] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Coral Flame"></button>
+                <button type="button" onclick="selectAccentColor('#EA580C')" class="w-11 h-11 rounded-full bg-[#EA580C] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Sunset Orange"></button>
+                <button type="button" onclick="selectAccentColor('#FFB900')" class="w-11 h-11 rounded-full bg-[#FFB900] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Amber Horizon"></button>
 
                 <!-- Row 3: Yellows, Greens & Teals -->
-                <button type="button" onclick="selectAccentColor('#EAB308')" class="w-8 h-8 rounded-full bg-[#EAB308] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Sunburst Yellow"></button>
-                <button type="button" onclick="selectAccentColor('#84CC16')" class="w-8 h-8 rounded-full bg-[#84CC16] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Lime Electric"></button>
-                <button type="button" onclick="selectAccentColor('#107C41')" class="w-8 h-8 rounded-full bg-[#107C41] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Emerald Green"></button>
-                <button type="button" onclick="selectAccentColor('#0D9488')" class="w-8 h-8 rounded-full bg-[#0D9488] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Ocean Turquoise"></button>
-                <button type="button" onclick="selectAccentColor('#06B6D4')" class="w-8 h-8 rounded-full bg-[#06B6D4] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Aqua Mint"></button>
+                <button type="button" onclick="selectAccentColor('#EAB308')" class="w-11 h-11 rounded-full bg-[#EAB308] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Sunburst Yellow"></button>
+                <button type="button" onclick="selectAccentColor('#84CC16')" class="w-11 h-11 rounded-full bg-[#84CC16] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Lime Electric"></button>
+                <button type="button" onclick="selectAccentColor('#107C41')" class="w-11 h-11 rounded-full bg-[#107C41] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Emerald Green"></button>
+                <button type="button" onclick="selectAccentColor('#0D9488')" class="w-11 h-11 rounded-full bg-[#0D9488] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Ocean Turquoise"></button>
+                <button type="button" onclick="selectAccentColor('#06B6D4')" class="w-11 h-11 rounded-full bg-[#06B6D4] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Aqua Mint"></button>
               </div>
             </div>
 
             <!-- Language Selector (42 Languages: 22 Indian + 20 Global) -->
-            <div class="relative flex flex-col p-3 rounded-lg bg-[#282828] border border-white/5 transition-colors">
+            <div class="relative flex flex-col p-4 rounded-2xl bg-[#282828] border border-white/5 transition-colors">
               <div onclick="toggleLanguageSelector()" class="flex items-center justify-between cursor-pointer select-none">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[#0078D4]">
-                    <span class="material-symbols-outlined text-[18px]">language</span>
+                <div class="flex items-center gap-4">
+                  <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-[#0078D4] shrink-0 shadow-sm">
+                    <span class="material-symbols-outlined text-[32px]">language</span>
                   </div>
                   <div>
-                    <p data-i18n="language" class="text-sm font-medium text-white">Language</p>
-                    <p id="settings-language-label" class="text-xs text-neutral-400 current-lang-label">English (English (US))</p>
+                    <p data-i18n="language" class="text-base font-bold text-white">Language</p>
+                    <p id="settings-language-label" class="text-xs text-neutral-400 current-lang-label mt-0.5">English (English (US))</p>
                   </div>
                 </div>
-                <button type="button" class="p-1.5 rounded text-neutral-400 hover:text-white hover:bg-white/10 transition-colors pointer-events-none" title="Select Language">
-                  <span class="material-symbols-outlined text-[18px]">expand_more</span>
+                <button type="button" class="p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-white/10 transition-colors pointer-events-none" title="Select Language">
+                  <span class="material-symbols-outlined text-[28px]">expand_more</span>
                 </button>
               </div>
 
               <!-- 42 Languages Dynamic Flyout (Rendered via i18n.js) -->
-              <div id="language-selector-flyout" class="hidden mt-3 pt-3 border-t border-white/10">
-                <!-- Dynamically rendered with search bar & category filter pills -->
-              </div>
+              <div id="language-selector-flyout" class="hidden mt-4 pt-4 border-t border-white/10"></div>
             </div>
 
             <!-- Notifications Settings Expandable Card -->
-            <div class="relative flex flex-col p-3 rounded-lg bg-[#282828] border border-white/5 transition-colors">
+            <div class="relative flex flex-col p-4 rounded-2xl bg-[#282828] border border-white/5 transition-colors">
               <div onclick="toggleNotificationSettingsSection()" class="flex items-center justify-between cursor-pointer select-none">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-[#0078D4]">
-                    <span class="material-symbols-outlined text-[18px]">notifications</span>
+                <div class="flex items-center gap-4">
+                  <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-[#0078D4] shrink-0 shadow-sm">
+                    <span class="material-symbols-outlined text-[32px]">notifications</span>
                   </div>
                   <div>
-                    <p data-i18n="notif_settings" class="text-sm font-medium text-white">Notification Settings</p>
-                    <p data-i18n="notif_settings_desc" class="text-xs text-neutral-400">Alerts, task updates and channels</p>
+                    <p data-i18n="notif_settings" class="text-base font-bold text-white">Notification Settings</p>
+                    <p data-i18n="notif_settings_desc" class="text-xs text-neutral-400 mt-0.5">Alerts, task updates and channels</p>
                   </div>
                 </div>
-                <div class="flex items-center gap-2">
-                  <span id="notif-status-badge" class="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-white/5 text-neutral-300 border border-white/10">Active</span>
-                  <button type="button" class="p-1 rounded text-neutral-400 hover:text-white transition-colors pointer-events-none" title="Expand Notification Settings">
-                    <span id="notif-chevron-icon" class="material-symbols-outlined text-[18px] transition-transform duration-200">expand_more</span>
+                <div class="flex items-center gap-3">
+                  <span id="notif-status-badge" class="text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-white/5 text-neutral-300 border border-white/10">Active</span>
+                  <button type="button" class="p-1 rounded-xl text-neutral-400 hover:text-white transition-colors pointer-events-none" title="Expand Notification Settings">
+                    <span id="notif-chevron-icon" class="material-symbols-outlined text-[28px] transition-transform duration-200">expand_more</span>
                   </button>
                 </div>
               </div>
 
               <!-- Expandable Notification Controls Container -->
-              <div id="notification-settings-panel" class="hidden mt-3 pt-3 border-t border-white/10 space-y-3">
-                
+              <div id="notification-settings-panel" class="hidden mt-4 pt-4 border-t border-white/10 space-y-3.5">
                 <!-- 1. Master Switch: Enable All Notifications -->
-                <div class="flex items-center justify-between p-2.5 rounded-lg bg-[#202020] border border-white/5 transition-colors">
-                  <div class="flex items-center gap-2.5">
-                    <span class="material-symbols-outlined text-[18px] text-[#0078D4]">notifications_active</span>
+                <div class="flex items-center justify-between p-3.5 rounded-xl bg-[#202020] border border-white/5 transition-colors">
+                  <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-[26px] text-[#0078D4]">notifications_active</span>
                     <div>
-                      <p data-i18n="enable_all_notif" class="text-xs sm:text-sm font-semibold text-white">Enable All Notifications</p>
-                      <p data-i18n="enable_all_notif_desc" class="text-[11px] text-neutral-400">Master switch for all alerts and messages</p>
+                      <p data-i18n="enable_all_notif" class="text-sm font-bold text-white">Enable All Notifications</p>
+                      <p data-i18n="enable_all_notif_desc" class="text-xs text-neutral-400">Master switch for all alerts and messages</p>
                     </div>
                   </div>
                   <label class="relative inline-flex items-center cursor-pointer select-none shrink-0 ml-3">
                     <input id="notif-master-switch" type="checkbox" checked class="sr-only peer" onchange="handleMasterNotificationToggle(this)"/>
-                    <div class="w-10 h-5 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
-                    <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
+                    <div class="w-12 h-7 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
+                    <div class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
                   </label>
                 </div>
 
-                <!-- Child Toggles Container (Automatically dimmed & disabled when master is OFF) -->
-                <div id="notif-children-group" class="space-y-2.5 transition-all duration-200">
-                  
+                <!-- Child Toggles Container -->
+                <div id="notif-children-group" class="space-y-3 transition-all duration-200">
                   <!-- Section 1: Alert Triggers -->
-                  <div class="space-y-1.5 pt-1">
-                    <span class="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold pl-1">ALERT TRIGGERS</span>
-                    
+                  <div class="space-y-2 pt-1">
+                    <span class="text-[11px] font-mono tracking-wider text-neutral-400 uppercase font-bold pl-1">ALERT TRIGGERS</span>
                     <!-- AI Task Complete Alert -->
-                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-[#202020]/70 border border-white/5 transition-colors">
-                      <div class="flex items-center gap-2.5">
-                        <span class="material-symbols-outlined text-[17px] text-[#4cc2ff]">task_alt</span>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-[#202020]/70 border border-white/5 transition-colors">
+                      <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[24px] text-[#4cc2ff]">task_alt</span>
                         <div>
-                          <p data-i18n="notif_task_complete" class="text-xs font-medium text-white">Notify when AI task is complete</p>
-                          <p data-i18n="notif_task_complete_desc" class="text-[11px] text-neutral-400">Alerts for long tasks, deep reasoning or image generation</p>
+                          <p data-i18n="notif_task_complete" class="text-sm font-semibold text-white">Notify when AI task is complete</p>
+                          <p data-i18n="notif_task_complete_desc" class="text-xs text-neutral-400">Alerts for long tasks, deep reasoning or image generation</p>
                         </div>
                       </div>
                       <label class="relative inline-flex items-center cursor-pointer select-none shrink-0 ml-3">
                         <input id="notif-task-complete-switch" type="checkbox" checked class="sr-only peer child-notif-input" onchange="handleChildNotificationToggle('task_complete', this)"/>
-                        <div class="w-10 h-5 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
-                        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
+                        <div class="w-12 h-7 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
+                        <div class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
                       </label>
                     </div>
 
                     <!-- Product Updates & New Models -->
-                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-[#202020]/70 border border-white/5 transition-colors">
-                      <div class="flex items-center gap-2.5">
-                        <span class="material-symbols-outlined text-[17px] text-[#a855f7]">auto_awesome</span>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-[#202020]/70 border border-white/5 transition-colors">
+                      <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[24px] text-[#a855f7]">auto_awesome</span>
                         <div>
-                          <p data-i18n="notif_product_updates" class="text-xs font-medium text-white">Product updates & New AI models</p>
-                          <p data-i18n="notif_product_updates_desc" class="text-[11px] text-neutral-400">New capabilities, models, and platform updates</p>
+                          <p data-i18n="notif_product_updates" class="text-sm font-semibold text-white">Product updates & New AI models</p>
+                          <p data-i18n="notif_product_updates_desc" class="text-xs text-neutral-400">New capabilities, models, and platform updates</p>
                         </div>
                       </div>
                       <label class="relative inline-flex items-center cursor-pointer select-none shrink-0 ml-3">
                         <input id="notif-product-updates-switch" type="checkbox" checked class="sr-only peer child-notif-input" onchange="handleChildNotificationToggle('product_updates', this)"/>
-                        <div class="w-10 h-5 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
-                        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
+                        <div class="w-12 h-7 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
+                        <div class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
                       </label>
                     </div>
                   </div>
 
                   <!-- Section 2: Channel Preferences -->
-                  <div class="space-y-1.5 pt-1">
-                    <span data-i18n="notif_channels_title" class="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold pl-1">CHANNEL PREFERENCES</span>
-                    
+                  <div class="space-y-2 pt-1">
+                    <span data-i18n="notif_channels_title" class="text-[11px] font-mono tracking-wider text-neutral-400 uppercase font-bold pl-1">CHANNEL PREFERENCES</span>
                     <!-- Push Notifications -->
-                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-[#202020]/70 border border-white/5 transition-colors">
-                      <div class="flex items-center gap-2.5">
-                        <span class="material-symbols-outlined text-[17px] text-[#0078D4]">devices</span>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-[#202020]/70 border border-white/5 transition-colors">
+                      <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[24px] text-[#0078D4]">devices</span>
                         <div>
-                          <p data-i18n="notif_push" class="text-xs font-medium text-white">Push Notifications</p>
-                          <p data-i18n="notif_push_desc" class="text-[11px] text-neutral-400">Instant popups on your browser or device screen</p>
+                          <p data-i18n="notif_push" class="text-sm font-semibold text-white">Push Notifications</p>
+                          <p data-i18n="notif_push_desc" class="text-xs text-neutral-400">Instant popups on your browser or device screen</p>
                         </div>
                       </div>
                       <label class="relative inline-flex items-center cursor-pointer select-none shrink-0 ml-3">
                         <input id="notif-push-switch" type="checkbox" checked class="sr-only peer child-notif-input" onchange="handleChildNotificationToggle('push_notifications', this)"/>
-                        <div class="w-10 h-5 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
-                        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
+                        <div class="w-12 h-7 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
+                        <div class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
                       </label>
                     </div>
 
                     <!-- Email Notifications -->
-                    <div class="flex items-center justify-between p-2.5 rounded-lg bg-[#202020]/70 border border-white/5 transition-colors">
-                      <div class="flex items-center gap-2.5">
-                        <span class="material-symbols-outlined text-[17px] text-[#107c41]">mail</span>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-[#202020]/70 border border-white/5 transition-colors">
+                      <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[24px] text-[#107c41]">mail</span>
                         <div>
-                          <p data-i18n="notif_email" class="text-xs font-medium text-white">Email Notifications</p>
-                          <p data-i18n="notif_email_desc" class="text-[11px] text-neutral-400">Periodic digests and task alerts sent to your inbox</p>
+                          <p data-i18n="notif_email" class="text-sm font-semibold text-white">Email Notifications</p>
+                          <p data-i18n="notif_email_desc" class="text-xs text-neutral-400">Periodic digests and task alerts sent to your inbox</p>
                         </div>
                       </div>
                       <label class="relative inline-flex items-center cursor-pointer select-none shrink-0 ml-3">
                         <input id="notif-email-switch" type="checkbox" class="sr-only peer child-notif-input" onchange="handleChildNotificationToggle('email_notifications', this)"/>
-                        <div class="w-10 h-5 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
-                        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
+                        <div class="w-12 h-7 bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/10"></div>
+                        <div class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
                       </label>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
@@ -951,45 +1062,47 @@
         </section>
 
         <!-- Free 500 MB Storage Card (Live Dynamic Metrics) -->
-        <section class="fluent-mica-card rounded-xl p-5 space-y-3 bg-[#1f1f1f] border border-white/10 shadow-md">
-          <div class="flex items-center justify-between flex-wrap gap-2 pb-1">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[#0078D4] text-[20px]">hard_drive</span>
-              <h3 data-i18n="free_storage" class="text-sm font-semibold text-white">Free Storage</h3>
+        <section class="fluent-mica-card rounded-3xl p-6 sm:p-7 space-y-4 bg-[#1f1f1f] border border-white/10 shadow-xl">
+          <div class="flex items-center justify-between flex-wrap gap-3 pb-2 border-b border-white/10">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-[#0078D4]/20 border border-[#0078D4]/40 text-[#0078D4] flex items-center justify-center shadow-sm">
+                <span class="material-symbols-outlined text-[30px]">hard_drive</span>
+              </div>
+              <h3 data-i18n="free_storage" class="text-lg font-bold text-white">Free Storage</h3>
             </div>
-            <span id="settings-storage-badge" class="text-xs font-medium text-[#8ecdff] bg-[#0078D4]/15 px-2.5 py-1 rounded border border-[#0078D4]/30">
+            <span id="settings-storage-badge" class="text-xs font-bold text-[#8ecdff] bg-[#0078D4]/20 px-3 py-1.5 rounded-lg border border-[#0078D4]/40">
               0 MB of 500 MB used (0%)
             </span>
           </div>
-          <div class="space-y-3 pt-1">
+          <div class="space-y-4 pt-1">
             <!-- Two-Tone Progress Bar Track -->
-            <div class="w-full h-2 bg-[#303030] rounded-full overflow-hidden flex border border-white/5">
+            <div class="w-full h-3.5 bg-[#303030] rounded-full overflow-hidden flex border border-white/5">
               <div id="storage-bar-threads" class="h-full bg-[#0078D4] transition-all duration-300 rounded-l-full" style="width: 0%;"></div>
               <div id="storage-bar-media" class="h-full bg-[#00a4ef] transition-all duration-300" style="width: 0%;"></div>
               <div class="h-full bg-transparent flex-1"></div>
             </div>
             <!-- Breakdown Legend -->
-            <div class="flex flex-wrap items-center gap-4 text-xs text-neutral-300">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-[#0078D4] shrink-0"></span>
-                <span><span data-i18n="threads">Threads</span> <strong id="storage-val-threads" class="text-white font-medium">0 MB</strong></span>
+            <div class="flex flex-wrap items-center gap-4 text-sm text-neutral-200">
+              <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-[#0078D4] shrink-0"></span>
+                <span><span data-i18n="threads">Threads</span> <strong id="storage-val-threads" class="text-white font-bold">0 MB</strong></span>
               </div>
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-[#00a4ef] shrink-0"></span>
-                <span><span data-i18n="media">Media</span> <strong id="storage-val-media" class="text-white font-medium">0 MB</strong></span>
+              <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-[#00a4ef] shrink-0"></span>
+                <span><span data-i18n="media">Media</span> <strong id="storage-val-media" class="text-white font-bold">0 MB</strong></span>
               </div>
-              <div class="flex items-center gap-2 ml-auto">
-                <span class="w-2 h-2 rounded-full bg-neutral-500 shrink-0"></span>
-                <span><strong id="storage-val-free" class="text-white font-medium">500 MB</strong> <span data-i18n="free">Free</span></span>
+              <div class="flex items-center gap-2.5 ml-auto">
+                <span class="w-3 h-3 rounded-full bg-neutral-500 shrink-0"></span>
+                <span><strong id="storage-val-free" class="text-white font-bold">500 MB</strong> <span data-i18n="free">Free</span></span>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- Log Out Button -->
+        <!-- Log Out Button: Tall & Bold -->
         <section class="pt-2">
-          <button id="btn-logout" type="button" onclick="logoutUser()" class="w-full py-2.5 px-4 rounded-lg bg-[#93000a]/20 hover:bg-[#93000a]/30 border border-[#ffb4ab]/20 text-[#ffb4ab] flex items-center justify-center gap-2 font-medium text-sm transition-all active:scale-[0.99]" title="Log out of Rhynia">
-            <span class="material-symbols-outlined text-[18px]">logout</span>
+          <button id="btn-logout" type="button" onclick="logoutUser()" class="w-full h-16 rounded-2xl bg-[#93000a]/25 hover:bg-[#93000a]/35 border border-[#ffb4ab]/30 text-[#ffb4ab] flex items-center justify-center gap-3 font-bold text-lg transition-all active:scale-[0.98] shadow-lg" title="Log out of Rhynia">
+            <span class="material-symbols-outlined text-[30px]">logout</span>
             <span data-i18n="logout">Log Out</span>
           </button>
         </section>
@@ -1170,21 +1283,45 @@
     </div>
   </div>
 
+  <!-- Modal: Mandatory Mobile Number for Google OAuth -->
+  <div id="modal-google-phone" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="w-full max-w-sm rounded-2xl p-6 bg-[#181818] border border-white/15 shadow-2xl flex flex-col items-center text-center">
+      <div class="w-12 h-12 rounded-xl bg-[#0078D4]/20 text-[#0078D4] flex items-center justify-center mb-3">
+        <span class="material-symbols-outlined text-2xl">phone_iphone</span>
+      </div>
+      <h3 class="text-lg font-bold text-white font-headline">Enter Mobile Number</h3>
+      <p class="text-xs text-neutral-400 mt-1 max-w-[260px] leading-relaxed">
+        Mobile number is mandatory. Please enter your 10-digit mobile number to complete Google Sign In.
+      </p>
+      <form id="form-google-phone" class="w-full space-y-3 mt-4" onsubmit="submitGooglePhoneNumber(event)">
+        <div class="fluent-input flex items-center bg-[#252525] border border-white/15 rounded-lg h-11 px-3">
+          <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">call</span>
+          <input id="google-phone-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none" placeholder="10-digit mobile number" required type="tel" maxlength="15"/>
+        </div>
+        <button id="btn-submit-google-phone" type="submit" class="w-full h-11 rounded-lg bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white font-medium text-sm flex items-center justify-center gap-2 border border-white/15 shadow-md active:scale-[0.98] transition-all">
+          <span>Complete Sign In</span>
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
 
   <!-- ========================================================= -->
   <!-- SCRIPTS (Configuration, Modules & App Orchestrator)       -->
   <!-- ========================================================= -->
-  <script src="config.js?v=25"></script>
-  <script src="modules/i18n.js?v=25"></script>
-  <script src="app.js?v=25"></script>
-  <script src="modules/auth.js?v=25"></script>
-  <script src="modules/composer.js?v=25"></script>
-  <script src="modules/chat.js?v=25"></script>
-  <script src="modules/feedback.js?v=25"></script>
-  <script src="modules/drawer.js?v=25"></script>
-  <script src="modules/settings.js?v=25"></script>
+  <script src="config.js?v=77"></script>
+  <script src="modules/i18n.js?v=77"></script>
+  <script src="modules/ppt_viewer.js?v=77"></script>
+  <script src="app.js?v=77"></script>
+  <script src="modules/auth.js?v=77"></script>
+  <script src="modules/composer.js?v=77"></script>
+  <script src="modules/chat.js?v=77"></script>
+  <script src="modules/feedback.js?v=77"></script>
+  <script src="modules/drawer.js?v=77"></script>
+  <script src="modules/settings.js?v=77"></script>
 
 </body>
 </html>
