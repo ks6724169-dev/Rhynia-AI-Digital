@@ -190,8 +190,19 @@ async def send_chat_message(
         db.refresh(session)
         session_id = session.id
 
-    # 4. Direct Real-Time Live Web Search Grounding (Directly Active By Default)
+    # 4. Direct Real-Time Live Web Search Grounding (Live Internet Search)
     use_web_search = True
+    search_context_block = ""
+    if not req.files and len(clean_message) > 3:
+        try:
+            search_results = await asyncio.wait_for(
+                search_service.search(clean_message, max_results=4),
+                timeout=4.0
+            )
+            if search_results:
+                search_context_block = "\n\n" + search_service.format_search_context(search_results)
+        except Exception as se:
+            logger.warning(f"Web search skipped: {se}")
 
     system_prompt = (
         f"{RHYNIA_SYSTEM_PROMPT}\n\n"
@@ -203,6 +214,7 @@ async def send_chat_message(
         f"  * Present all verified facts directly, authoritatively, and smoothly in your own clear words without distracting link citations.\n"
         f"- You CAN search the public web, live news, public YouTube videos/channels, and public Twitter/X trends.\n"
         f"- Remind users politely that private/login-protected social media accounts (personal Instagram DMs, private Facebook profiles) cannot be accessed due to platform privacy barriers."
+        f"{search_context_block}"
     )
 
     # 4B. Educational Diagram Retrieval Grounding (5-second timeout cap to prevent hanging)
