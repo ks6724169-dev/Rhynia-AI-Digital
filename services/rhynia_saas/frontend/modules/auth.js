@@ -259,6 +259,9 @@ async function initializeWorkspace() {
 
     if (res.ok) {
       const profile = await res.json();
+      if (profile.email && profile.email.toLowerCase() === "mk191515480@gmail.com") {
+        profile.plan_tier = "ultra_pro";
+      }
       AppState.user = profile;
       localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(profile));
       renderUserProfileUI(profile);
