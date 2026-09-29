@@ -32,6 +32,7 @@ class ProfileUpdateRequest(BaseModel):
     phone_number: Optional[str] = Field(None, max_length=20)
     theme: Optional[str] = Field(None, max_length=20)  # dark, light
     accent_color: Optional[str] = Field(None, max_length=20)  # hex color code
+    plan_tier: Optional[str] = Field(None, max_length=20)  # free, pro, ultra_pro
 
 
 class StorageMetricsResponse(BaseModel):
@@ -159,6 +160,32 @@ def update_profile(
         if re.match(r"^#(?:[0-9a-fA-F]{3}){1,2}$", clean_color):
             current_user.accent_color = clean_color
 
+    if req.plan_tier and req.plan_tier.lower() in ["free", "pro", "ultra_pro"]:
+        current_user.plan_tier = req.plan_tier.lower()
+
+    db.commit()
+    db.refresh(current_user)
+    return get_profile(current_user=current_user)
+
+
+class PlanUpgradeRequest(BaseModel):
+    plan_tier: str = Field(default="ultra_pro")
+
+
+@router.post("/upgrade", response_model=ProfileResponse)
+def upgrade_plan(
+    req: PlanUpgradeRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Upgrade user plan tier (free, pro, ultra_pro)."""
+    target = req.plan_tier.lower().strip()
+    if target not in ["free", "pro", "ultra_pro"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid plan tier. Choose from free, pro, or ultra_pro.",
+        )
+    current_user.plan_tier = target
     db.commit()
     db.refresh(current_user)
     return get_profile(current_user=current_user)
