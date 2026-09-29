@@ -93,8 +93,8 @@ if frontend_dir.exists():
 
 @app.get("/", tags=["General"])
 async def root():
-    """Redirect root directly to web chat interface."""
-    return RedirectResponse(url="/app")
+    """Service status and health check for cloud providers."""
+    return {"status": "healthy", "service": "Rhynia Intelligence API", "version": settings.APP_VERSION}
 
 
 IMAGE_CACHE_DIR = Path(__file__).resolve().parent.parent / "database" / "image_cache"
