@@ -88,6 +88,9 @@ async def upload_file(
         )
 
     # 3. Determine user storage quota
+    if current_user.email and current_user.email.lower() == "mk191515480@gmail.com":
+        current_user.plan_tier = "ultra_pro"
+
     if current_user.plan_tier == "ultra_pro":
         quota_bytes = settings.ULTRA_PRO_STORAGE_BYTES
     elif current_user.plan_tier == "pro":

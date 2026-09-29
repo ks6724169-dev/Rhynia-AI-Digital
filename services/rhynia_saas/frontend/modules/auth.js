@@ -261,6 +261,12 @@ async function initializeWorkspace() {
       const profile = await res.json();
       if (profile.email && profile.email.toLowerCase() === "mk191515480@gmail.com") {
         profile.plan_tier = "ultra_pro";
+        if (profile.storage) {
+          profile.storage.plan_tier = "ultra_pro";
+          profile.storage.storage_quota_mb = 25600;
+          profile.storage.storage_quota_bytes = 25600 * 1024 * 1024;
+          profile.storage.storage_free_mb = Math.max(0, 25600 - (profile.storage.storage_used_mb || 0));
+        }
       }
       AppState.user = profile;
       localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(profile));

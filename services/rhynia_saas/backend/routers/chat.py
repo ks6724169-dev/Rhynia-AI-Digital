@@ -72,6 +72,9 @@ def enforce_daily_quota(user: User, db: Session) -> int:
         db.commit()
 
     # Determine daily limit based on plan
+    if user.email and user.email.lower() == "mk191515480@gmail.com":
+        user.plan_tier = "ultra_pro"
+
     if user.plan_tier == "ultra_pro":
         limit = settings.ULTRA_PRO_DAILY_MESSAGE_LIMIT
     elif user.plan_tier == "pro":

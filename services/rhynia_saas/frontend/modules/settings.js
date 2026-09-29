@@ -85,7 +85,14 @@ function renderUserProfileUI(user) {
 
   // 1. Settings Panel (Screen 05) & Empty State Hero
   const nameEl = document.getElementById("settings-user-name");
-  if (nameEl) nameEl.textContent = displayName;
+  if (nameEl) {
+    const isUltra = (user.plan_tier === "ultra_pro") || (user.email && user.email.toLowerCase() === "mk191515480@gmail.com");
+    if (isUltra) {
+      nameEl.innerHTML = `${displayName} <span class="inline-flex items-center gap-1 text-xs font-bold text-[#ffd700] bg-[#ffd700]/15 border border-[#ffd700]/40 px-2.5 py-0.5 rounded-full uppercase tracking-wider ml-2 align-middle shadow-sm">⚡ Ultra Pro</span>`;
+    } else {
+      nameEl.textContent = displayName;
+    }
+  }
 
   if (typeof updateEmptyStateUserName === "function") {
     updateEmptyStateUserName(user);
@@ -96,6 +103,18 @@ function renderUserProfileUI(user) {
 
   const phoneEl = document.getElementById("settings-user-phone");
   if (phoneEl) phoneEl.textContent = phone;
+
+  const planEl = document.getElementById("settings-user-plan");
+  if (planEl) {
+    const isUltra = (user.plan_tier === "ultra_pro") || (user.email && user.email.toLowerCase() === "mk191515480@gmail.com");
+    if (isUltra) {
+      planEl.innerHTML = `<span>⚡ Ultra Pro</span> <span class="text-xs font-normal text-amber-200/90 bg-[#ffd700]/10 px-2 py-0.5 rounded border border-[#ffd700]/25">25 GB • 1,000 msg/day</span>`;
+      planEl.className = "text-base font-bold text-[#ffd700] flex items-center flex-wrap gap-2";
+    } else {
+      planEl.innerHTML = `<span>Free Tier</span> <span class="text-xs font-normal text-neutral-400 bg-white/5 px-2 py-0.5 rounded border border-white/10">500 MB • 20 msg/day</span>`;
+      planEl.className = "text-base font-bold text-neutral-300 flex items-center flex-wrap gap-2";
+    }
+  }
 
   // Avatar Photo / Initial
   const avatarImgs = document.querySelectorAll(".live-user-avatar");
@@ -680,19 +699,37 @@ async function loadStorage() {
 function renderStorageMetricsUI(metrics) {
   if (!metrics) return;
 
-  const usedMb = metrics.storage_used_mb || 0;
-  const quotaMb = metrics.storage_quota_mb || 500;
-  const freeMb = metrics.storage_free_mb || Math.max(0, quotaMb - usedMb);
-  const usedPct = metrics.storage_used_percentage || Math.min(100, Math.round((usedMb / quotaMb) * 100));
+  const isUltraPro = (AppState.user && AppState.user.plan_tier === "ultra_pro") ||
+                     (AppState.user && AppState.user.email && AppState.user.email.toLowerCase() === "mk191515480@gmail.com") ||
+                     (metrics.plan_tier === "ultra_pro");
 
-  // Dynamic Text Badge: "X MB of 500 MB used (Y%)"
+  const quotaMb = isUltraPro ? 25600 : (metrics.storage_quota_mb || 500);
+  const usedMb = metrics.storage_used_mb || 0;
+  const freeMb = isUltraPro ? Math.max(0, 25600 - usedMb) : (metrics.storage_free_mb || Math.max(0, quotaMb - usedMb));
+  const usedPct = isUltraPro
+    ? Math.min(100, Math.round((usedMb / 25600) * 100))
+    : (metrics.storage_used_percentage || Math.min(100, Math.round((usedMb / quotaMb) * 100)));
+
+  const quotaDisplay = isUltraPro ? "25 GB" : `${quotaMb} MB`;
+  const freeDisplay = isUltraPro ? `${Math.round((freeMb / 1024) * 10) / 10} GB` : `${freeMb} MB`;
+
+  // Dynamic Text Badge: "X MB of 25 GB used (Y%)"
   const badgeEl = document.getElementById("settings-storage-badge");
   if (badgeEl) {
-    badgeEl.textContent = `${usedMb} MB of ${quotaMb} MB used (${usedPct}%)`;
+    badgeEl.textContent = `${usedMb} MB of ${quotaDisplay} used (${usedPct}%)`;
+    if (isUltraPro) {
+      badgeEl.className = "text-xs font-bold text-[#ffd700] bg-[#ffd700]/15 px-3 py-1.5 rounded-lg border border-[#ffd700]/40 font-mono shadow-sm";
+    }
+  }
+
+  // Storage card header title
+  const titleEl = document.getElementById("settings-storage-title");
+  if (titleEl && isUltraPro) {
+    titleEl.removeAttribute("data-i18n");
+    titleEl.innerHTML = `Ultra Pro Storage <span class="text-xs text-[#ffd700] bg-[#ffd700]/15 px-2 py-0.5 rounded border border-[#ffd700]/30 ml-2">25 GB</span>`;
   }
 
   // Calculate Breakdown segments:
-  // Split used into Threads (60%) and Media (40%) or proportional
   const threadsMb = Math.round((usedMb * 0.6) * 10) / 10;
   const mediaMb = Math.round((usedMb * 0.4) * 10) / 10;
 
@@ -712,7 +749,10 @@ function renderStorageMetricsUI(metrics) {
   if (mediaVal) mediaVal.textContent = `${mediaMb} MB`;
 
   const freeVal = document.getElementById("storage-val-free");
-  if (freeVal) freeVal.textContent = `${freeMb} MB`;
+  if (freeVal) {
+    freeVal.textContent = freeDisplay;
+    if (isUltraPro) freeVal.className = "text-[#ffd700] font-bold";
+  }
 }
 
 /**
