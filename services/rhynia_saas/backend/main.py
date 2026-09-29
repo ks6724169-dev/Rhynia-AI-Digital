@@ -17,14 +17,19 @@ from services.rhynia_saas.backend.routers import auth, chat, feedback, files, no
 from services.rhynia_saas.backend.services.image_search import EducationalImageService
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Application startup and shutdown events."""
+import asyncio
+
+async def _bg_init_db():
     try:
         init_db()
     except Exception as e:
         import logging
-        logging.getLogger("rhynia.main").warning(f"Database initialization deferred or already created: {e}")
+        logging.getLogger("rhynia.main").warning(f"Database initialization deferred: {e}")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application startup and shutdown events."""
+    asyncio.create_task(_bg_init_db())
     yield
 
 
