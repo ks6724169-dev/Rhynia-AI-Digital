@@ -120,12 +120,18 @@ async function handleLoginSubmit(event) {
       })
     });
 
-    const data = await res.json();
+    let data;
+    try {
+      data = await res.json();
+    } catch (_) {
+      throw new Error(`Server connection issue (${res.status}). Please retry in a few moments.`);
+    }
+
     if (!res.ok) {
       let errMsg = "Authentication failed";
-      if (typeof data.detail === "string") {
+      if (data && typeof data.detail === "string") {
         errMsg = data.detail;
-      } else if (Array.isArray(data.detail)) {
+      } else if (data && Array.isArray(data.detail)) {
         errMsg = data.detail.map(e => e.msg || e.detail).join(", ");
       }
       throw new Error(errMsg);

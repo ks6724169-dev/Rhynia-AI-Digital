@@ -22,7 +22,8 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship, Session
 from services.rhynia_saas.backend.config import settings
 
 # Database Engine Configuration
-db_url = settings.DATABASE_URL
+import os
+db_url = os.environ.get("DATABASE_URL") or settings.DATABASE_URL
 if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
 
