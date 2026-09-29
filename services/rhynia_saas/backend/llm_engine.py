@@ -346,10 +346,10 @@ class CascadeLLMEngine:
                         continue
 
             # ====================================================
-            # TIER 2: OpenRouter Flagship Models (Llama 3.3 70B & DeepSeek)
+            # TIER 2: OpenRouter Smart Free Router & Flagship Models
             # ====================================================
             if openrouter_key:
-                tier2_models = ["meta-llama/llama-3.3-70b-instruct", "deepseek/deepseek-chat"]
+                tier2_models = ["openrouter/free", "meta-llama/llama-3.3-70b-instruct", "deepseek/deepseek-chat"]
                 for or_model in tier2_models:
                     streamed_any = False
                     try:
@@ -368,6 +368,8 @@ class CascadeLLMEngine:
             # ====================================================
             if openrouter_backup_key:
                 tier3_models = [
+                    "openrouter/free",
+                    "meta-llama/llama-3.3-70b-instruct",
                     "liquid/lfm-2.5-2.6b:free",
                     "dots-studio/dots-3-note-preview:free",
                     "nex-agi/nex-n2.5-mini:free",
