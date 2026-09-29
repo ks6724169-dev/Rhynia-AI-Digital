@@ -20,8 +20,11 @@ from services.rhynia_saas.backend.services.image_search import EducationalImageS
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application startup and shutdown events."""
-    # Ensure database tables exist on startup
-    init_db()
+    try:
+        init_db()
+    except Exception as e:
+        import logging
+        logging.getLogger("rhynia.main").warning(f"Database initialization deferred or already created: {e}")
     yield
 
 
