@@ -28,6 +28,9 @@ database/
 # Vercel
 .vercel/
 
+# Temporary Scripts
+scripts/
+
 # Large ML Weights, Models & Datasets (Hosted on HuggingFace/Cloud)
 *.safetensors
 *.gguf

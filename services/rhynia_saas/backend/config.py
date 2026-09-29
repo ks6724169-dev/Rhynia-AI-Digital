@@ -56,17 +56,17 @@ class Settings(BaseSettings):
     OTP_EXPIRE_SECONDS: int = 600  # 10 minutes for relaxed user entry
 
     # Google OAuth 2.0 Credentials
-    GOOGLE_CLIENT_ID: Optional[str] = "1001346913265-qbdhpbb69gen2mvcjtu56jepn1sld8os.apps.googleusercontent.com"
-    GOOGLE_CLIENT_SECRET: Optional[str] = "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"
+    GOOGLE_CLIENT_ID: Optional[str] = None
+    GOOGLE_CLIENT_SECRET: Optional[str] = None
 
     # Fast2SMS Gateway Configuration
-    FAST2SMS_API_KEY: Optional[str] = "ZREic30HSxnBehfXKM29VdCrTFjaDNogkz4J1ylAQqpU5mIwG8NvBRVM3ueYnICoQ0UEchZkHtT6b48z"
+    FAST2SMS_API_KEY: Optional[str] = None
 
     # Gmail SMTP Configuration
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 465
-    SMTP_USER: Optional[str] = "mk6611236@gmail.com"
-    SMTP_PASSWORD: Optional[str] = "nldgbrmonepawpqw"
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
     SMTP_FROM_NAME: str = "Rhynia Intelligence"
 
     # AI Model Cascade (Multi-Provider Engine)
