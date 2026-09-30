@@ -105,6 +105,8 @@ class User(Base):
     notification_preferences = relationship(
         "UserNotificationPreference", back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
+    memory_facts = relationship("UserMemoryFact", back_populates="user", cascade="all, delete-orphan")
+    summary_buffers = relationship("ChatSummaryBuffer", back_populates="user", cascade="all, delete-orphan")
 
 
 # ==========================================
@@ -160,6 +162,12 @@ class ChatSession(Base):
         back_populates="session",
         cascade="all, delete-orphan",
         order_by="ChatMessage.created_at",
+    )
+    summary_buffer = relationship(
+        "ChatSummaryBuffer",
+        back_populates="session",
+        uselist=False,
+        cascade="all, delete-orphan",
     )
 
 
@@ -256,6 +264,60 @@ class UserNotificationPreference(Base):
 
     # Relationships
     user = relationship("User", back_populates="notification_preferences")
+
+
+# ==========================================
+# 8. USER MEMORY FACT MODEL (Long-Term Personalization)
+# ==========================================
+class UserMemoryFact(Base):
+    __tablename__ = "user_memory_facts"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid, index=True)
+    user_id = Column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    fact_key = Column(String(100), nullable=False, index=True)  # e.g., "profession", "language_pref", "interests"
+    fact_value = Column(Text, nullable=False)
+    category = Column(String(50), default="general", nullable=False)  # "profile", "preference", "context", "goal"
+    confidence_score = Column(Integer, default=100, nullable=False)
+    size_bytes = Column(Integer, default=0, nullable=False)
+
+    created_at = Column(DateTime(timezone=True), default=get_utc_now, nullable=False)
+    updated_at = Column(
+        DateTime(timezone=True), default=get_utc_now, onupdate=get_utc_now, nullable=False
+    )
+
+    # Relationships
+    user = relationship("User", back_populates="memory_facts")
+
+
+# ==========================================
+# 9. CHAT SUMMARY BUFFER MODEL (2-Tier Rolling Summarization)
+# ==========================================
+class ChatSummaryBuffer(Base):
+    __tablename__ = "chat_summary_buffers"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid, index=True)
+    session_id = Column(
+        String(36), ForeignKey("chat_sessions.id", ondelete="CASCADE"), unique=True, nullable=False, index=True
+    )
+    user_id = Column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    macro_summary = Column(Text, default="", nullable=False)
+    micro_summary = Column(Text, default="", nullable=False)
+    message_count = Column(Integer, default=0, nullable=False)
+    last_summarized_message_id = Column(String(36), nullable=True)
+    size_bytes = Column(Integer, default=0, nullable=False)
+
+    created_at = Column(DateTime(timezone=True), default=get_utc_now, nullable=False)
+    updated_at = Column(
+        DateTime(timezone=True), default=get_utc_now, onupdate=get_utc_now, nullable=False
+    )
+
+    # Relationships
+    session = relationship("ChatSession", back_populates="summary_buffer")
+    user = relationship("User", back_populates="summary_buffers")
 
 
 # ==========================================

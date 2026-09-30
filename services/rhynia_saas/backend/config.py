@@ -105,6 +105,15 @@ class Settings(BaseSettings):
     ULTRA_PRO_DAILY_MESSAGE_LIMIT: int = 1000
     ULTRA_PRO_STORAGE_BYTES: int = 25 * 1024 * 1024 * 1024  # 25 GB
 
+    # Rhynia AI Master Memory System Quotas & Thread Boundaries
+    FREE_MEMORY_QUOTA_BYTES: int = 8 * 1024 * 1024       # 8 MB
+    PRO_MEMORY_QUOTA_BYTES: int = 16 * 1024 * 1024       # 16 MB
+    ULTRA_PRO_MEMORY_QUOTA_BYTES: int = 25 * 1024 * 1024 # 25 MB
+
+    FREE_TIER_THREAD_MESSAGE_LIMIT: int = 30
+    PRO_TIER_THREAD_MESSAGE_LIMIT: int = 60
+    ULTRA_PRO_THREAD_MESSAGE_LIMIT: int = 60
+
     # Storage Paths
     UPLOAD_DIR: Path = Path(__file__).resolve().parent.parent / "uploads"
 
