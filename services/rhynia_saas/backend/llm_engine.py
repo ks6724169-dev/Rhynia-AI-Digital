@@ -122,8 +122,12 @@ class CascadeLLMEngine:
         sys_content = base_prompt + time_context
         formatted = [{"role": "system", "content": sys_content}]
         for m in messages:
-            role = m.get("role", "user")
-            if role not in ["user", "system", "model"]:
+            raw_role = m.get("role", "user")
+            if raw_role in ["model", "assistant"]:
+                role = "assistant"
+            elif raw_role == "system":
+                role = "system"
+            else:
                 role = "user"
             formatted.append({"role": role, "content": m.get("content", "")})
 

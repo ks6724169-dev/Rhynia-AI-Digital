@@ -1330,10 +1330,16 @@ html.light .mermaid-diagram-box .label text {
   display: flex;
   align-items: flex-start;
   gap: 0.55rem;
-  margin: 0.35rem 0;
-  line-height: 1.625;
-  font-size: 0.935rem;
-  color: #d1d5db;
+  margin: 0.4rem 0;
+  line-height: 1.72;
+  font-size: 15px;
+  color: #e2e8f0;
+}
+
+.ms-bullet-item strong {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
 }
 
 .ms-bullet {
@@ -1993,54 +1999,61 @@ html.light .user-bubble {
     font-size: 34px !important;
   }
 
-  /* Chat Messages: User Bubble (Height ~80 px, 24px font, rounded pill bubble) */
+  /* Chat Messages: User Bubble (ChatGPT/Claude Grade: 15px clean rounded bubble) */
   .user-bubble {
-    font-size: 24px !important;
-    min-height: 80px !important;
-    padding: 20px 32px !important;
-    border-radius: 36px 36px 12px 36px !important;
-    max-width: 92% !important;
-    line-height: 1.65 !important;
-    display: inline-flex !important;
-    align-items: center !important;
+    font-size: 15px !important;
+    min-height: auto !important;
+    padding: 12px 18px !important;
+    border-radius: 18px 18px 4px 18px !important;
+    max-width: 88% !important;
+    line-height: 1.62 !important;
+    display: inline-block !important;
+    align-items: initial !important;
   }
 
-  /* AI Message Text: 24px Font, 1.8 Line Height */
+  /* AI Message Text: ChatGPT / Claude Standard 15px, 1.72 Line Height */
   .ai-text-body,
   .ai-text-body p,
-  .ai-text-body li {
-    font-size: 24px !important;
-    line-height: 1.8 !important;
+  .ai-text-body li,
+  .ms-bullet-item {
+    font-size: 15px !important;
+    line-height: 1.72 !important;
+    color: #e2e8f0 !important;
   }
 
-  .ai-text-body strong {
-    font-size: 24px !important;
+  .ai-text-body strong,
+  .ms-bullet-item strong {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
   }
 
   .ai-text-body code {
-    font-size: 20px !important;
+    font-size: 13.5px !important;
+    font-family: 'JetBrains Mono', monospace !important;
   }
 
   .ai-text-body pre {
-    font-size: 19px !important;
+    font-size: 13px !important;
+    padding: 12px 14px !important;
   }
 
-  /* Action Buttons Bar: 56 px Touch Area, 30 px Icons, 16 px Spacing */
+  /* Action Buttons Bar: Standard 38px Touch Area, 20px Icons */
   .ai-actions-bar {
-    gap: 16px !important;
-    padding-top: 18px !important;
+    gap: 8px !important;
+    padding-top: 10px !important;
   }
 
   .ai-actions-bar button {
-    width: 56px !important;
-    height: 56px !important;
-    min-width: 56px !important;
-    min-height: 56px !important;
-    border-radius: 16px !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+    border-radius: 10px !important;
   }
 
   .ai-actions-bar .material-symbols-outlined {
-    font-size: 30px !important;
+    font-size: 20px !important;
   }
 
   /* Empty State Hero on Big Display */

@@ -385,16 +385,18 @@ async def send_chat_message(
     db.add(user_msg)
     db.commit()
 
-    # 6. Load Conversation History (Last 10 turns)
+    # 6. Load Conversation History (Most Recent 20 messages)
     history_records = (
         db.query(ChatMessage)
         .filter(ChatMessage.session_id == session_id)
-        .order_by(ChatMessage.created_at.asc())
+        .order_by(ChatMessage.created_at.desc())
         .limit(20)
         .all()
     )
+    history_records.reverse()
+
     messages_payload = [
-        {"role": m.role, "content": strip_source_links(m.content) if m.role == "model" else m.content}
+        {"role": m.role, "content": strip_source_links(m.content) if m.role in ["model", "assistant"] else m.content}
         for m in history_records
     ]
 
