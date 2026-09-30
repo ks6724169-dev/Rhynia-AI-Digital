@@ -90,7 +90,7 @@
   <meta http-equiv="Expires" content="0"/>
 
   <!-- Modular Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=98"/>
+  <link rel="stylesheet" href="style.css?v=99"/>
 
   <!-- Mermaid.js v10 for SmartArt & Visual Diagrams -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
@@ -555,17 +555,17 @@
   <!-- ========================================================= -->
   <div id="view-app" class="hidden min-h-screen flex flex-col justify-between relative bg-[#131313]">
 
-    <!-- Top Navigation Header (Screen 01 & 02: Fixed Floating ChatGPT Style) -->
-    <header class="fixed top-0 left-0 right-0 z-50 h-[90px] border-b border-white/[0.08] bg-[#121212]/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between transition-all">
+    <!-- Top Navigation Header (Screen 01 & 02: Transparent Floating, Only Left & Right Buttons Visible) -->
+    <header class="fixed top-0 left-0 right-0 z-50 h-[90px] bg-transparent border-0 px-4 sm:px-6 flex items-center justify-between transition-all pointer-events-none">
       <!-- Left: Hamburger Drawer Menu Pill Card (Extra Large: 70x70px) -->
-      <div class="flex items-center">
+      <div class="flex items-center pointer-events-auto">
         <button id="btn-hamburger-menu" type="button" onclick="toggleSidebarDrawer(true)" class="w-[70px] h-[70px] bg-[#212121] border border-white/15 text-neutral-200 hover:text-white rounded-full hover:bg-white/20 active:scale-95 shadow-lg flex items-center justify-center transition-all" title="Open Drawer" data-i18n-title="open_drawer">
           <span class="material-symbols-outlined text-[38px]">menu</span>
         </button>
       </div>
 
       <!-- Right: Action Buttons in Combined Capsule Card (New Chat + 3-Dots, Extra Large: 60x60px) -->
-      <div class="relative flex items-center">
+      <div class="relative flex items-center pointer-events-auto">
         <div id="header-right-capsule" class="flex items-center bg-[#212121] border border-white/15 rounded-full px-2.5 py-1.5 shadow-lg gap-2">
           <button type="button" onclick="startNewChat()" class="w-[60px] h-[60px] text-neutral-200 hover:text-white rounded-full hover:bg-white/15 active:scale-95 flex items-center justify-center transition-all" title="New Chat" data-i18n-title="new_chat">
             <span class="material-symbols-outlined text-[34px]">edit_square</span>
@@ -1329,16 +1329,16 @@
   <!-- ========================================================= -->
   <!-- SCRIPTS (Configuration, Modules & App Orchestrator)       -->
   <!-- ========================================================= -->
-  <script src="config.js?v=98"></script>
-  <script src="modules/i18n.js?v=98"></script>
-  <script src="modules/ppt_viewer.js?v=98"></script>
-  <script src="app.js?v=98"></script>
-  <script src="modules/auth.js?v=98"></script>
-  <script src="modules/composer.js?v=98"></script>
-  <script src="modules/chat.js?v=98"></script>
-  <script src="modules/feedback.js?v=98"></script>
-  <script src="modules/drawer.js?v=98"></script>
-  <script src="modules/settings.js?v=98"></script>
+  <script src="config.js?v=99"></script>
+  <script src="modules/i18n.js?v=99"></script>
+  <script src="modules/ppt_viewer.js?v=99"></script>
+  <script src="app.js?v=99"></script>
+  <script src="modules/auth.js?v=99"></script>
+  <script src="modules/composer.js?v=99"></script>
+  <script src="modules/chat.js?v=99"></script>
+  <script src="modules/feedback.js?v=99"></script>
+  <script src="modules/drawer.js?v=99"></script>
+  <script src="modules/settings.js?v=99"></script>
 
 </body>
 </html>

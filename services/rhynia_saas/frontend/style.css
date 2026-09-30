@@ -801,9 +801,14 @@ html.light #view-app {
 }
 
 html.light #view-app header {
-  background-color: rgba(255, 255, 255, 0.94) !important;
-  border-bottom: 1px solid #e5e7eb !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
 }
 
 html.light #view-app header button {
@@ -1881,21 +1886,33 @@ html.light .user-bubble {
     max-width: 100% !important;
   }
 
-  /* Top Navigation Bar: FIXED Floating ChatGPT Style ~90px (Never Scrolls Away!) */
+  /* Top Navigation Bar: FIXED Floating Transparent (No Card/Bar Strip, Only Left & Right Buttons Visible) */
+  #view-app header,
   header {
     height: 90px !important;
     min-height: 90px !important;
     padding-left: 16px !important;
     padding-right: 16px !important;
-    background: rgba(18, 18, 18, 0.95) !important;
-    backdrop-filter: blur(14px) !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
     z-index: 50 !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    pointer-events: none !important;
+  }
+
+  #btn-hamburger-menu,
+  #header-right-capsule,
+  #three-dots-menu {
+    pointer-events: auto !important;
   }
 
   /* ☰ Menu button: 70 × 70 px Touch Target inside Pill */
