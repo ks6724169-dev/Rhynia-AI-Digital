@@ -90,7 +90,7 @@
   <meta http-equiv="Expires" content="0"/>
 
   <!-- Modular Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=96"/>
+  <link rel="stylesheet" href="style.css?v=97"/>
 
   <!-- Mermaid.js v10 for SmartArt & Visual Diagrams -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
@@ -555,28 +555,28 @@
   <!-- ========================================================= -->
   <div id="view-app" class="hidden min-h-screen flex flex-col justify-between relative bg-[#131313]">
 
-    <!-- Top Navigation Header (Screen 01 & 02: Sticky Floating ChatGPT Style) -->
-    <header class="sticky top-0 z-40 h-[72px] sm:h-[78px] border-b border-white/[0.06] bg-[#121212]/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between transition-all">
-      <!-- Left: Hamburger Drawer Menu Pill Card -->
+    <!-- Top Navigation Header (Screen 01 & 02: Fixed Floating ChatGPT Style) -->
+    <header class="fixed top-0 left-0 right-0 z-50 h-[82px] border-b border-white/[0.08] bg-[#121212]/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between transition-all">
+      <!-- Left: Hamburger Drawer Menu Pill Card (Bigger: 62x62px) -->
       <div class="flex items-center">
-        <button id="btn-hamburger-menu" type="button" onclick="toggleSidebarDrawer(true)" class="w-12 h-12 bg-[#212121] border border-white/10 text-neutral-200 hover:text-white rounded-full hover:bg-white/15 active:scale-95 shadow-md flex items-center justify-center transition-all" title="Open Drawer" data-i18n-title="open_drawer">
-          <span class="material-symbols-outlined text-[28px]">menu</span>
+        <button id="btn-hamburger-menu" type="button" onclick="toggleSidebarDrawer(true)" class="w-[62px] h-[62px] bg-[#212121] border border-white/15 text-neutral-200 hover:text-white rounded-full hover:bg-white/20 active:scale-95 shadow-lg flex items-center justify-center transition-all" title="Open Drawer" data-i18n-title="open_drawer">
+          <span class="material-symbols-outlined text-[34px]">menu</span>
         </button>
       </div>
 
-      <!-- Right: Action Buttons in Combined Capsule Card (New Chat + 3-Dots) -->
+      <!-- Right: Action Buttons in Combined Capsule Card (New Chat + 3-Dots, Bigger) -->
       <div class="relative flex items-center">
-        <div class="flex items-center bg-[#212121] border border-white/10 rounded-full px-1.5 py-1 shadow-md gap-1">
-          <button type="button" onclick="startNewChat()" class="w-11 h-11 text-neutral-200 hover:text-white rounded-full hover:bg-white/15 active:scale-95 flex items-center justify-center transition-all" title="New Chat" data-i18n-title="new_chat">
-            <span class="material-symbols-outlined text-[26px]">edit_square</span>
+        <div id="header-right-capsule" class="flex items-center bg-[#212121] border border-white/15 rounded-full px-2 py-1.5 shadow-lg gap-1.5">
+          <button type="button" onclick="startNewChat()" class="w-[52px] h-[52px] text-neutral-200 hover:text-white rounded-full hover:bg-white/15 active:scale-95 flex items-center justify-center transition-all" title="New Chat" data-i18n-title="new_chat">
+            <span class="material-symbols-outlined text-[30px]">edit_square</span>
           </button>
-          <button id="btn-three-dots-trigger" type="button" onclick="toggle3DotsMenu()" class="w-11 h-11 text-neutral-200 hover:text-white rounded-full hover:bg-white/15 active:scale-95 flex items-center justify-center transition-all" title="More Options" data-i18n-title="more_options">
-            <span class="material-symbols-outlined text-[26px]">more_vert</span>
+          <button id="btn-three-dots-trigger" type="button" onclick="toggle3DotsMenu()" class="w-[52px] h-[52px] text-neutral-200 hover:text-white rounded-full hover:bg-white/15 active:scale-95 flex items-center justify-center transition-all" title="More Options" data-i18n-title="more_options">
+            <span class="material-symbols-outlined text-[30px]">more_vert</span>
           </button>
         </div>
 
         <!-- Screen 03: 3-Dots Flyout Menu (Fluent 2 Dark Context Menu: Only Share, Pin, Delete) -->
-        <div id="three-dots-menu" class="hidden absolute top-16 right-0 w-80 fluent-flyout rounded-2xl p-3 shadow-2xl z-50 divide-y divide-white/10 border border-white/15 bg-[#252525]">
+        <div id="three-dots-menu" class="hidden absolute top-[86px] right-0 w-80 fluent-flyout rounded-2xl p-3 shadow-2xl z-50 divide-y divide-white/10 border border-white/15 bg-[#252525]">
           <div class="py-1.5 space-y-1.5">
             <button type="button" onclick="shareActiveSession()" class="w-full flex items-center justify-between px-5 py-4 rounded-xl text-left text-neutral-100 hover:bg-white/15 active:bg-white/20 transition-all text-xl font-medium">
               <div class="flex items-center gap-4">
@@ -607,7 +607,7 @@
     </header>
 
     <!-- Main Chat Workspace Container -->
-    <div id="main-chat-container" class="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 flex flex-col justify-between relative pb-36">
+    <div id="main-chat-container" class="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 pt-[90px] flex flex-col justify-between relative pb-36">
 
       <!-- SCREEN 01: EMPTY STATE (Center Theme Logo & Glowing Welcome Hero) -->
       <div id="screen-empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-10 sm:py-16 animate-fade-in select-none">
@@ -1329,16 +1329,16 @@
   <!-- ========================================================= -->
   <!-- SCRIPTS (Configuration, Modules & App Orchestrator)       -->
   <!-- ========================================================= -->
-  <script src="config.js?v=96"></script>
-  <script src="modules/i18n.js?v=96"></script>
-  <script src="modules/ppt_viewer.js?v=96"></script>
-  <script src="app.js?v=96"></script>
-  <script src="modules/auth.js?v=96"></script>
-  <script src="modules/composer.js?v=96"></script>
-  <script src="modules/chat.js?v=96"></script>
-  <script src="modules/feedback.js?v=96"></script>
-  <script src="modules/drawer.js?v=96"></script>
-  <script src="modules/settings.js?v=96"></script>
+  <script src="config.js?v=97"></script>
+  <script src="modules/i18n.js?v=97"></script>
+  <script src="modules/ppt_viewer.js?v=97"></script>
+  <script src="app.js?v=97"></script>
+  <script src="modules/auth.js?v=97"></script>
+  <script src="modules/composer.js?v=97"></script>
+  <script src="modules/chat.js?v=97"></script>
+  <script src="modules/feedback.js?v=97"></script>
+  <script src="modules/drawer.js?v=97"></script>
+  <script src="modules/settings.js?v=97"></script>
 
 </body>
 </html>
