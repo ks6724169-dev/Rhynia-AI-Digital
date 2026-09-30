@@ -283,7 +283,7 @@ function initMermaid() {
         theme: isLight ? "default" : "dark",
         securityLevel: "loose",
         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-        fontSize: 13,
+        fontSize: 10.5,
         flowchart: {
           htmlLabels: false,
           useMaxWidth: true,
@@ -291,7 +291,7 @@ function initMermaid() {
         },
         themeVariables: isLight ? {
           darkMode: false,
-          fontSize: "13px",
+          fontSize: "10.5px",
           background: "#ffffff",
           primaryColor: "#0078D4",
           primaryTextColor: "#0e0e0e",
@@ -301,7 +301,7 @@ function initMermaid() {
           tertiaryColor: "#e5e7eb"
         } : {
           darkMode: true,
-          fontSize: "13px",
+          fontSize: "10.5px",
           background: "#141619",
           primaryColor: "#0078D4",
           primaryTextColor: "#ffffff",

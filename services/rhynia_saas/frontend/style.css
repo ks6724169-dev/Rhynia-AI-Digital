@@ -1107,8 +1107,8 @@ html.light .code-block-container .svg-preview-box {
   color: #58a6ff !important; /* Header font color alag (Fluent Azure Highlight) */
   background-color: #1c2128 !important; /* Header cell color different */
   font-weight: 600;
-  font-size: 13px;
-  padding: 11px 16px;
+  font-size: 20px !important;
+  padding: 14px 18px !important;
   letter-spacing: 0.02em;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
@@ -1133,16 +1133,16 @@ html.light .code-block-container .svg-preview-box {
 
 .markdown-table-wrapper tbody td {
   color: #e6edf3 !important; /* All cell font color same */
-  padding: 10px 16px;
-  font-size: 14.5px !important;
-  line-height: 1.5 !important;
+  padding: 14px 18px !important;
+  font-size: 20px !important;
+  line-height: 1.6 !important;
 }
 
 .markdown-table-wrapper tbody td strong,
 .markdown-table-wrapper tbody td b,
 .markdown-table-wrapper thead th strong,
 .markdown-table-wrapper thead th b {
-  font-size: 14.5px !important;
+  font-size: 20px !important;
   font-weight: 600 !important;
   color: #ffffff !important;
 }
@@ -1293,7 +1293,7 @@ svg[aria-roledescription="error"] {
   fill: #ffffff !important;
   color: #ffffff !important;
   font-weight: 500 !important;
-  font-size: 12.5px !important;
+  font-size: 10.5px !important;
 }
 
 html.light .mermaid-diagram-box .node rect,
@@ -1317,7 +1317,7 @@ html.light .fluent-mermaid-svg tspan {
   fill: #0f172a !important;
   color: #0f172a !important;
   font-weight: 500 !important;
-  font-size: 12.5px !important;
+  font-size: 10.5px !important;
 }
 
 /* ========================================================= */
@@ -2139,7 +2139,7 @@ html.light .user-bubble {
     font-size: 32px !important;
   }
 
-  /* Table Uniformity on Mobile: Stop ai-text-body strong from blowing up table bold words */
+  /* Table Uniformity on Mobile: Large 20px font matching mobile text */
   .markdown-table-wrapper table,
   .markdown-table-wrapper tbody,
   .markdown-table-wrapper thead,
@@ -2150,8 +2150,13 @@ html.light .user-bubble {
   .markdown-table-wrapper th strong,
   .markdown-table-wrapper td span,
   .markdown-table-wrapper td b {
-    font-size: 14.5px !important;
-    line-height: 1.5 !important;
+    font-size: 20px !important;
+    line-height: 1.6 !important;
+  }
+
+  .markdown-table-wrapper th,
+  .markdown-table-wrapper td {
+    padding: 14px 18px !important;
   }
 
   .markdown-table-wrapper td strong,
@@ -2160,7 +2165,7 @@ html.light .user-bubble {
     color: #ffffff !important;
   }
 
-  /* Flowchart Compact Text on Mobile */
+  /* Flowchart Compact Text on Mobile: 10.5px */
   .mermaid-diagram-box text,
   .mermaid-diagram-box tspan,
   .mermaid-diagram-box .node text,
@@ -2168,7 +2173,7 @@ html.light .user-bubble {
   .mermaid-diagram-box .nodeLabel,
   .fluent-mermaid-svg text,
   .fluent-mermaid-svg tspan {
-    font-size: 12.5px !important;
+    font-size: 10.5px !important;
     font-weight: 500 !important;
   }
 
