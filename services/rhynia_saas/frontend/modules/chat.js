@@ -239,7 +239,7 @@ function appendUserMessageUI(text, files) {
   msgDiv.className = "flex flex-col items-end gap-1.5 w-full pl-6 sm:pl-24 py-2 animate-fade-in";
   msgDiv.innerHTML = `
     ${filesHtml}
-    <div class="user-bubble inline-block bg-[#262626] text-white px-6 py-4 rounded-2xl rounded-br-sm text-[20px] sm:text-[20.5px] font-normal text-left leading-[1.65] max-w-[90%] sm:max-w-2xl border border-white/[0.06] shadow-sm">
+    <div class="user-bubble inline-block bg-[#262626] text-white px-6 py-4 rounded-2xl rounded-br-sm text-[23px] sm:text-[23px] font-normal text-left leading-[1.65] max-w-[90%] sm:max-w-2xl border border-white/[0.06] shadow-sm">
       ${escapeHtml(text)}
     </div>
   `;
@@ -264,7 +264,7 @@ function appendRhyniaPlaceholderUI(existingMessageId) {
 
   msgDiv.innerHTML = `
     <!-- Response Markdown Content -->
-    <div class="ai-text-body markdown-body space-y-4 text-[#e2e8f0] text-[20px] sm:text-[20.5px] leading-[1.75]">
+    <div class="ai-text-body markdown-body space-y-4 text-[#e2e8f0] text-[23px] sm:text-[23px] leading-[1.78]">
       <span class="inline-block w-3 h-5 bg-[#0078d4] animate-pulse rounded-sm"></span>
     </div>
 

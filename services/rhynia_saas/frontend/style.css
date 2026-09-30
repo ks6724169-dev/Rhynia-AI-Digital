@@ -225,15 +225,15 @@ body {
 
 /* Markdown formatting in AI responses */
 .markdown-body {
-  font-size: 20px;
-  line-height: 1.78;
+  font-size: 23px;
+  line-height: 1.8;
   color: #e2e8f0;
 }
 
 .markdown-body p {
   margin: 0 0 16px 0;
-  font-size: 20px;
-  line-height: 1.78;
+  font-size: 23px;
+  line-height: 1.8;
 }
 
 .markdown-body p:last-child {
@@ -247,8 +247,8 @@ body {
 
 .markdown-body li {
   margin-bottom: 10px;
-  font-size: 20px;
-  line-height: 1.78;
+  font-size: 23px;
+  line-height: 1.8;
 }
 
 .markdown-body pre {
@@ -1309,39 +1309,39 @@ html.light .mermaid-diagram-box .label text {
 }
 
 .ms-heading-1 {
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   color: #ffffff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: 0.35rem;
 }
 
 .ms-heading-2 {
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   color: #ffffff;
 }
 
 .ms-heading-3 {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   color: #f1f5f9;
 }
 
 .ms-heading-4 {
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   color: #e2e8f0;
 }
 
 .ms-bullet-item {
   display: flex;
   align-items: flex-start;
-  gap: 0.55rem;
-  margin: 0.45rem 0;
-  line-height: 1.78;
-  font-size: 20px;
+  gap: 0.6rem;
+  margin: 0.5rem 0;
+  line-height: 1.8;
+  font-size: 23px;
   color: #e2e8f0;
 }
 
 .ms-bullet-item strong {
-  font-size: 20px !important;
+  font-size: 23px !important;
   font-weight: 600 !important;
   color: #ffffff !important;
 }
@@ -1350,7 +1350,7 @@ html.light .mermaid-diagram-box .label text {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   line-height: 1.5;
   user-select: none;
   flex-shrink: 0;
@@ -2003,31 +2003,31 @@ html.light .user-bubble {
     font-size: 34px !important;
   }
 
-  /* Chat Messages: User Bubble (Large & Clear 20px) */
+  /* Chat Messages: User Bubble (Extra Large & Clear 23px) */
   .user-bubble {
-    font-size: 20px !important;
+    font-size: 23px !important;
     min-height: auto !important;
-    padding: 14px 20px !important;
+    padding: 15px 22px !important;
     border-radius: 18px 18px 4px 18px !important;
-    max-width: 88% !important;
+    max-width: 90% !important;
     line-height: 1.68 !important;
     display: inline-block !important;
     align-items: initial !important;
   }
 
-  /* AI Message Text: Large & Clear 20px, 1.78 Line Height */
+  /* AI Message Text: Extra Large & Clear 23px, 1.8 Line Height */
   .ai-text-body,
   .ai-text-body p,
   .ai-text-body li,
   .ms-bullet-item {
-    font-size: 20px !important;
-    line-height: 1.78 !important;
+    font-size: 23px !important;
+    line-height: 1.8 !important;
     color: #e2e8f0 !important;
   }
 
   .ai-text-body strong,
   .ms-bullet-item strong {
-    font-size: 20px !important;
+    font-size: 23px !important;
     font-weight: 600 !important;
     color: #ffffff !important;
   }
