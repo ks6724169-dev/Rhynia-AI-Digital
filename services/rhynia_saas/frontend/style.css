@@ -225,15 +225,15 @@ body {
 
 /* Markdown formatting in AI responses */
 .markdown-body {
-  font-size: 23px;
-  line-height: 1.8;
+  font-size: 26px;
+  line-height: 1.82;
   color: #e2e8f0;
 }
 
 .markdown-body p {
-  margin: 0 0 16px 0;
-  font-size: 23px;
-  line-height: 1.8;
+  margin: 0 0 18px 0;
+  font-size: 26px;
+  line-height: 1.82;
 }
 
 .markdown-body p:last-child {
@@ -241,14 +241,14 @@ body {
 }
 
 .markdown-body ul, .markdown-body ol {
-  margin: 0 0 16px 0;
-  padding-left: 24px;
+  margin: 0 0 18px 0;
+  padding-left: 28px;
 }
 
 .markdown-body li {
-  margin-bottom: 10px;
-  font-size: 23px;
-  line-height: 1.8;
+  margin-bottom: 12px;
+  font-size: 26px;
+  line-height: 1.82;
 }
 
 .markdown-body pre {
@@ -1309,39 +1309,39 @@ html.light .mermaid-diagram-box .label text {
 }
 
 .ms-heading-1 {
-  font-size: 1.7rem;
+  font-size: 1.95rem;
   color: #ffffff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: 0.35rem;
 }
 
 .ms-heading-2 {
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   color: #ffffff;
 }
 
 .ms-heading-3 {
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   color: #f1f5f9;
 }
 
 .ms-heading-4 {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   color: #e2e8f0;
 }
 
 .ms-bullet-item {
   display: flex;
   align-items: flex-start;
-  gap: 0.6rem;
-  margin: 0.5rem 0;
-  line-height: 1.8;
-  font-size: 23px;
+  gap: 0.65rem;
+  margin: 0.55rem 0;
+  line-height: 1.82;
+  font-size: 26px;
   color: #e2e8f0;
 }
 
 .ms-bullet-item strong {
-  font-size: 23px !important;
+  font-size: 26px !important;
   font-weight: 600 !important;
   color: #ffffff !important;
 }
@@ -1350,7 +1350,7 @@ html.light .mermaid-diagram-box .label text {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
+  font-size: 1.3rem;
   line-height: 1.5;
   user-select: none;
   flex-shrink: 0;
@@ -2003,61 +2003,62 @@ html.light .user-bubble {
     font-size: 34px !important;
   }
 
-  /* Chat Messages: User Bubble (Extra Large & Clear 23px) */
+  /* Chat Messages: User Bubble (Extra Large & Clear 26px) */
   .user-bubble {
-    font-size: 23px !important;
+    font-size: 26px !important;
     min-height: auto !important;
-    padding: 15px 22px !important;
-    border-radius: 18px 18px 4px 18px !important;
+    padding: 16px 24px !important;
+    border-radius: 20px 20px 4px 20px !important;
     max-width: 90% !important;
     line-height: 1.68 !important;
     display: inline-block !important;
     align-items: initial !important;
   }
 
-  /* AI Message Text: Extra Large & Clear 23px, 1.8 Line Height */
+  /* AI Message Text: Extra Large & Clear 26px, 1.82 Line Height */
   .ai-text-body,
   .ai-text-body p,
   .ai-text-body li,
   .ms-bullet-item {
-    font-size: 23px !important;
-    line-height: 1.8 !important;
+    font-size: 26px !important;
+    line-height: 1.82 !important;
     color: #e2e8f0 !important;
   }
 
   .ai-text-body strong,
   .ms-bullet-item strong {
-    font-size: 23px !important;
+    font-size: 26px !important;
     font-weight: 600 !important;
     color: #ffffff !important;
   }
 
   .ai-text-body code {
-    font-size: 14.5px !important;
+    font-size: 16px !important;
     font-family: 'JetBrains Mono', monospace !important;
   }
 
   .ai-text-body pre {
-    font-size: 14px !important;
-    padding: 12px 14px !important;
+    font-size: 15px !important;
+    padding: 14px 16px !important;
   }
 
-  /* Action Buttons Bar: Standard 38px Touch Area, 20px Icons */
+  /* Action Buttons Bar: Big 52px Touch Area, 30px Icons (Copy, Speaker, Good, Bad, Share) */
   .ai-actions-bar {
-    gap: 8px !important;
-    padding-top: 10px !important;
+    gap: 12px !important;
+    padding-top: 14px !important;
   }
 
   .ai-actions-bar button {
-    width: 38px !important;
-    height: 38px !important;
-    min-width: 38px !important;
-    min-height: 38px !important;
-    border-radius: 10px !important;
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
+    border-radius: 14px !important;
+    background: rgba(255, 255, 255, 0.06) !important;
   }
 
   .ai-actions-bar .material-symbols-outlined {
-    font-size: 20px !important;
+    font-size: 30px !important;
   }
 
   /* Empty State Hero on Big Display */

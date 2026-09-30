@@ -239,7 +239,7 @@ function appendUserMessageUI(text, files) {
   msgDiv.className = "flex flex-col items-end gap-1.5 w-full pl-6 sm:pl-24 py-2 animate-fade-in";
   msgDiv.innerHTML = `
     ${filesHtml}
-    <div class="user-bubble inline-block bg-[#262626] text-white px-6 py-4 rounded-2xl rounded-br-sm text-[23px] sm:text-[23px] font-normal text-left leading-[1.65] max-w-[90%] sm:max-w-2xl border border-white/[0.06] shadow-sm">
+    <div class="user-bubble inline-block bg-[#262626] text-white px-7 py-4 rounded-2xl rounded-br-sm text-[26px] sm:text-[26px] font-normal text-left leading-[1.65] max-w-[90%] sm:max-w-2xl border border-white/[0.06] shadow-sm">
       ${escapeHtml(text)}
     </div>
   `;
@@ -264,26 +264,26 @@ function appendRhyniaPlaceholderUI(existingMessageId) {
 
   msgDiv.innerHTML = `
     <!-- Response Markdown Content -->
-    <div class="ai-text-body markdown-body space-y-4 text-[#e2e8f0] text-[23px] sm:text-[23px] leading-[1.78]">
+    <div class="ai-text-body markdown-body space-y-4 text-[#e2e8f0] text-[26px] sm:text-[26px] leading-[1.82]">
       <span class="inline-block w-3 h-5 bg-[#0078d4] animate-pulse rounded-sm"></span>
     </div>
 
     <!-- Response Action Bar (5 Icons: Copy, Speaker, Good, Bad, Share) -->
-    <div class="ai-actions-bar hidden items-center gap-3.5 sm:gap-2.5 pt-3.5 text-neutral-400">
-      <button onclick="copyResponseText(this)" aria-label="Copy response" title="Copy response" class="w-12 h-12 sm:w-11 sm:h-11 rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[26px] sm:text-[24px]">content_copy</span>
+    <div class="ai-actions-bar hidden items-center gap-3.5 sm:gap-3 pt-4 text-neutral-400">
+      <button onclick="copyResponseText(this)" aria-label="Copy response" title="Copy response" class="w-13 h-13 sm:w-12 sm:h-12 min-w-[50px] min-h-[50px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[30px] sm:text-[28px]">content_copy</span>
       </button>
-      <button onclick="speakResponseText(this)" aria-label="Read aloud" title="Read aloud" class="w-12 h-12 sm:w-11 sm:h-11 rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[26px] sm:text-[24px]">volume_up</span>
+      <button onclick="speakResponseText(this)" aria-label="Read aloud" title="Read aloud" class="w-13 h-13 sm:w-12 sm:h-12 min-w-[50px] min-h-[50px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[30px] sm:text-[28px]">volume_up</span>
       </button>
-      <button onclick="feedbackResponse(this, true)" aria-label="Good response" title="Good response" class="w-12 h-12 sm:w-11 sm:h-11 rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[26px] sm:text-[24px]">thumb_up</span>
+      <button onclick="feedbackResponse(this, true)" aria-label="Good response" title="Good response" class="w-13 h-13 sm:w-12 sm:h-12 min-w-[50px] min-h-[50px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[30px] sm:text-[28px]">thumb_up</span>
       </button>
-      <button onclick="feedbackResponse(this, false)" aria-label="Poor response" title="Poor response" class="w-12 h-12 sm:w-11 sm:h-11 rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[26px] sm:text-[24px]">thumb_down</span>
+      <button onclick="feedbackResponse(this, false)" aria-label="Poor response" title="Poor response" class="w-13 h-13 sm:w-12 sm:h-12 min-w-[50px] min-h-[50px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[30px] sm:text-[28px]">thumb_down</span>
       </button>
-      <button onclick="shareResponseSnippet(this)" aria-label="Share snippet" title="Share snippet" class="w-12 h-12 sm:w-11 sm:h-11 rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[26px] sm:text-[24px]">share</span>
+      <button onclick="shareResponseSnippet(this)" aria-label="Share snippet" title="Share snippet" class="w-13 h-13 sm:w-12 sm:h-12 min-w-[50px] min-h-[50px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[30px] sm:text-[28px]">share</span>
       </button>
     </div>
   `;
