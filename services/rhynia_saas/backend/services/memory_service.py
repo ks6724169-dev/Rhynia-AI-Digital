@@ -13,6 +13,7 @@ from sqlalchemy import func
 from services.rhynia_saas.backend.config import settings
 from services.rhynia_saas.backend.database import (
     User,
+    ChatSession,
     ChatMessage,
     UserMemoryFact,
     ChatSummaryBuffer,
@@ -587,3 +588,174 @@ async def async_extract_and_save_facts(user_id: str, user_message: str) -> None:
         logger.warning(f"Failed to extract/save facts for user {user_id}: {e}")
     finally:
         db.close()
+
+
+# ==========================================
+# PHASE 4: ON-DEMAND CROSS-SESSION RECALL RAG
+# ==========================================
+def is_past_recall_query(message: str) -> bool:
+    """
+    Detect if the user is asking to recall past conversations, prior discussions,
+    code snippets, or decisions from earlier chat sessions.
+    Supports Hindi, Hinglish, and English phrasing.
+    """
+    if not message or len(message.strip()) < 5:
+        return False
+
+    text = message.lower().strip()
+    recall_patterns = [
+        r"\bpichl[ie]\s+(?:chat|session|baar|bar|conversation)\b",
+        r"\bpuran[ie]\s+(?:chat|session|conversation)\b",
+        r"\blast\s+(?:chat|session|time|conversation|discussion|week|month)\b",
+        r"\bprevious\s+(?:chat|session|conversation|discussion)\b",
+        r"\b(?:what\s+did\s+we|did\s+we)\s+(?:talk|discuss|say|cover|write|build|plan)\b",
+        r"\b(?:talked|discussed|said|shared|talk)\s+(?:about\s+)?(?:earlier|previously)\b",
+        r"\bearlier\s+(?:we|you|i|discussed|said|talked|shared|wrote)\b",
+        r"\b(?:earlier|previously)\b.*?\b(?:discuss|talk|conversation|chat|say|mention|regarding|about)\b",
+        r"\bdo\s+you\s+remember\b",
+        r"\bcan\s+you\s+recall\b",
+        r"\brecall\s+(?:our|the|what|previous|last|it)?\b",
+        r"\byaad\s+hai\b",
+        r"\bhumne\s+(?:baat\s+ki|discuss\s+ki|banaya|likha|padha)\b",
+        r"\bhamne\s+(?:baat\s+ki|discuss\s+ki|banaya|likha|padha)\b",
+        r"\bmaine\s+(?:pucha\s+tha|kaha\s+tha|bataya\s+tha)\b",
+        r"\bpichle\s+din\b",
+        r"\byesterday\s+we\b",
+    ]
+    return any(re.search(pat, text) for pat in recall_patterns)
+
+
+def search_past_conversations(
+    user_id: str,
+    query: str,
+    exclude_session_id: Optional[str] = None,
+    db: Session = None,
+    limit: int = 3,
+) -> List[Dict[str, Any]]:
+    """
+    Search prior chat sessions and summary buffers for discussions matching the user's query.
+    Calculates lexical/semantic relevance scores across session titles, macro summaries,
+    micro summaries, and messages.
+    """
+    if not query or not db:
+        return []
+
+    # Extract informative tokens (filtering stop words)
+    stop_words = {
+        "pichli", "pichle", "chat", "session", "me", "mein", "kya", "tha", "thi", "the",
+        "humne", "hamne", "maine", "baat", "ki", "ka", "ke", "ko", "se", "aur", "hai", "hu",
+        "what", "did", "we", "talk", "about", "discuss", "earlier", "remember", "recall",
+        "last", "time", "you", "me", "tell", "show", "give", "the", "a", "an", "is", "was",
+        "in", "on", "for", "with", "do"
+    }
+    raw_tokens = re.findall(r"\b[a-zA-Z0-9\u0900-\u097F]{2,}\b", query.lower())
+    search_keywords = [t for t in raw_tokens if t not in stop_words]
+
+    # Query all user summary buffers from OTHER sessions
+    buffer_query = (
+        db.query(ChatSummaryBuffer, ChatSession)
+        .join(ChatSession, ChatSummaryBuffer.session_id == ChatSession.id)
+        .filter(ChatSummaryBuffer.user_id == user_id)
+    )
+    if exclude_session_id:
+        buffer_query = buffer_query.filter(ChatSummaryBuffer.session_id != exclude_session_id)
+
+    matched_results: List[Dict[str, Any]] = []
+
+    buffers = buffer_query.order_by(ChatSession.updated_at.desc()).limit(20).all()
+    for buf, sess in buffers:
+        title = sess.title or "Untitled Session"
+        macro = buf.macro_summary or ""
+        micro = buf.micro_summary or ""
+        combined_text = f"{title} {macro} {micro}".lower()
+
+        score = 0
+        if search_keywords:
+            for kw in search_keywords:
+                if kw in combined_text:
+                    score += 2 if kw in title.lower() else 1
+        else:
+            # If query is purely generic ("pichli chat me kya hua"), rank by recency
+            score = 1
+
+        if score > 0:
+            date_str = sess.created_at.strftime("%d %b %Y") if sess.created_at else "Earlier"
+            snippet = macro if macro else (micro[:200] if micro else title)
+            matched_results.append({
+                "session_id": sess.id,
+                "session_title": title,
+                "date": date_str,
+                "score": score,
+                "recalled_snippet": snippet.strip(),
+            })
+
+    # If no summary buffer matches, fallback to checking recent ChatMessage records
+    if not matched_results and search_keywords:
+        msg_query = (
+            db.query(ChatMessage, ChatSession)
+            .join(ChatSession, ChatMessage.session_id == ChatSession.id)
+            .filter(ChatMessage.user_id == user_id)
+        )
+        if exclude_session_id:
+            msg_query = msg_query.filter(ChatMessage.session_id != exclude_session_id)
+
+        candidate_msgs = msg_query.order_by(ChatMessage.created_at.desc()).limit(50).all()
+        for msg, sess in candidate_msgs:
+            c_lower = (msg.content or "").lower()
+            score = sum(1 for kw in search_keywords if kw in c_lower)
+            if score > 0:
+                date_str = sess.created_at.strftime("%d %b %Y") if sess.created_at else "Earlier"
+                snippet = msg.content[:200] + ("..." if len(msg.content) > 200 else "")
+                matched_results.append({
+                    "session_id": sess.id,
+                    "session_title": sess.title or "Chat Session",
+                    "date": date_str,
+                    "score": score,
+                    "recalled_snippet": snippet.strip(),
+                })
+                if len(matched_results) >= limit:
+                    break
+
+    # Sort by relevance score descending
+    matched_results.sort(key=lambda r: r["score"], reverse=True)
+    return matched_results[:limit]
+
+
+def retrieve_relevant_prior_context(
+    user_id: str,
+    current_session_id: Optional[str],
+    query: str,
+    db: Session,
+) -> str:
+    """
+    On-Demand Memory RAG: Evaluates if query is asking to recall past discussions,
+    searches cross-session memories, and returns a formatted prompt grounding block.
+    Returns empty string if not a recall query or no relevant prior chats exist.
+    """
+    if not is_past_recall_query(query):
+        return ""
+
+    past_matches = search_past_conversations(
+        user_id=user_id,
+        query=query,
+        exclude_session_id=current_session_id,
+        db=db,
+        limit=3,
+    )
+    if not past_matches:
+        return ""
+
+    recalled_blocks = []
+    for idx, match in enumerate(past_matches, 1):
+        recalled_blocks.append(
+            f"[{idx}] Session: \"{match['session_title']}\" (Recorded: {match['date']})\n"
+            f"    Discussion Summary: {match['recalled_snippet']}"
+        )
+
+    return (
+        "\n\nCROSS-SESSION RECALLED MEMORY (पूर्व वार्तालापों से पुनः स्मरण):\n"
+        "- The user is specifically asking to recall or reference past discussions from earlier chat sessions.\n"
+        "- The following verified summaries and excerpts were retrieved from the user's prior sessions:\n"
+        + "\n\n".join(recalled_blocks) + "\n\n"
+        "- INSTRUCTION: Use these recalled discussions directly to answer the user's inquiry authoritatively and accurately."
+    )

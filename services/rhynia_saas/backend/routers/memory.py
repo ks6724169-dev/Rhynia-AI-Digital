@@ -50,9 +50,33 @@ class MemoryTelemetryResponse(BaseModel):
     summary_bytes: int
 
 
+class MemorySearchResult(BaseModel):
+    session_id: str
+    session_title: str
+    date: str
+    score: int
+    recalled_snippet: str
+
+
 # ==========================================
 # ENDPOINTS
 # ==========================================
+@router.get("/search", response_model=List[MemorySearchResult])
+def search_memory(
+    q: str,
+    exclude_session_id: Optional[str] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Search prior chat conversations, summaries, and topics for cross-session recall."""
+    results = memory_service.search_past_conversations(
+        user_id=current_user.id,
+        query=q,
+        exclude_session_id=exclude_session_id,
+        db=db,
+        limit=5,
+    )
+    return results
 @router.get("/profile", response_model=MemoryTelemetryResponse)
 def get_memory_profile(
     current_user: User = Depends(get_current_user),

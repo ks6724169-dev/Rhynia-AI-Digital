@@ -405,6 +405,16 @@ async def send_chat_message(
     if user_memory_context:
         system_prompt = f"{system_prompt}{user_memory_context}"
 
+    # 4E. On-Demand Cross-Session Prior Recall RAG (Phase 4)
+    recalled_context = memory_service.retrieve_relevant_prior_context(
+        user_id=current_user.id,
+        current_session_id=session_id,
+        query=clean_message,
+        db=db,
+    )
+    if recalled_context:
+        system_prompt = f"{system_prompt}{recalled_context}"
+
     # 5. Persist User Message
     user_msg = ChatMessage(
         session_id=session_id,
