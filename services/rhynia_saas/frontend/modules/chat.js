@@ -269,21 +269,21 @@ function appendRhyniaPlaceholderUI(existingMessageId) {
     </div>
 
     <!-- Response Action Bar (5 Icons: Copy, Speaker, Good, Bad, Share) -->
-    <div class="ai-actions-bar hidden items-center gap-4.5 sm:gap-4 pt-4 text-neutral-400">
-      <button onclick="copyResponseText(this)" aria-label="Copy response" title="Copy response" class="w-13 h-13 sm:w-12 sm:h-12 min-w-[50px] min-h-[50px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[30px] sm:text-[28px]">content_copy</span>
+    <div class="ai-actions-bar hidden items-center gap-5 sm:gap-5 pt-4 text-neutral-400">
+      <button onclick="copyResponseText(this)" aria-label="Copy response" title="Copy response" class="w-[58px] h-[58px] min-w-[58px] min-h-[58px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[32px]">content_copy</span>
       </button>
-      <button onclick="speakResponseText(this)" aria-label="Read aloud" title="Read aloud" class="w-13 h-13 sm:w-12 sm:h-12 min-w-[50px] min-h-[50px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[30px] sm:text-[28px]">volume_up</span>
+      <button onclick="speakResponseText(this)" aria-label="Read aloud" title="Read aloud" class="w-[58px] h-[58px] min-w-[58px] min-h-[58px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[32px]">volume_up</span>
       </button>
-      <button onclick="feedbackResponse(this, true)" aria-label="Good response" title="Good response" class="w-13 h-13 sm:w-12 sm:h-12 min-w-[50px] min-h-[50px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[30px] sm:text-[28px]">thumb_up</span>
+      <button onclick="feedbackResponse(this, true)" aria-label="Good response" title="Good response" class="w-[58px] h-[58px] min-w-[58px] min-h-[58px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[32px]">thumb_up</span>
       </button>
-      <button onclick="feedbackResponse(this, false)" aria-label="Poor response" title="Poor response" class="w-13 h-13 sm:w-12 sm:h-12 min-w-[50px] min-h-[50px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[30px] sm:text-[28px]">thumb_down</span>
+      <button onclick="feedbackResponse(this, false)" aria-label="Poor response" title="Poor response" class="w-[58px] h-[58px] min-w-[58px] min-h-[58px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[32px]">thumb_down</span>
       </button>
-      <button onclick="shareResponseSnippet(this)" aria-label="Share snippet" title="Share snippet" class="w-13 h-13 sm:w-12 sm:h-12 min-w-[50px] min-h-[50px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[30px] sm:text-[28px]">share</span>
+      <button onclick="shareResponseSnippet(this)" aria-label="Share snippet" title="Share snippet" class="w-[58px] h-[58px] min-w-[58px] min-h-[58px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-[32px]">share</span>
       </button>
     </div>
   `;

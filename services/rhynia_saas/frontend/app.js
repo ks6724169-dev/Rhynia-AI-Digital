@@ -283,12 +283,15 @@ function initMermaid() {
         theme: isLight ? "default" : "dark",
         securityLevel: "loose",
         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+        fontSize: 13,
         flowchart: {
           htmlLabels: false,
-          useMaxWidth: true
+          useMaxWidth: true,
+          curve: 'linear'
         },
         themeVariables: isLight ? {
           darkMode: false,
+          fontSize: "13px",
           background: "#ffffff",
           primaryColor: "#0078D4",
           primaryTextColor: "#0e0e0e",
@@ -298,6 +301,7 @@ function initMermaid() {
           tertiaryColor: "#e5e7eb"
         } : {
           darkMode: true,
+          fontSize: "13px",
           background: "#141619",
           primaryColor: "#0078D4",
           primaryTextColor: "#ffffff",
@@ -1273,23 +1277,44 @@ function renderMarkdown(rawText) {
   // 5. Inline text styles (bold, italic, inline code)
   text = renderInlineMarkdown(text);
 
+  // Strip leading bullet symbols if immediately followed by an emoji icon (e.g., '▪ 📚' -> '📚')
+  text = text.replace(/(?:^|\n)[■▪❖➤➢➔●•○◦\*\-]\s*([\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F2FF}])/gu, '\n$1');
+
+  // Helper to check if text starts with an emoji or visual symbol
+  const hasLeadingEmoji = (str) => /^\s*[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F2FF}]/u.test(str);
+
   // 6. Convert any Markdown Headings to Word-Style Headings (stripping raw ###)
-  text = text.replace(/(?:^|\n)#{4,}\s*(.+)/g, '\n<h4 class="ms-heading ms-heading-4"><span class="ms-bullet ms-bullet-arrow">➤</span><span>$1</span></h4>');
-  text = text.replace(/(?:^|\n)#{3}\s*(.+)/g, '\n<h3 class="ms-heading ms-heading-3"><span class="ms-bullet ms-bullet-square">■</span><span>$1</span></h3>');
-  text = text.replace(/(?:^|\n)#{2}\s*(.+)/g, '\n<h2 class="ms-heading ms-heading-2"><span class="ms-bullet ms-bullet-diamond">❖</span><span>$1</span></h2>');
-  text = text.replace(/(?:^|\n)#{1}\s*(.+)/g, '\n<h1 class="ms-heading ms-heading-1"><span class="ms-bullet ms-bullet-diamond">❖</span><span>$1</span></h1>');
+  const formatHeading = (level, bulletCls, bulletChar, content) => {
+    const trimmed = content.trim();
+    const bulletSpan = hasLeadingEmoji(trimmed) ? '' : `<span class="ms-bullet ${bulletCls}">${bulletChar}</span>`;
+    return `\n<h${level} class="ms-heading ms-heading-${level}">${bulletSpan}<span>${trimmed}</span></h${level}>`;
+  };
+
+  text = text.replace(/(?:^|\n)#{4,}\s*(.+)/g, (_, c) => formatHeading(4, 'ms-bullet-arrow', '➤', c));
+  text = text.replace(/(?:^|\n)#{3}\s*(.+)/g, (_, c) => formatHeading(3, 'ms-bullet-square', '■', c));
+  text = text.replace(/(?:^|\n)#{2}\s*(.+)/g, (_, c) => formatHeading(2, 'ms-bullet-diamond', '❖', c));
+  text = text.replace(/(?:^|\n)#{1}\s*(.+)/g, (_, c) => formatHeading(1, 'ms-bullet-diamond', '❖', c));
+
+  // Helper for bullet items: omit bullet symbol if line starts with emoji/icon
+  const formatBulletItem = (bulletCls, bulletChar, content) => {
+    const trimmed = content.trim();
+    if (hasLeadingEmoji(trimmed)) {
+      return `\n<div class="ms-bullet-item ms-emoji-item"><div class="flex-1">${trimmed}</div></div>`;
+    }
+    return `\n<div class="ms-bullet-item"><span class="ms-bullet ${bulletCls}">${bulletChar}</span><div class="flex-1">${trimmed}</div></div>`;
+  };
 
   // 7. Microsoft Word Bullet Library List Items
-  text = text.replace(/(?:^|\n)(❖)\s*(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-diamond">❖</span><div class="flex-1">$2</div></div>');
-  text = text.replace(/(?:^|\n)(➤|➢|➔)\s*(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-arrow">$1</span><div class="flex-1">$2</div></div>');
-  text = text.replace(/(?:^|\n)(✔|☑)\s*(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-check">$1</span><div class="flex-1">$2</div></div>');
-  text = text.replace(/(?:^|\n)(■|▪)\s*(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-square">$1</span><div class="flex-1">$2</div></div>');
-  text = text.replace(/(?:^|\n)(●|•)\s*(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-circle">•</span><div class="flex-1">$2</div></div>');
-  text = text.replace(/(?:^|\n)(○|◦)\s*(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-open-circle">○</span><div class="flex-1">$2</div></div>');
+  text = text.replace(/(?:^|\n)(❖)\s*(.+)/g, (_, b, c) => formatBulletItem('ms-bullet-diamond', '❖', c));
+  text = text.replace(/(?:^|\n)(➤|➢|➔)\s*(.+)/g, (_, b, c) => formatBulletItem('ms-bullet-arrow', b, c));
+  text = text.replace(/(?:^|\n)(✔|☑)\s*(.+)/g, (_, b, c) => formatBulletItem('ms-bullet-check', b, c));
+  text = text.replace(/(?:^|\n)(■|▪)\s*(.+)/g, (_, b, c) => formatBulletItem('ms-bullet-square', b, c));
+  text = text.replace(/(?:^|\n)(●|•)\s*(.+)/g, (_, b, c) => formatBulletItem('ms-bullet-circle', '•', c));
+  text = text.replace(/(?:^|\n)(○|◦)\s*(.+)/g, (_, b, c) => formatBulletItem('ms-bullet-open-circle', '○', c));
 
-  // 8. Standard Lists (*, -, and numbered 1.)
-  text = text.replace(/(?:^|\n)[*-]\s+(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-bullet ms-bullet-circle">•</span><div class="flex-1">$1</div></div>');
-  text = text.replace(/(?:^|\n)(\d+)\.\s+(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-num-bullet font-semibold text-[#0078D4] min-w-[1.25rem]">$1.</span><div class="flex-1">$2</div></div>');
+  // 8. Standard Lists (*, -, and numbered 1. in matching neutral text color)
+  text = text.replace(/(?:^|\n)[*-]\s+(.+)/g, (_, c) => formatBulletItem('ms-bullet-circle', '•', c));
+  text = text.replace(/(?:^|\n)(\d+)\.\s+(.+)/g, '\n<div class="ms-bullet-item"><span class="ms-num-bullet font-semibold text-neutral-200 min-w-[1.25rem]">$1.</span><div class="flex-1">$2</div></div>');
 
   // 9. Paragraphs & Line Breaks
   text = text.replace(/\n\n+/g, `<div class="h-2.5"></div>`);

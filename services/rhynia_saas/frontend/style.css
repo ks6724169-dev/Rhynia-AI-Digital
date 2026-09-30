@@ -1134,7 +1134,17 @@ html.light .code-block-container .svg-preview-box {
 .markdown-table-wrapper tbody td {
   color: #e6edf3 !important; /* All cell font color same */
   padding: 10px 16px;
-  font-size: 13.5px;
+  font-size: 14.5px !important;
+  line-height: 1.5 !important;
+}
+
+.markdown-table-wrapper tbody td strong,
+.markdown-table-wrapper tbody td b,
+.markdown-table-wrapper thead th strong,
+.markdown-table-wrapper thead th b {
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
 }
 
 .markdown-table-wrapper tbody td:not(:last-child) {
@@ -1271,14 +1281,19 @@ svg[aria-roledescription="error"] {
   stroke: #0078D4 !important;
 }
 
+.mermaid-diagram-box text,
+.mermaid-diagram-box tspan,
 .mermaid-diagram-box .mindmap-node text,
 .mermaid-diagram-box .mindmap-node span,
 .mermaid-diagram-box .node text,
-.mermaid-diagram-box .label text {
+.mermaid-diagram-box .label text,
+.mermaid-diagram-box .nodeLabel,
+.fluent-mermaid-svg text,
+.fluent-mermaid-svg tspan {
   fill: #ffffff !important;
   color: #ffffff !important;
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: 500 !important;
+  font-size: 12.5px !important;
 }
 
 html.light .mermaid-diagram-box .node rect,
@@ -1290,14 +1305,19 @@ html.light .mermaid-diagram-box .node ellipse {
   stroke-width: 1.5px !important;
 }
 
+html.light .mermaid-diagram-box text,
+html.light .mermaid-diagram-box tspan,
 html.light .mermaid-diagram-box .mindmap-node text,
 html.light .mermaid-diagram-box .mindmap-node span,
 html.light .mermaid-diagram-box .node text,
-html.light .mermaid-diagram-box .label text {
+html.light .mermaid-diagram-box .label text,
+html.light .mermaid-diagram-box .nodeLabel,
+html.light .fluent-mermaid-svg text,
+html.light .fluent-mermaid-svg tspan {
   fill: #0f172a !important;
   color: #0f172a !important;
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: 500 !important;
+  font-size: 12.5px !important;
 }
 
 /* ========================================================= */
@@ -1388,7 +1408,7 @@ html.light .mermaid-diagram-box .label text {
 }
 
 .ms-bullet-square {
-  color: #818cf8; /* Fluent Indigo */
+  color: #e2e8f0 !important; /* Matches neutral body text */
   font-size: 1rem;
 }
 
@@ -1405,7 +1425,7 @@ html.light .mermaid-diagram-box .label text {
 }
 
 .ms-num-bullet {
-  color: #0078D4;
+  color: #e2e8f0 !important; /* Matches clean body text, NOT blue */
   font-weight: 600;
   font-size: 1.25rem;
   flex-shrink: 0;
@@ -1422,6 +1442,11 @@ html.light .ms-heading-4 {
 
 html.light .ms-bullet-item {
   color: #334155;
+}
+
+html.light .ms-num-bullet,
+html.light .ms-bullet-square {
+  color: #1e293b !important;
 }
 
 html.light .ms-heading-1 {
@@ -1878,7 +1903,7 @@ html.light .user-bubble {
 
   /* Main Container: Safe Area Awareness & Fixed Header Offset */
   #main-chat-container {
-    padding-top: 102px !important;
+    padding-top: 112px !important;
     padding-left: 20px !important;
     padding-right: 20px !important;
     padding-bottom: calc(140px + env(safe-area-inset-bottom, 24px)) !important;
@@ -1889,8 +1914,8 @@ html.light .user-bubble {
   /* Top Navigation Bar: FIXED Floating Transparent (No Card/Bar Strip, Only Left & Right Buttons Visible) */
   #view-app header,
   header {
-    height: 90px !important;
-    min-height: 90px !important;
+    height: 100px !important;
+    min-height: 100px !important;
     padding-left: 16px !important;
     padding-right: 16px !important;
     background: transparent !important;
@@ -1915,12 +1940,12 @@ html.light .user-bubble {
     pointer-events: auto !important;
   }
 
-  /* ☰ Menu button: 70 × 70 px Touch Target inside Pill */
+  /* ☰ Menu button: 80 × 80 px Touch Target inside Pill */
   #btn-hamburger-menu {
-    width: 70px !important;
-    height: 70px !important;
-    min-width: 70px !important;
-    min-height: 70px !important;
+    width: 80px !important;
+    height: 80px !important;
+    min-width: 80px !important;
+    min-height: 80px !important;
     border-radius: 9999px !important;
     background: #212121 !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
@@ -1931,27 +1956,27 @@ html.light .user-bubble {
   }
 
   #btn-hamburger-menu .material-symbols-outlined {
-    font-size: 38px !important;
+    font-size: 44px !important;
   }
 
   /* Right Capsule container */
   #header-right-capsule {
-    padding: 5px 10px !important;
+    padding: 6px 12px !important;
     border-radius: 9999px !important;
     background: #212121 !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
-    gap: 8px !important;
+    gap: 10px !important;
     display: flex !important;
     align-items: center !important;
   }
 
-  /* ✏️ New Chat Button inside Right Capsule: 60 × 60 px */
+  /* ✏️ New Chat Button inside Right Capsule: 70 × 70 px */
   header button[onclick="startNewChat()"] {
-    width: 60px !important;
-    height: 60px !important;
-    min-width: 60px !important;
-    min-height: 60px !important;
+    width: 70px !important;
+    height: 70px !important;
+    min-width: 70px !important;
+    min-height: 70px !important;
     border-radius: 9999px !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -1959,15 +1984,15 @@ html.light .user-bubble {
   }
 
   header button[onclick="startNewChat()"] .material-symbols-outlined {
-    font-size: 34px !important;
+    font-size: 38px !important;
   }
 
-  /* ⋮ More Button inside Right Capsule: 60 × 60 px */
+  /* ⋮ More Button inside Right Capsule: 70 × 70 px */
   #btn-three-dots-trigger {
-    width: 60px !important;
-    height: 60px !important;
-    min-width: 60px !important;
-    min-height: 60px !important;
+    width: 70px !important;
+    height: 70px !important;
+    min-width: 70px !important;
+    min-height: 70px !important;
     border-radius: 9999px !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -1975,14 +2000,14 @@ html.light .user-bubble {
   }
 
   #btn-three-dots-trigger .material-symbols-outlined {
-    font-size: 34px !important;
+    font-size: 38px !important;
   }
 
   /* 3-Dots Flyout Menu Positioned Comfortably Below Top Bar */
   #three-dots-menu {
-    top: 96px !important;
+    top: 106px !important;
     right: 18px !important;
-    width: 300px !important;
+    width: 310px !important;
     border-radius: 20px !important;
   }
 
@@ -2095,23 +2120,56 @@ html.light .user-bubble {
     padding: 14px 16px !important;
   }
 
-  /* Action Buttons Bar: Big 50px Touch Area, 28px Icons, 18px Gap (Copy, Speaker, Good, Bad, Share) */
+  /* Action Buttons Bar: Extra Large 58px Touch Area, 32px Icons, 20px Gap (Copy, Speaker, Good, Bad, Share) */
   .ai-actions-bar {
-    gap: 18px !important;
-    padding-top: 16px !important;
+    gap: 20px !important;
+    padding-top: 18px !important;
   }
 
   .ai-actions-bar button {
-    width: 50px !important;
-    height: 50px !important;
-    min-width: 50px !important;
-    min-height: 50px !important;
-    border-radius: 14px !important;
-    background: rgba(255, 255, 255, 0.06) !important;
+    width: 58px !important;
+    height: 58px !important;
+    min-width: 58px !important;
+    min-height: 58px !important;
+    border-radius: 16px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
   }
 
   .ai-actions-bar .material-symbols-outlined {
-    font-size: 28px !important;
+    font-size: 32px !important;
+  }
+
+  /* Table Uniformity on Mobile: Stop ai-text-body strong from blowing up table bold words */
+  .markdown-table-wrapper table,
+  .markdown-table-wrapper tbody,
+  .markdown-table-wrapper thead,
+  .markdown-table-wrapper tr,
+  .markdown-table-wrapper th,
+  .markdown-table-wrapper td,
+  .markdown-table-wrapper td strong,
+  .markdown-table-wrapper th strong,
+  .markdown-table-wrapper td span,
+  .markdown-table-wrapper td b {
+    font-size: 14.5px !important;
+    line-height: 1.5 !important;
+  }
+
+  .markdown-table-wrapper td strong,
+  .markdown-table-wrapper td b {
+    font-weight: 600 !important;
+    color: #ffffff !important;
+  }
+
+  /* Flowchart Compact Text on Mobile */
+  .mermaid-diagram-box text,
+  .mermaid-diagram-box tspan,
+  .mermaid-diagram-box .node text,
+  .mermaid-diagram-box .label text,
+  .mermaid-diagram-box .nodeLabel,
+  .fluent-mermaid-svg text,
+  .fluent-mermaid-svg tspan {
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
   }
 
   /* Empty State Hero on Big Display */
