@@ -88,11 +88,14 @@ def get_user_memory_usage(user_id: str, db: Session) -> Dict:
         "total_used_bytes": total_used_bytes,
         "total_used_mb": round(total_used_bytes / (1024 * 1024), 4),
         "used_percentage": min(used_percentage, 100.0),
+        "usage_percent": min(used_percentage, 100.0),
         "is_exceeded": total_used_bytes >= quota_bytes,
         "facts_count": facts_count,
         "facts_bytes": facts_bytes,
         "summaries_count": summaries_count,
+        "summary_buffers_count": summaries_count,
         "summaries_bytes": summaries_bytes,
+        "summary_bytes": summaries_bytes,
     }
 
 

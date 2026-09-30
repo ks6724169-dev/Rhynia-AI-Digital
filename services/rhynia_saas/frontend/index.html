@@ -1073,6 +1073,64 @@
               </div>
             </div>
           </div>
+        <!-- Phase 5: Memory & Personalization Dashboard Card -->
+        <section class="fluent-mica-card rounded-3xl p-6 sm:p-7 space-y-5 bg-[#1f1f1f] border border-white/10 shadow-xl">
+          <div class="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-white/10">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-[#a855f7]/20 border border-[#a855f7]/40 text-[#c084fc] flex items-center justify-center shadow-sm">
+                <span class="material-symbols-outlined text-[30px]">neurology</span>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                  Memory & Personalization
+                  <span id="memory-tier-badge" class="text-xs font-bold text-[#c084fc] bg-[#a855f7]/15 px-2.5 py-0.5 rounded-full border border-[#a855f7]/30 uppercase tracking-wider">Free Tier</span>
+                </h3>
+                <p class="text-xs text-neutral-400 mt-0.5">Rhynia remembers your preferences and context across conversations</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="openAddFactModal()" class="px-3.5 py-2 rounded-xl bg-[#0078D4] hover:bg-[#006cbd] text-white text-xs font-bold flex items-center gap-1.5 shadow-md active:scale-95 transition-all">
+                <span class="material-symbols-outlined text-[18px]">add</span>
+                Add Fact
+              </button>
+              <button type="button" onclick="confirmResetMemory()" class="px-3.5 py-2 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 text-xs font-bold flex items-center gap-1.5 active:scale-95 transition-all" title="Reset all learned memory">
+                <span class="material-symbols-outlined text-[18px]">delete_sweep</span>
+                Reset
+              </button>
+            </div>
+          </div>
+
+          <!-- Memory Quota Meter -->
+          <div class="space-y-2 p-4 rounded-2xl bg-[#282828] border border-white/5">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-neutral-400 font-medium">Long-Term Storage Used</span>
+              <span id="memory-quota-text" class="text-white font-mono font-bold">0 KB / 8 MB (0.0%)</span>
+            </div>
+            <div class="w-full h-3 bg-[#353535] rounded-full overflow-hidden border border-white/5">
+              <div id="memory-quota-bar" class="h-full bg-gradient-to-r from-[#a855f7] to-[#0078D4] transition-all duration-300 rounded-full" style="width: 0%;"></div>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-neutral-400 pt-0.5">
+              <span>Facts: <strong id="memory-facts-count" class="text-neutral-200">0</strong></span>
+              <span>Summaries: <strong id="memory-summaries-count" class="text-neutral-200">0</strong></span>
+              <span>Status: <strong id="memory-status-text" class="text-emerald-400">Optimal (Active)</strong></span>
+            </div>
+          </div>
+
+          <!-- Remembered Facts List Container -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Remembered Facts & Preferences</span>
+              <button type="button" onclick="loadMemoryDashboard()" class="text-xs text-[#0078D4] hover:text-[#4cc2ff] flex items-center gap-1 font-semibold">
+                <span class="material-symbols-outlined text-[16px]">refresh</span> Refresh
+              </button>
+            </div>
+            <div id="memory-facts-list" class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+              <!-- Dynamically populated or empty state -->
+              <div class="p-6 text-center text-neutral-400 text-xs rounded-2xl bg-[#282828]/50 border border-white/5">
+                No personalized facts remembered yet. Chat naturally and Rhynia will automatically learn your preferences!
+              </div>
+            </div>
+          </div>
         </section>
 
         <!-- Storage Card (Live Dynamic Metrics) -->
@@ -1323,22 +1381,66 @@
     </div>
   </div>
 
+  <!-- Modal: Add Memory Fact (Phase 5) -->
+  <div id="modal-add-fact" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+    <div class="fluent-mica-card w-full max-w-md rounded-3xl p-6 bg-[#212121] border border-white/15 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#a855f7]">bookmark_add</span>
+          Add Personal Fact
+        </h3>
+        <button type="button" onclick="closeAddFactModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-neutral-400 hover:text-white transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+      <div class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-semibold text-neutral-300 mb-1">Fact Key / Attribute</label>
+          <input id="input-fact-key" type="text" placeholder="e.g. profession, preferred_language, tech_stack" class="w-full px-4 py-2.5 rounded-xl bg-[#2a2a2a] border border-white/10 text-white text-sm focus:border-[#0078D4] focus:outline-none"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-neutral-300 mb-1">Fact Value / Information</label>
+          <input id="input-fact-value" type="text" placeholder="e.g. AI Research Engineer, Hinglish, Python & Flutter" class="w-full px-4 py-2.5 rounded-xl bg-[#2a2a2a] border border-white/10 text-white text-sm focus:border-[#0078D4] focus:outline-none"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-neutral-300 mb-1">Category</label>
+          <select id="select-fact-category" class="w-full px-4 py-2.5 rounded-xl bg-[#2a2a2a] border border-white/10 text-white text-sm focus:border-[#0078D4] focus:outline-none">
+            <option value="general">General</option>
+            <option value="identity">Identity</option>
+            <option value="profession">Profession & Study</option>
+            <option value="technical">Technical Stack</option>
+            <option value="preferences">Preferences & Tone</option>
+            <option value="goals">Goals & Projects</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button type="button" onclick="closeAddFactModal()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm text-neutral-300 font-semibold transition-colors">
+          Cancel
+        </button>
+        <button type="button" onclick="submitAddFact()" class="px-5 py-2 rounded-xl bg-[#0078D4] hover:bg-[#006cbd] text-sm text-white font-bold transition-all shadow-md active:scale-95">
+          Save Fact
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
 
   <!-- ========================================================= -->
   <!-- SCRIPTS (Configuration, Modules & App Orchestrator)       -->
   <!-- ========================================================= -->
-  <script src="config.js?v=101"></script>
-  <script src="modules/i18n.js?v=101"></script>
-  <script src="modules/ppt_viewer.js?v=101"></script>
-  <script src="app.js?v=101"></script>
-  <script src="modules/auth.js?v=101"></script>
-  <script src="modules/composer.js?v=101"></script>
-  <script src="modules/chat.js?v=101"></script>
-  <script src="modules/feedback.js?v=101"></script>
-  <script src="modules/drawer.js?v=101"></script>
-  <script src="modules/settings.js?v=101"></script>
+  <script src="config.js?v=102"></script>
+  <script src="modules/i18n.js?v=102"></script>
+  <script src="modules/ppt_viewer.js?v=102"></script>
+  <script src="app.js?v=102"></script>
+  <script src="modules/auth.js?v=102"></script>
+  <script src="modules/composer.js?v=102"></script>
+  <script src="modules/chat.js?v=102"></script>
+  <script src="modules/feedback.js?v=102"></script>
+  <script src="modules/drawer.js?v=102"></script>
+  <script src="modules/settings.js?v=102"></script>
 
 </body>
 </html>

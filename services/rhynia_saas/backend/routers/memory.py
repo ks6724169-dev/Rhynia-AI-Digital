@@ -90,12 +90,12 @@ def get_memory_profile(
         quota_mb=telemetry["quota_mb"],
         total_used_bytes=telemetry["total_used_bytes"],
         total_used_mb=telemetry["total_used_mb"],
-        usage_percent=telemetry["usage_percent"],
+        usage_percent=telemetry.get("used_percentage", 0.0),
         is_quota_exceeded=telemetry["is_exceeded"],
-        facts_count=telemetry["facts_count"],
-        facts_bytes=telemetry["facts_bytes"],
-        summary_buffers_count=telemetry["summary_buffers_count"],
-        summary_bytes=telemetry["summary_bytes"],
+        facts_count=telemetry.get("facts_count", 0),
+        facts_bytes=telemetry.get("facts_bytes", 0),
+        summary_buffers_count=telemetry.get("summary_buffers_count", telemetry.get("summaries_count", 0)),
+        summary_bytes=telemetry.get("summary_bytes", telemetry.get("summaries_bytes", 0)),
     )
 
 

@@ -32,6 +32,7 @@ async function openSettingsPanel() {
   await loadUserProfile();
   await loadStorage();
   await loadNotificationSettings();
+  await loadMemoryDashboard();
 }
 
 /**
@@ -778,6 +779,228 @@ function logoutUser() {
   switchView("view-login");
 }
 
+/**
+ * ==========================================
+ * PHASE 5: MEMORY & PERSONALIZATION DASHBOARD
+ * ==========================================
+ */
+async function loadMemoryDashboard() {
+  if (!AppState.token) return;
+
+  try {
+    // 1. Fetch live memory telemetry (quota, used, count)
+    const telemetryRes = await fetch(`${CONFIG.API_BASE}/memory/profile`, {
+      headers: { "Authorization": `Bearer ${AppState.token}` }
+    });
+    if (telemetryRes.ok) {
+      const telemetry = await telemetryRes.json();
+      renderMemoryTelemetryUI(telemetry);
+    }
+
+    // 2. Fetch stored user facts
+    const factsRes = await fetch(`${CONFIG.API_BASE}/memory/facts`, {
+      headers: { "Authorization": `Bearer ${AppState.token}` }
+    });
+    if (factsRes.ok) {
+      const facts = await factsRes.json();
+      renderMemoryFactsListUI(facts);
+    }
+  } catch (err) {
+    console.error("Error loading memory dashboard:", err);
+  }
+}
+
+function renderMemoryTelemetryUI(telemetry) {
+  if (!telemetry) return;
+
+  // Plan Tier Badge
+  const badgeEl = document.getElementById("memory-tier-badge");
+  if (badgeEl) {
+    const tier = (telemetry.plan_tier || "free").toUpperCase();
+    badgeEl.textContent = `${tier} TIER (${telemetry.quota_mb} MB)`;
+    if (tier === "ULTRA_PRO") {
+      badgeEl.className = "text-xs font-bold text-[#ffd700] bg-[#ffd700]/15 px-2.5 py-0.5 rounded-full border border-[#ffd700]/40 uppercase tracking-wider";
+    } else if (tier === "PRO") {
+      badgeEl.className = "text-xs font-bold text-[#0078D4] bg-[#0078D4]/15 px-2.5 py-0.5 rounded-full border border-[#0078D4]/40 uppercase tracking-wider";
+    } else {
+      badgeEl.className = "text-xs font-bold text-[#c084fc] bg-[#a855f7]/15 px-2.5 py-0.5 rounded-full border border-[#a855f7]/30 uppercase tracking-wider";
+    }
+  }
+
+  // Quota Text
+  const textEl = document.getElementById("memory-quota-text");
+  if (textEl) {
+    const usedKb = Math.round((telemetry.total_used_bytes / 1024) * 10) / 10;
+    textEl.textContent = `${usedKb} KB / ${telemetry.quota_mb} MB (${telemetry.usage_percent}%)`;
+  }
+
+  // Progress Bar
+  const barEl = document.getElementById("memory-quota-bar");
+  if (barEl) {
+    const widthPct = Math.min(100, Math.max(1, telemetry.usage_percent));
+    barEl.style.width = `${widthPct}%`;
+    if (telemetry.is_quota_exceeded) {
+      barEl.className = "h-full bg-red-500 transition-all duration-300 rounded-full";
+    } else {
+      barEl.className = "h-full bg-gradient-to-r from-[#a855f7] to-[#0078D4] transition-all duration-300 rounded-full";
+    }
+  }
+
+  // Counts & Status
+  const factsCountEl = document.getElementById("memory-facts-count");
+  if (factsCountEl) factsCountEl.textContent = telemetry.facts_count;
+
+  const summariesCountEl = document.getElementById("memory-summaries-count");
+  if (summariesCountEl) summariesCountEl.textContent = telemetry.summary_buffers_count;
+
+  const statusEl = document.getElementById("memory-status-text");
+  if (statusEl) {
+    if (telemetry.is_quota_exceeded) {
+      statusEl.textContent = "Quota Exceeded";
+      statusEl.className = "text-red-400 font-bold";
+    } else {
+      statusEl.textContent = "Optimal (Active)";
+      statusEl.className = "text-emerald-400 font-bold";
+    }
+  }
+}
+
+function renderMemoryFactsListUI(facts) {
+  const container = document.getElementById("memory-facts-list");
+  if (!container) return;
+
+  if (!facts || facts.length === 0) {
+    container.innerHTML = `
+      <div class="p-6 text-center text-neutral-400 text-xs rounded-2xl bg-[#282828]/50 border border-white/5">
+        No personalized facts remembered yet. Chat naturally with Rhynia and it will learn your preferences automatically!
+      </div>
+    `;
+    return;
+  }
+
+  const categoryColors = {
+    identity: "text-[#4cc2ff] bg-[#0078D4]/15 border-[#0078D4]/30",
+    profession: "text-[#ffd700] bg-[#ffd700]/15 border-[#ffd700]/30",
+    technical: "text-[#107c41] bg-[#107c41]/15 border-[#107c41]/30",
+    preferences: "text-[#c084fc] bg-[#a855f7]/15 border-[#a855f7]/30",
+    goals: "text-[#ff8c00] bg-[#ff8c00]/15 border-[#ff8c00]/30",
+    general: "text-neutral-300 bg-white/10 border-white/15"
+  };
+
+  container.innerHTML = facts.map(f => {
+    const colorClass = categoryColors[f.category] || categoryColors.general;
+    const catLabel = (f.category || "general").toUpperCase();
+    const keyLabel = (f.fact_key || "").replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
+
+    return `
+      <div class="flex items-center justify-between p-3.5 rounded-2xl bg-[#282828] border border-white/5 hover:border-white/15 transition-all group">
+        <div class="min-w-0 flex-1 pr-3">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${colorClass} uppercase tracking-wider">${catLabel}</span>
+            <span class="text-xs font-bold text-white">${escapeHtml(keyLabel)}</span>
+            <span class="text-[10px] font-mono text-neutral-400 ml-auto">${f.size_bytes} B</span>
+          </div>
+          <p class="text-xs text-neutral-300 break-words leading-relaxed">${escapeHtml(f.fact_value)}</p>
+        </div>
+        <button type="button" onclick="deleteMemoryFactUI('${f.id}')" class="w-8 h-8 rounded-xl text-neutral-400 hover:text-red-400 hover:bg-red-500/15 flex items-center justify-center transition-all opacity-80 group-hover:opacity-100" title="Delete Fact">
+          <span class="material-symbols-outlined text-[18px]">delete</span>
+        </button>
+      </div>
+    `;
+  }).join("");
+}
+
+function openAddFactModal() {
+  const modal = document.getElementById("modal-add-fact");
+  if (modal) {
+    const k = document.getElementById("input-fact-key");
+    const v = document.getElementById("input-fact-value");
+    if (k) k.value = "";
+    if (v) v.value = "";
+    modal.classList.remove("hidden");
+  }
+}
+
+function closeAddFactModal() {
+  const modal = document.getElementById("modal-add-fact");
+  if (modal) modal.classList.add("hidden");
+}
+
+async function submitAddFact() {
+  const keyInput = document.getElementById("input-fact-key");
+  const valInput = document.getElementById("input-fact-value");
+  const catInput = document.getElementById("select-fact-category");
+
+  const key = (keyInput ? keyInput.value : "").trim();
+  const val = (valInput ? valInput.value : "").trim();
+  const cat = (catInput ? catInput.value : "general").trim();
+
+  if (!key || !val) {
+    showToast("Please enter both fact key and value", "error");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${CONFIG.API_BASE}/memory/facts`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${AppState.token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ fact_key: key, fact_value: val, category: cat })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || "Failed to save memory fact");
+    }
+
+    closeAddFactModal();
+    showToast("Memory fact added successfully!", "success");
+    await loadMemoryDashboard();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+async function deleteMemoryFactUI(factId) {
+  if (!factId || !AppState.token) return;
+
+  try {
+    const res = await fetch(`${CONFIG.API_BASE}/memory/facts/${factId}`, {
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${AppState.token}` }
+    });
+
+    if (!res.ok) throw new Error("Failed to delete fact");
+
+    showToast("Fact removed from memory", "info");
+    await loadMemoryDashboard();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
+async function confirmResetMemory() {
+  if (!confirm("Are you sure you want to reset all learned memory facts? Rhynia will forget your stored personal preferences.")) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`${CONFIG.API_BASE}/memory/facts`, {
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${AppState.token}` }
+    });
+
+    if (!res.ok) throw new Error("Failed to reset memory");
+
+    showToast("All personal memory facts reset successfully!", "success");
+    await loadMemoryDashboard();
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+}
+
 // Expose settings & theme functions globally
 window.toggleAppearanceTheme = toggleAppearanceTheme;
 window.toggleThemeMode = toggleAppearanceTheme;
@@ -796,4 +1019,12 @@ window.triggerAvatarUpload = triggerAvatarUpload;
 window.handleAvatarFileSelected = handleAvatarFileSelected;
 window.toggleEditProfileModal = toggleEditProfileModal;
 window.saveProfileChanges = saveProfileChanges;
+
+// Phase 5 Memory Bindings
+window.loadMemoryDashboard = loadMemoryDashboard;
+window.openAddFactModal = openAddFactModal;
+window.closeAddFactModal = closeAddFactModal;
+window.submitAddFact = submitAddFact;
+window.deleteMemoryFactUI = deleteMemoryFactUI;
+window.confirmResetMemory = confirmResetMemory;
 
