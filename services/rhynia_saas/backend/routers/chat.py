@@ -27,6 +27,7 @@ from services.rhynia_saas.backend.services.educational_synthesis import educatio
 from services.rhynia_saas.backend.services.image_search import educational_image_service
 from services.rhynia_saas.backend.services.ppt_engine import ppt_engine
 from services.rhynia_saas.backend.services.search import search_service
+from services.rhynia_saas.backend.services import memory_service
 
 logger = logging.getLogger("rhynia.chat")
 router = APIRouter(prefix="/api/v1/chat", tags=["Chat"])
@@ -195,6 +196,31 @@ async def send_chat_message(
         db.commit()
         db.refresh(session)
         session_id = session.id
+
+    # 3B. Thread Message Limit Boundary Check (Phase 2)
+    thread_count = db.query(ChatMessage).filter(ChatMessage.session_id == session_id).count()
+    thread_limit = memory_service.get_tier_thread_limit(current_user.plan_tier)
+    if thread_count >= thread_limit:
+        limit_msg = (
+            f"⚠️ **बातचीत सीमा (Thread Limit Reached)**: आपके वर्तमान प्लान ({current_user.plan_tier.upper()}) में "
+            f"एक चैट सेशन में अधिकतम {thread_limit} संदेशों की अनुमति है ताकि AI की गति और स्मरण क्षमता सर्वोच्च बनी रहे।\n\n"
+            f"कृपया नई चर्चा जारी रखने के लिए ऊपर बाएँ **'+ New Chat'** बटन पर क्लिक करें!"
+        )
+        if not req.stream:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Thread message limit reached ({thread_limit} messages). Please start a new chat.",
+            )
+
+        async def thread_limit_generator():
+            yield f"data: {json.dumps({'type': 'init', 'session_id': session_id})}\n\n"
+            for word in limit_msg.split(" "):
+                yield f"data: {json.dumps({'type': 'token', 'content': word + ' '})}\n\n"
+                await asyncio.sleep(0.01)
+            remaining = max(0, limit - current_user.daily_messages_used)
+            yield f"data: {json.dumps({'type': 'done', 'content': limit_msg, 'daily_messages_used': current_user.daily_messages_used, 'daily_messages_remaining': remaining})}\n\n"
+
+        return StreamingResponse(thread_limit_generator(), media_type="text/event-stream")
 
     # 4. Direct Real-Time Live Web Search Grounding (Live Internet Search)
     use_web_search = True
@@ -385,20 +411,15 @@ async def send_chat_message(
     db.add(user_msg)
     db.commit()
 
-    # 6. Load Conversation History (Most Recent 20 messages)
-    history_records = (
-        db.query(ChatMessage)
-        .filter(ChatMessage.session_id == session_id)
-        .order_by(ChatMessage.created_at.desc())
-        .limit(20)
-        .all()
+    # 6. Load Conversation History (2-Tier Rolling Architecture: Macro Summary + 4 Recent Turns)
+    messages_payload = memory_service.build_2tier_conversation_history(
+        session_id=session_id,
+        db=db,
+        max_recent_messages=4,
     )
-    history_records.reverse()
-
-    messages_payload = [
-        {"role": m.role, "content": strip_source_links(m.content) if m.role in ["model", "assistant"] else m.content}
-        for m in history_records
-    ]
+    for msg in messages_payload:
+        if msg.get("role") in ["model", "assistant"]:
+            msg["content"] = strip_source_links(msg.get("content", ""))
 
     # Augment last message with extracted textual contexts if present
     if file_contexts and messages_payload:
@@ -598,6 +619,9 @@ async def send_chat_message(
         session.updated_at = datetime.now(timezone.utc)
         db.commit()
 
+        # Phase 2: Asynchronously update rolling macro/micro summaries
+        asyncio.create_task(memory_service.async_update_rolling_summary(session_id, current_user.id))
+
         remaining = max(0, limit - current_user.daily_messages_used)
         return ChatResponseJSON(
             session_id=session_id,
@@ -660,6 +684,9 @@ async def send_chat_message(
             current_user.last_active_date = datetime.now(timezone.utc)
             session.updated_at = datetime.now(timezone.utc)
             db.commit()
+
+            # Phase 2: Asynchronously update rolling macro/micro summaries
+            asyncio.create_task(memory_service.async_update_rolling_summary(session_id, current_user.id))
 
             # Final event: completion metadata with clean content
             remaining = max(0, limit - current_user.daily_messages_used)
