@@ -13,7 +13,7 @@ import httpx
 
 from services.rhynia_saas.backend.config import settings
 from services.rhynia_saas.backend.database import init_db
-from services.rhynia_saas.backend.routers import auth, chat, feedback, files, notifications, ppt, profile, sessions
+from services.rhynia_saas.backend.routers import auth, chat, feedback, files, notifications, ppt, profile, sessions, memory
 from services.rhynia_saas.backend.services.image_search import EducationalImageService
 
 
@@ -81,6 +81,7 @@ app.include_router(profile.router)
 app.include_router(feedback.router)
 app.include_router(notifications.router)
 app.include_router(ppt.router)
+app.include_router(memory.router)
 
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles

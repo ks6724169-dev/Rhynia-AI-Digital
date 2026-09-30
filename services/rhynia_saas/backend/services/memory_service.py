@@ -5,7 +5,8 @@ and 2-Tier Rolling Summary Buffering.
 """
 
 import logging
-from typing import Dict, List, Optional
+import re
+from typing import Any, Dict, List, Optional, Union
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -94,11 +95,12 @@ def get_user_memory_usage(user_id: str, db: Session) -> Dict:
     }
 
 
-def check_user_memory_quota(user: User, db: Session) -> bool:
+def check_user_memory_quota(user: Union[User, str], db: Session) -> bool:
     """Returns True if user has room within their memory quota, False if exceeded."""
     if not user:
         return False
-    usage = get_user_memory_usage(user.id, db)
+    user_id = user if isinstance(user, str) else user.id
+    usage = get_user_memory_usage(user_id, db)
     return not usage["is_exceeded"]
 
 
@@ -366,5 +368,222 @@ async def async_update_rolling_summary(session_id: str, user_id: str) -> None:
         logger.info(f"Rolling summary updated for session {session_id[:8]} (Macro: {len(macro_summary)} chars)")
     except Exception as e:
         logger.warning(f"Failed to update rolling summary for session {session_id}: {e}")
+    finally:
+        db.close()
+
+
+# ==========================================
+# PHASE 3: LONG-TERM PERSONALIZATION ENGINE
+# ==========================================
+def clear_user_facts(user_id: str, db: Session) -> int:
+    """Delete all long-term memory facts for a user (Reset Memory). Returns count deleted."""
+    deleted = db.query(UserMemoryFact).filter(UserMemoryFact.user_id == user_id).delete()
+    db.commit()
+    return deleted
+
+
+def format_facts_for_prompt(user_id: str, db: Session, max_facts: int = 12) -> str:
+    """
+    Format stored user facts into a clean system instruction block for prompt injection.
+    Only returns a block if at least one fact exists for the user.
+    """
+    facts = get_user_facts(user_id, db)
+    if not facts:
+        return ""
+
+    facts_to_include = facts[:max_facts]
+    lines = []
+    for f in facts_to_include:
+        label = f.fact_key.replace("_", " ").title()
+        lines.append(f"- {label}: {f.fact_value}")
+
+    formatted_block = (
+        "\n\nUSER PROFILE & LONG-TERM MEMORY (उपयोगकर्ता का दीर्घकालिक स्मृति संदर्भ):\n"
+        "- The following verified facts and preferences are remembered about this user across sessions:\n"
+        + "\n".join(lines) + "\n"
+        "- INSTRUCTION: Seamlessly ground your examples, terminology, tone, and technical depth in these user preferences without explicitly announcing 'As per my memory'."
+    )
+    return formatted_block
+
+
+def extract_facts_from_user_message(message: str) -> List[Dict[str, Any]]:
+    """
+    Extract long-term user facts, preferences, role, and tech stack from natural messages.
+    Supports Hindi, Hinglish, and English phrasing.
+    """
+    if not message or len(message.strip()) < 5:
+        return []
+
+    extracted: List[Dict[str, Any]] = []
+    text = message.strip()
+
+    # Pattern 1: Preferred Name / Identity
+    name_match = re.search(
+        r"(?:mera naam|my name is|call me|mujhe bulao)\s+([a-zA-Z\u0900-\u097F\s]{2,30}?)(?:\s+hai|\s+is|\s+hu|\s+hoon|[.,!?]|$)",
+        text,
+        re.IGNORECASE,
+    )
+    if name_match:
+        val = name_match.group(1).strip().strip(".,!?\"'")
+        val_clean = " ".join([w for w in val.split() if w.lower() not in ["hai", "is", "hu", "hoon", "aur", "and"]])
+        if len(val_clean) >= 2:
+            extracted.append({
+                "fact_key": "preferred_name",
+                "fact_value": val_clean.title(),
+                "category": "identity",
+                "confidence_score": 95,
+            })
+
+    # Pattern 2: Profession / Role / Occupation
+    prof_match = re.search(
+        r"(?:i am an?|i work as an?|mai ek|main ek)\s+([a-zA-Z\u0900-\u097F\s]{3,40})(?:\s+hu|\s+hoon|$|[.,!?])",
+        text,
+        re.IGNORECASE,
+    )
+    if prof_match:
+        val = prof_match.group(1).strip().strip(".,!?\"'")
+        if len(val) >= 3 and not any(w in val.lower() for w in ["student", "taiyari", "padh"]):
+            extracted.append({
+                "fact_key": "profession_role",
+                "fact_value": val.title(),
+                "category": "profession",
+                "confidence_score": 90,
+            })
+
+    # Pattern 3: Exam / Study Goal
+    study_match = re.search(
+        r"(?:mai|main|i am|currently)\s+([a-zA-Z0-9\u0900-\u097F\s]{2,30})\s+(?:ki taiyari kar raha|ki preparation kar raha|preparing for)",
+        text,
+        re.IGNORECASE,
+    )
+    if study_match:
+        val = study_match.group(1).strip().strip(".,!?\"'")
+        extracted.append({
+            "fact_key": "study_or_exam_goal",
+            "fact_value": val.upper() if len(val) <= 6 else val.title(),
+            "category": "goals",
+            "confidence_score": 92,
+        })
+
+    # Pattern 4: Technical Stack & Tools
+    tech_match = re.search(
+        r"(?:my tech stack|technologies i use|tech stack is|mera stack|languages i know|tools i use|i code in)\s*(?:is|are|:)?\s*([^.\n!]+)",
+        text,
+        re.IGNORECASE,
+    )
+    if tech_match:
+        val = tech_match.group(1).strip().strip(".,!?\"'")
+        if len(val) >= 2:
+            extracted.append({
+                "fact_key": "tech_stack",
+                "fact_value": val,
+                "category": "technical",
+                "confidence_score": 95,
+            })
+
+    # Pattern 5: Ongoing Project / Business
+    proj_match = re.search(
+        r"(?:i am building|currently working on|mera project|my project is|i am developing)\s*([^.\n!]+)",
+        text,
+        re.IGNORECASE,
+    )
+    if proj_match:
+        val = proj_match.group(1).strip().strip(".,!?\"'")
+        if len(val) >= 3:
+            extracted.append({
+                "fact_key": "current_project",
+                "fact_value": val,
+                "category": "projects",
+                "confidence_score": 90,
+            })
+
+    # Pattern 6: Language & Communication Preference
+    lang_match = re.search(
+        r"(?:explain in|reply in|speak in|answer in|hamesha|prefer)\s*([^.\n!]+)",
+        text,
+        re.IGNORECASE,
+    )
+    if not lang_match:
+        lang_match = re.search(
+            r"(?:mujhe|main|mai)?\s*([a-zA-Z\u0900-\u097F\s]{2,25})\s*(?:me|mein)\s*(?:samjhao|batao|likho|reply karo|answer do)",
+            text,
+            re.IGNORECASE,
+        )
+    if lang_match:
+        val = lang_match.group(1).strip().strip(".,!?\"'")
+        if any(w in val.lower() for w in ["hindi", "hinglish", "english", "bullet", "points", "simple", "saral", "easy"]):
+            extracted.append({
+                "fact_key": "preferred_language_style",
+                "fact_value": val.title() if len(val.split()) <= 2 else val,
+                "category": "preferences",
+                "confidence_score": 88,
+            })
+
+    # Pattern 7: Location / Origin
+    loc_match = re.search(
+        r"(?:i live in|i am from|mai rehta hu|mera ghar|based in)\s*([a-zA-Z\u0900-\u097F\s,]{3,35})",
+        text,
+        re.IGNORECASE,
+    )
+    if loc_match:
+        val = loc_match.group(1).strip().strip(".,!?\"'")
+        if len(val) >= 3 and not any(w in val.lower() for w in ["room", "hostel", "ghar"]):
+            extracted.append({
+                "fact_key": "location",
+                "fact_value": val.title(),
+                "category": "identity",
+                "confidence_score": 85,
+            })
+
+    # Pattern 8: Explicit "Remember that..."
+    explicit_match = re.search(
+        r"(?:remember that|please remember|note that|yaad rakhna ki?|dhyan rakhna ki?)\s*([^.\n!]{4,100})",
+        text,
+        re.IGNORECASE,
+    )
+    if explicit_match:
+        val = explicit_match.group(1).strip().strip(".,!?\"'")
+        extracted.append({
+            "fact_key": "user_instruction",
+            "fact_value": val,
+            "category": "preferences",
+            "confidence_score": 98,
+        })
+
+    return extracted
+
+
+async def async_extract_and_save_facts(user_id: str, user_message: str) -> None:
+    """
+    Background asynchronous task triggered after chat completion to extract
+    and persist user facts without blocking the chat streaming response.
+    """
+    if not user_message or len(user_message.strip()) < 5:
+        return
+
+    facts = extract_facts_from_user_message(user_message)
+    if not facts:
+        return
+
+    db = SessionLocal()
+    try:
+        # Check quota first
+        can_store = check_user_memory_quota(user_id, db)
+        if not can_store:
+            logger.warning(f"User {user_id[:8]} memory quota exceeded; skipping fact storage.")
+            return
+
+        for item in facts:
+            save_or_update_fact(
+                user_id=user_id,
+                fact_key=item["fact_key"],
+                fact_value=item["fact_value"],
+                category=item.get("category", "general"),
+                confidence_score=item.get("confidence_score", 90),
+                db=db,
+            )
+            logger.info(f"Fact '{item['fact_key']}' extracted and saved for user {user_id[:8]}")
+    except Exception as e:
+        logger.warning(f"Failed to extract/save facts for user {user_id}: {e}")
     finally:
         db.close()

@@ -400,6 +400,11 @@ async def send_chat_message(
         )
         system_prompt = f"{system_prompt}\n{attachments_info}"
 
+    # 4D. Long-Term Personalization Memory Grounding (Phase 3)
+    user_memory_context = memory_service.format_facts_for_prompt(current_user.id, db)
+    if user_memory_context:
+        system_prompt = f"{system_prompt}{user_memory_context}"
+
     # 5. Persist User Message
     user_msg = ChatMessage(
         session_id=session_id,
@@ -622,6 +627,9 @@ async def send_chat_message(
         # Phase 2: Asynchronously update rolling macro/micro summaries
         asyncio.create_task(memory_service.async_update_rolling_summary(session_id, current_user.id))
 
+        # Phase 3: Asynchronously extract and store long-term user facts
+        asyncio.create_task(memory_service.async_extract_and_save_facts(current_user.id, clean_message))
+
         remaining = max(0, limit - current_user.daily_messages_used)
         return ChatResponseJSON(
             session_id=session_id,
@@ -687,6 +695,9 @@ async def send_chat_message(
 
             # Phase 2: Asynchronously update rolling macro/micro summaries
             asyncio.create_task(memory_service.async_update_rolling_summary(session_id, current_user.id))
+
+            # Phase 3: Asynchronously extract and store long-term user facts
+            asyncio.create_task(memory_service.async_extract_and_save_facts(current_user.id, clean_message))
 
             # Final event: completion metadata with clean content
             remaining = max(0, limit - current_user.daily_messages_used)
