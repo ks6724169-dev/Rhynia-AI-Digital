@@ -225,13 +225,15 @@ body {
 
 /* Markdown formatting in AI responses */
 .markdown-body {
-  font-size: 15px;
-  line-height: 1.68;
-  color: #e2e2e2;
+  font-size: 17.5px;
+  line-height: 1.75;
+  color: #e2e8f0;
 }
 
 .markdown-body p {
   margin: 0 0 14px 0;
+  font-size: 17.5px;
+  line-height: 1.75;
 }
 
 .markdown-body p:last-child {
@@ -244,7 +246,9 @@ body {
 }
 
 .markdown-body li {
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  font-size: 17.5px;
+  line-height: 1.75;
 }
 
 .markdown-body pre {
@@ -1305,24 +1309,24 @@ html.light .mermaid-diagram-box .label text {
 }
 
 .ms-heading-1 {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   color: #ffffff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: 0.35rem;
 }
 
 .ms-heading-2 {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   color: #ffffff;
 }
 
 .ms-heading-3 {
-  font-size: 1rem;
+  font-size: 1.15rem;
   color: #f1f5f9;
 }
 
 .ms-heading-4 {
-  font-size: 0.925rem;
+  font-size: 1.05rem;
   color: #e2e8f0;
 }
 
@@ -1330,14 +1334,14 @@ html.light .mermaid-diagram-box .label text {
   display: flex;
   align-items: flex-start;
   gap: 0.55rem;
-  margin: 0.4rem 0;
-  line-height: 1.72;
-  font-size: 15px;
+  margin: 0.45rem 0;
+  line-height: 1.75;
+  font-size: 17.5px;
   color: #e2e8f0;
 }
 
 .ms-bullet-item strong {
-  font-size: 15px !important;
+  font-size: 17.5px !important;
   font-weight: 600 !important;
   color: #ffffff !important;
 }
@@ -1999,42 +2003,42 @@ html.light .user-bubble {
     font-size: 34px !important;
   }
 
-  /* Chat Messages: User Bubble (ChatGPT/Claude Grade: 15px clean rounded bubble) */
+  /* Chat Messages: User Bubble (Comfortable 17.5px) */
   .user-bubble {
-    font-size: 15px !important;
+    font-size: 17.5px !important;
     min-height: auto !important;
-    padding: 12px 18px !important;
+    padding: 13px 19px !important;
     border-radius: 18px 18px 4px 18px !important;
     max-width: 88% !important;
-    line-height: 1.62 !important;
+    line-height: 1.65 !important;
     display: inline-block !important;
     align-items: initial !important;
   }
 
-  /* AI Message Text: ChatGPT / Claude Standard 15px, 1.72 Line Height */
+  /* AI Message Text: Comfortable 17.5px, 1.75 Line Height */
   .ai-text-body,
   .ai-text-body p,
   .ai-text-body li,
   .ms-bullet-item {
-    font-size: 15px !important;
-    line-height: 1.72 !important;
+    font-size: 17.5px !important;
+    line-height: 1.75 !important;
     color: #e2e8f0 !important;
   }
 
   .ai-text-body strong,
   .ms-bullet-item strong {
-    font-size: 15px !important;
+    font-size: 17.5px !important;
     font-weight: 600 !important;
     color: #ffffff !important;
   }
 
   .ai-text-body code {
-    font-size: 13.5px !important;
+    font-size: 14.5px !important;
     font-family: 'JetBrains Mono', monospace !important;
   }
 
   .ai-text-body pre {
-    font-size: 13px !important;
+    font-size: 14px !important;
     padding: 12px 14px !important;
   }
 
