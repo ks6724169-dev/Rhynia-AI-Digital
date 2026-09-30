@@ -260,7 +260,7 @@ function appendRhyniaPlaceholderUI(existingMessageId) {
   if (existingMessageId) {
     msgDiv.dataset.messageId = existingMessageId;
   }
-  msgDiv.className = "flex flex-col gap-3.5 w-full pr-1 sm:pr-8 py-5 animate-fade-in border-b border-white/[0.04]";
+  msgDiv.className = "flex flex-col gap-3.5 w-full px-3 sm:px-6 py-5 animate-fade-in border-b border-white/[0.04]";
 
   msgDiv.innerHTML = `
     <!-- Response Markdown Content -->
@@ -269,7 +269,7 @@ function appendRhyniaPlaceholderUI(existingMessageId) {
     </div>
 
     <!-- Response Action Bar (5 Icons: Copy, Speaker, Good, Bad, Share) -->
-    <div class="ai-actions-bar hidden items-center gap-3.5 sm:gap-3 pt-4 text-neutral-400">
+    <div class="ai-actions-bar hidden items-center gap-4.5 sm:gap-4 pt-4 text-neutral-400">
       <button onclick="copyResponseText(this)" aria-label="Copy response" title="Copy response" class="w-13 h-13 sm:w-12 sm:h-12 min-w-[50px] min-h-[50px] rounded-2xl inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all">
         <span class="material-symbols-outlined text-[30px] sm:text-[28px]">content_copy</span>
       </button>
