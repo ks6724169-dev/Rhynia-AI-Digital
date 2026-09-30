@@ -22,9 +22,11 @@ async function openSettingsPanel() {
 
   const settingsPanel = document.getElementById("screen-settings-panel");
   const mainChatContainer = document.getElementById("main-chat-container");
+  const header = document.querySelector("header");
 
   if (settingsPanel) settingsPanel.classList.remove("hidden");
   if (mainChatContainer) mainChatContainer.classList.add("hidden");
+  if (header) header.style.setProperty("display", "none", "important");
 
   // Load latest live telemetry
   await loadUserProfile();
@@ -38,9 +40,11 @@ async function openSettingsPanel() {
 function closeSettingsPanel() {
   const settingsPanel = document.getElementById("screen-settings-panel");
   const mainChatContainer = document.getElementById("main-chat-container");
+  const header = document.querySelector("header");
 
   if (settingsPanel) settingsPanel.classList.add("hidden");
   if (mainChatContainer) mainChatContainer.classList.remove("hidden");
+  if (header) header.style.removeProperty("display");
 }
 
 /**

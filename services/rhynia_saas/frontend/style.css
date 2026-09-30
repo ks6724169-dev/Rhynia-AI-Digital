@@ -1873,7 +1873,7 @@ html.light .user-bubble {
 
   /* Main Container: Safe Area Awareness & Fixed Header Offset */
   #main-chat-container {
-    padding-top: 92px !important;
+    padding-top: 102px !important;
     padding-left: 20px !important;
     padding-right: 20px !important;
     padding-bottom: calc(140px + env(safe-area-inset-bottom, 24px)) !important;
@@ -1881,10 +1881,10 @@ html.light .user-bubble {
     max-width: 100% !important;
   }
 
-  /* Top Navigation Bar: FIXED Floating ChatGPT Style ~82px (Never Scrolls Away!) */
+  /* Top Navigation Bar: FIXED Floating ChatGPT Style ~90px (Never Scrolls Away!) */
   header {
-    height: 82px !important;
-    min-height: 82px !important;
+    height: 90px !important;
+    min-height: 90px !important;
     padding-left: 16px !important;
     padding-right: 16px !important;
     background: rgba(18, 18, 18, 0.95) !important;
@@ -1898,12 +1898,12 @@ html.light .user-bubble {
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
 
-  /* ☰ Menu button: 62 × 62 px Touch Target inside Pill */
+  /* ☰ Menu button: 70 × 70 px Touch Target inside Pill */
   #btn-hamburger-menu {
-    width: 62px !important;
-    height: 62px !important;
-    min-width: 62px !important;
-    min-height: 62px !important;
+    width: 70px !important;
+    height: 70px !important;
+    min-width: 70px !important;
+    min-height: 70px !important;
     border-radius: 9999px !important;
     background: #212121 !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
@@ -1914,27 +1914,27 @@ html.light .user-bubble {
   }
 
   #btn-hamburger-menu .material-symbols-outlined {
-    font-size: 34px !important;
+    font-size: 38px !important;
   }
 
   /* Right Capsule container */
   #header-right-capsule {
-    padding: 4px 8px !important;
+    padding: 5px 10px !important;
     border-radius: 9999px !important;
     background: #212121 !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
-    gap: 6px !important;
+    gap: 8px !important;
     display: flex !important;
     align-items: center !important;
   }
 
-  /* ✏️ New Chat Button inside Right Capsule: 52 × 52 px */
+  /* ✏️ New Chat Button inside Right Capsule: 60 × 60 px */
   header button[onclick="startNewChat()"] {
-    width: 52px !important;
-    height: 52px !important;
-    min-width: 52px !important;
-    min-height: 52px !important;
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
     border-radius: 9999px !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -1942,15 +1942,15 @@ html.light .user-bubble {
   }
 
   header button[onclick="startNewChat()"] .material-symbols-outlined {
-    font-size: 30px !important;
+    font-size: 34px !important;
   }
 
-  /* ⋮ More Button inside Right Capsule: 52 × 52 px */
+  /* ⋮ More Button inside Right Capsule: 60 × 60 px */
   #btn-three-dots-trigger {
-    width: 52px !important;
-    height: 52px !important;
-    min-width: 52px !important;
-    min-height: 52px !important;
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
     border-radius: 9999px !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -1958,14 +1958,14 @@ html.light .user-bubble {
   }
 
   #btn-three-dots-trigger .material-symbols-outlined {
-    font-size: 30px !important;
+    font-size: 34px !important;
   }
 
   /* 3-Dots Flyout Menu Positioned Comfortably Below Top Bar */
   #three-dots-menu {
-    top: 90px !important;
+    top: 96px !important;
     right: 18px !important;
-    width: 290px !important;
+    width: 300px !important;
     border-radius: 20px !important;
   }
 
