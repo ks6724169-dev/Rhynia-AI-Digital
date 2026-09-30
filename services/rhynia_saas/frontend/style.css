@@ -225,15 +225,15 @@ body {
 
 /* Markdown formatting in AI responses */
 .markdown-body {
-  font-size: 17.5px;
-  line-height: 1.75;
+  font-size: 20px;
+  line-height: 1.78;
   color: #e2e8f0;
 }
 
 .markdown-body p {
-  margin: 0 0 14px 0;
-  font-size: 17.5px;
-  line-height: 1.75;
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  line-height: 1.78;
 }
 
 .markdown-body p:last-child {
@@ -241,14 +241,14 @@ body {
 }
 
 .markdown-body ul, .markdown-body ol {
-  margin: 0 0 14px 0;
-  padding-left: 20px;
+  margin: 0 0 16px 0;
+  padding-left: 24px;
 }
 
 .markdown-body li {
-  margin-bottom: 8px;
-  font-size: 17.5px;
-  line-height: 1.75;
+  margin-bottom: 10px;
+  font-size: 20px;
+  line-height: 1.78;
 }
 
 .markdown-body pre {
@@ -1309,24 +1309,24 @@ html.light .mermaid-diagram-box .label text {
 }
 
 .ms-heading-1 {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   color: #ffffff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   padding-bottom: 0.35rem;
 }
 
 .ms-heading-2 {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   color: #ffffff;
 }
 
 .ms-heading-3 {
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   color: #f1f5f9;
 }
 
 .ms-heading-4 {
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   color: #e2e8f0;
 }
 
@@ -1335,13 +1335,13 @@ html.light .mermaid-diagram-box .label text {
   align-items: flex-start;
   gap: 0.55rem;
   margin: 0.45rem 0;
-  line-height: 1.75;
-  font-size: 17.5px;
+  line-height: 1.78;
+  font-size: 20px;
   color: #e2e8f0;
 }
 
 .ms-bullet-item strong {
-  font-size: 17.5px !important;
+  font-size: 20px !important;
   font-weight: 600 !important;
   color: #ffffff !important;
 }
@@ -2003,31 +2003,31 @@ html.light .user-bubble {
     font-size: 34px !important;
   }
 
-  /* Chat Messages: User Bubble (Comfortable 17.5px) */
+  /* Chat Messages: User Bubble (Large & Clear 20px) */
   .user-bubble {
-    font-size: 17.5px !important;
+    font-size: 20px !important;
     min-height: auto !important;
-    padding: 13px 19px !important;
+    padding: 14px 20px !important;
     border-radius: 18px 18px 4px 18px !important;
     max-width: 88% !important;
-    line-height: 1.65 !important;
+    line-height: 1.68 !important;
     display: inline-block !important;
     align-items: initial !important;
   }
 
-  /* AI Message Text: Comfortable 17.5px, 1.75 Line Height */
+  /* AI Message Text: Large & Clear 20px, 1.78 Line Height */
   .ai-text-body,
   .ai-text-body p,
   .ai-text-body li,
   .ms-bullet-item {
-    font-size: 17.5px !important;
-    line-height: 1.75 !important;
+    font-size: 20px !important;
+    line-height: 1.78 !important;
     color: #e2e8f0 !important;
   }
 
   .ai-text-body strong,
   .ms-bullet-item strong {
-    font-size: 17.5px !important;
+    font-size: 20px !important;
     font-weight: 600 !important;
     color: #ffffff !important;
   }
