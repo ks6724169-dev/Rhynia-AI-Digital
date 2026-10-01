@@ -1018,7 +1018,8 @@ window.logoutUser = logoutUser;
 window.triggerAvatarUpload = triggerAvatarUpload;
 window.handleAvatarFileSelected = handleAvatarFileSelected;
 window.toggleEditProfileModal = toggleEditProfileModal;
-window.saveProfileChanges = saveProfileChanges;
+window.saveUserProfile = saveUserProfile;
+window.saveProfileChanges = saveUserProfile;
 
 // Phase 5 Memory Bindings
 window.loadMemoryDashboard = loadMemoryDashboard;

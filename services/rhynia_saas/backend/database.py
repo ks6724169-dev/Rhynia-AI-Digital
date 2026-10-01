@@ -39,7 +39,7 @@ if db_url.startswith("sqlite"):
         if db_path.parent and not db_path.parent.exists():
             db_path.parent.mkdir(parents=True, exist_ok=True)
 else:
-    connect_args = {"connect_timeout": 15}
+    connect_args = {"connect_timeout": 15, "sslmode": "require"}
 
 engine = create_engine(
     db_url,

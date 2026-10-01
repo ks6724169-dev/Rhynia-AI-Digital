@@ -17,15 +17,21 @@ let emailTimerInterval = null;
  */
 function togglePasswordVisibility(inputId, iconId) {
   const input = document.getElementById(inputId);
-  const icon = document.getElementById(iconId);
   if (!input) return;
 
-  if (input.type === "password") {
-    input.type = "text";
-    if (icon) icon.textContent = "visibility_off";
-  } else {
-    input.type = "password";
-    if (icon) icon.textContent = "visibility";
+  const isPassword = input.type === "password";
+  input.type = isPassword ? "text" : "password";
+
+  let icon = iconId ? document.getElementById(iconId) : null;
+  if (!icon) {
+    const btn = input.parentElement ? input.parentElement.querySelector("button") : null;
+    if (btn) {
+      icon = btn.querySelector(".material-symbols-outlined");
+    }
+  }
+
+  if (icon) {
+    icon.textContent = isPassword ? "visibility_off" : "visibility";
   }
 }
 
@@ -124,10 +130,16 @@ async function handleLoginSubmit(event) {
     try {
       data = await res.json();
     } catch (_) {
+      if (res.status === 502 || res.status === 503 || res.status === 504) {
+        throw new Error("Rhynia cloud server is waking up from standby. Please retry in 15 seconds.");
+      }
       throw new Error(`Server connection issue (${res.status}). Please retry in a few moments.`);
     }
 
     if (!res.ok) {
+      if (res.status === 502 || res.status === 503 || res.status === 504) {
+        throw new Error("Rhynia cloud server is waking up from standby. Please retry in 15 seconds.");
+      }
       let errMsg = "Authentication failed";
       if (data && typeof data.detail === "string") {
         errMsg = data.detail;
@@ -760,23 +772,6 @@ async function handleNewPasswordSubmit(event) {
   }
 }
 
-/**
- * Toggle Password Visibility (Eye Icon)
- */
-function togglePasswordVisibility(inputId) {
-  const input = document.getElementById(inputId);
-  if (!input) return;
-  const isPassword = input.type === "password";
-  input.type = isPassword ? "text" : "password";
-
-  const btn = input.parentElement ? input.parentElement.querySelector("button") : null;
-  if (btn) {
-    const icon = btn.querySelector(".material-symbols-outlined");
-    if (icon) {
-      icon.textContent = isPassword ? "visibility_off" : "visibility";
-    }
-  }
-}
 
 /**
  * Cancel Password Reset Flow

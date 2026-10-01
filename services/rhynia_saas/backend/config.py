@@ -42,12 +42,12 @@ class Settings(BaseSettings):
         "https://rhynia.vercel.app",
     ]
 
-    # Database Configuration (Supabase PostgreSQL via .env, with SQLite fallback)
-    DATABASE_URL: str = "sqlite:///./database/rhynia.db"
-    SUPABASE_URL: Optional[str] = None
+    # Database Configuration (Supabase PostgreSQL via .env, with Session Pooler fallback)
+    DATABASE_URL: str = "postgresql://postgres.argbmsljgfmevthutqpu:Maniwh%402007zzzz@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres"
+    SUPABASE_URL: Optional[str] = "https://argbmsljgfmevthutqpu.supabase.co"
     SUPABASE_ANON_KEY: Optional[str] = None
     SUPABASE_SERVICE_ROLE_KEY: Optional[str] = None
-    SUPABASE_PROJECT_ID: Optional[str] = None
+    SUPABASE_PROJECT_ID: Optional[str] = "argbmsljgfmevthutqpu"
 
     # Security & JWT Tokens
     JWT_SECRET: str = "rhynia_super_secure_jwt_secret_key_2026_horizon_luminescent"

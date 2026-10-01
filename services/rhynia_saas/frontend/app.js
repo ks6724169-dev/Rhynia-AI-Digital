@@ -1414,9 +1414,49 @@ document.addEventListener("DOMContentLoaded", async () => {
       headers: { "Authorization": `Bearer ${AppState.token}` }
     });
 
-    if (!res.ok) {
-      // Invalid or expired token: clear and force login
+    if (res.status === 401) {
+      // Only genuinely expired or invalid token triggers logout
+      console.warn("Token expired or unauthorized (401). Redirecting to login.");
       logoutUser();
+      return;
+    }
+
+    if (!res.ok) {
+      // Server is waking up (502/503/504) or experiencing temporary startup latency
+      console.warn(`Rhynia API responded with status ${res.status}. Preserving authenticated session.`);
+      if (AppState.user) {
+        switchView("view-app");
+        renderUserProfileUI(AppState.user);
+        updateEmptyStateUserName(AppState.user);
+        updateDrawerProfileAvatar();
+        showToast("Rhynia cloud waking up... your workspace is ready.", "info");
+        
+        // Background sync once server warms up
+        const retryProfileSync = async (retriesLeft = 6) => {
+          if (retriesLeft <= 0) return;
+          try {
+            await new Promise(r => setTimeout(r, 5000));
+            const retryRes = await fetch(`${CONFIG.API_BASE}/profile`, {
+              headers: { "Authorization": `Bearer ${AppState.token}` }
+            });
+            if (retryRes.ok) {
+              const freshProfile = await retryRes.json();
+              AppState.user = freshProfile;
+              localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(freshProfile));
+              renderUserProfileUI(freshProfile);
+              loadSessions();
+            } else if (retryRes.status !== 401) {
+              retryProfileSync(retriesLeft - 1);
+            }
+          } catch (_) {
+            retryProfileSync(retriesLeft - 1);
+          }
+        };
+        retryProfileSync();
+        return;
+      }
+      // If no cached user profile, fallback to cached view
+      switchView("view-app");
       return;
     }
 
@@ -1456,8 +1496,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   } catch (err) {
     console.error("Initialization error:", err);
-    // If backend unreachable, still allow cached UI or login
-    if (!AppState.user) {
+    // If backend unreachable due to network or cold boot, preserve session
+    if (AppState.user) {
+      switchView("view-app");
+      renderUserProfileUI(AppState.user);
+      updateEmptyStateUserName(AppState.user);
+      updateDrawerProfileAvatar();
+      showToast("Connecting to cloud... your workspace is ready.", "info");
+    } else if (!AppState.token) {
       switchView("view-login");
     } else {
       switchView("view-app");

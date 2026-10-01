@@ -12,3 +12,9 @@ services:
         value: production
       - key: DEBUG
         value: false
+      - key: DATABASE_URL
+        value: postgresql://postgres.argbmsljgfmevthutqpu:Maniwh%402007zzzz@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres
+      - key: SUPABASE_URL
+        value: https://argbmsljgfmevthutqpu.supabase.co
+      - key: SUPABASE_PROJECT_ID
+        value: argbmsljgfmevthutqpu
