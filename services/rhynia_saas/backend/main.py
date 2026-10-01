@@ -13,18 +13,24 @@ import httpx
 
 from services.rhynia_saas.backend.config import settings
 from services.rhynia_saas.backend.database import init_db
+from services.rhynia_saas.backend.services.migrator import run_sql_migrations
 from services.rhynia_saas.backend.routers import auth, chat, feedback, files, notifications, ppt, profile, sessions, memory
 from services.rhynia_saas.backend.services.image_search import EducationalImageService
 
 
 import asyncio
 
+def _bg_startup():
+    """Background startup tasks: initialize tables and execute pending migrations."""
+    init_db()
+    run_sql_migrations()
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application startup and shutdown events."""
     try:
         loop = asyncio.get_running_loop()
-        loop.run_in_executor(None, init_db)
+        loop.run_in_executor(None, _bg_startup)
     except Exception as e:
         import logging
         logging.getLogger("rhynia.main").warning(f"Startup background task warning: {e}")
