@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "outputDirectory": "services/rhynia_saas/frontend",
+  "outputDirectory": "dist",
   "cleanUrls": false,
   "rewrites": [
     {

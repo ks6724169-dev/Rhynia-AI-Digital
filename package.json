@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "echo 'Build successful'",
+    "build": "mkdir -p dist && cp -r services/rhynia_saas/frontend/* dist/ && mkdir -p public && cp -r services/rhynia_saas/frontend/* public/ 2>/dev/null || true",
     "start": "tsx server.ts"
   },
   "dependencies": {
