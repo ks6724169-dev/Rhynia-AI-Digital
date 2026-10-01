@@ -333,5 +333,9 @@ def get_db() -> Generator[Session, None, None]:
 
 
 def init_db() -> None:
-    """Create all tables in the database."""
-    Base.metadata.create_all(bind=engine)
+    """Create all tables in the database safely without blocking startup."""
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        import logging
+        logging.getLogger("rhynia.database").warning(f"init_db safe skip: {e}")

@@ -19,17 +19,15 @@ from services.rhynia_saas.backend.services.image_search import EducationalImageS
 
 import asyncio
 
-async def _bg_init_db():
-    try:
-        init_db()
-    except Exception as e:
-        import logging
-        logging.getLogger("rhynia.main").warning(f"Database initialization deferred: {e}")
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application startup and shutdown events."""
-    asyncio.create_task(_bg_init_db())
+    try:
+        loop = asyncio.get_running_loop()
+        loop.run_in_executor(None, init_db)
+    except Exception as e:
+        import logging
+        logging.getLogger("rhynia.main").warning(f"Startup background task warning: {e}")
     yield
 
 
