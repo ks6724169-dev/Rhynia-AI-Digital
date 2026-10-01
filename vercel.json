@@ -1,23 +1,11 @@
 {
   "version": 2,
-  "name": "rhynia-ai-digital",
+  "outputDirectory": "services/rhynia_saas/frontend",
   "cleanUrls": false,
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "https://rhynia-ai-api.onrender.com/api/$1"
-    },
-    {
-      "source": "/",
-      "destination": "/services/rhynia_saas/frontend/index.html"
-    },
-    {
-      "source": "/index.html",
-      "destination": "/services/rhynia_saas/frontend/index.html"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/services/rhynia_saas/frontend/$1"
     }
   ]
 }
