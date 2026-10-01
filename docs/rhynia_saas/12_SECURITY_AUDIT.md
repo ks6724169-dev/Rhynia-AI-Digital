@@ -171,7 +171,7 @@ curl -X GET "http://localhost:8000/api/v1/sessions/USER_B_SESSION_ID/messages" \
 ```bash
 # ✅ CORRECT — Secrets in .env (gitignored)
 RHYNIA_SECRET_KEY=super-random-256bit-string-here
-RHYNIA_HF_TOKEN=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
+RHYNIA_HF_TOKEN=hf_placeholder_token_for_audit
 RHYNIA_GROQ_KEY=gsk_your-groq-key-here
 RHYNIA_DATABASE_URL=postgresql://user:pass@host/db
 

@@ -4,7 +4,7 @@ services:
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn services.rhynia_saas.backend.main:app --host 0.0.0.0 --port $PORT
+    startCommand: python -m uvicorn services.rhynia_saas.backend.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
@@ -13,34 +13,34 @@ services:
       - key: DEBUG
         value: false
       - key: DATABASE_URL
-        value: postgresql://postgres.argbmsljgfmevthutqpu:Maniwh%402007zzzz@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres
+        sync: false
       - key: SUPABASE_URL
-        value: https://argbmsljgfmevthutqpu.supabase.co
+        sync: false
       - key: SUPABASE_PROJECT_ID
-        value: argbmsljgfmevthutqpu
+        sync: false
       - key: OPENROUTER_API_KEY
-        value: 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
+        sync: false
       - key: OPENROUTER_BACKUP_KEY
-        value: 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
+        sync: false
       - key: GEMINI_API_KEY
-        value: AQ.Ab8RN6IcQJ9ylCArnSlnK5m_WkrwWRjm1WgxweH_L1Hh2a9GfQ
+        sync: false
       - key: GEMINI_BACKUP_KEY
-        value: AQ.Ab8RN6L-5Z8FqYhyXbH727BNJ4EXgvq-HkMF4fcgZltLuCBBBQ
+        sync: false
       - key: JWT_SECRET
-        value: rhynia_super_secure_jwt_secret_key_2026_horizon_luminescent
+        sync: false
       - key: GOOGLE_CLIENT_ID
-        value: 1001346913265-qbdhpbb69gen2mvcjtu56jepn1sld8os.apps.googleusercontent.com
+        sync: false
       - key: GOOGLE_CLIENT_SECRET
-        value: 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
+        sync: false
       - key: FAST2SMS_API_KEY
-        value: ZREic30HSxnBehfXKM29VdCrTFjaDNogkz4J1ylAQqpU5mIwG8NvBRVM3ueYnICoQ0UEchZkHtT6b48z
+        sync: false
       - key: SMTP_HOST
         value: smtp.gmail.com
       - key: SMTP_PORT
         value: "465"
       - key: SMTP_USER
-        value: mk6611236@gmail.com
+        sync: false
       - key: SMTP_PASSWORD
-        value: nldgbrmonepawpqw
+        sync: false
       - key: SMTP_FROM_NAME
         value: Rhynia Intelligence
