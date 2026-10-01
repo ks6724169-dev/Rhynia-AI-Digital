@@ -5,8 +5,14 @@
 
 const CONFIG = {
   // Base URL for backend REST API
-  API_BASE: (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:")
-    ? "http://127.0.0.1:8000/api/v1"
+  API_BASE: (
+    window.location.hostname.includes("run.app") ||
+    window.location.hostname.includes("aistudio") ||
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1" ||
+    window.location.port === "3000"
+  )
+    ? "/api"
     : "https://rhynia-ai-api.onrender.com/api/v1",
 
   // Google OAuth 2.0 Web Client ID
