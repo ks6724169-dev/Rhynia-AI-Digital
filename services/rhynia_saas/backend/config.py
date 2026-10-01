@@ -40,6 +40,8 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8000",
         "http://localhost:8000",
         "https://rhynia.vercel.app",
+        "https://rhynia-ai-digital.vercel.app",
+        "https://rhynia-ai.onrender.com",
     ]
 
     # Database Configuration (Supabase PostgreSQL via .env, with Session Pooler fallback)
