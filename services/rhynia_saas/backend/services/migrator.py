@@ -15,17 +15,22 @@ logger = logging.getLogger("rhynia.migrator")
 
 def run_sql_migrations() -> None:
     """Find and execute unapplied .sql migrations in alphabetical/timestamp order."""
-    migrations_dir = Path(__file__).resolve().parent.parent.parent.parent / "migrations"
-    if not migrations_dir.exists():
-        migrations_dir = Path(__file__).resolve().parent.parent / "migrations"
+    repo_root = Path(__file__).resolve().parent.parent.parent.parent
+    candidate_dirs = [
+        repo_root / "supabase" / "migrations",
+        repo_root / "migrations",
+        Path(__file__).resolve().parent.parent / "migrations",
+    ]
 
-    if not migrations_dir.exists():
-        logger.info(f"No migrations folder found at {migrations_dir}, skipping.")
-        return
+    sql_files = []
+    for d in candidate_dirs:
+        if d.exists():
+            sql_files.extend(list(d.glob("*.sql")))
 
-    sql_files = sorted(list(migrations_dir.glob("*.sql")))
+    # Sort uniquely by filename
+    sql_files = sorted(list({f.name: f for f in sql_files}.values()), key=lambda f: f.name)
     if not sql_files:
-        logger.info("No .sql files found in migrations folder.")
+        logger.info("No .sql files found in migrations folders.")
         return
 
     try:
