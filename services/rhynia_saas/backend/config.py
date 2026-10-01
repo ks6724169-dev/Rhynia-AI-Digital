@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     ]
 
     # Database Configuration (Supabase PostgreSQL via .env, with Session Pooler fallback)
-    DATABASE_URL: str = "postgresql://postgres.argbmsljgfmevthutqpu:Maniwh%402007zzzz@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres"
+    DATABASE_URL: str = "postgresql://postgres.argbmsljgfmevthutqpu:Maniwh%402007zzzz@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
     SUPABASE_URL: Optional[str] = "https://argbmsljgfmevthutqpu.supabase.co"
     SUPABASE_ANON_KEY: Optional[str] = None
     SUPABASE_SERVICE_ROLE_KEY: Optional[str] = None
