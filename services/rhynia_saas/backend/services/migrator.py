@@ -15,11 +15,11 @@ logger = logging.getLogger("rhynia.migrator")
 
 def run_sql_migrations() -> None:
     """Find and execute unapplied .sql migrations in alphabetical/timestamp order."""
-    repo_root = Path(__file__).resolve().parent.parent.parent.parent
     candidate_dirs = [
-        repo_root / "supabase" / "migrations",
-        repo_root / "migrations",
-        Path(__file__).resolve().parent.parent / "migrations",
+        Path.cwd() / "supabase" / "migrations",
+        Path.cwd() / "migrations",
+        Path(__file__).resolve().parent.parent.parent.parent.parent / "supabase" / "migrations",
+        Path(__file__).resolve().parent.parent.parent.parent.parent / "migrations",
     ]
 
     sql_files = []
@@ -36,20 +36,18 @@ def run_sql_migrations() -> None:
     try:
         with engine.connect() as conn:
             # Create schema_migrations tracking table if not exists
-            conn.execute(
-                text(
-                    """
-                    CREATE TABLE IF NOT EXISTS schema_migrations (
-                        version VARCHAR(255) PRIMARY KEY,
-                        applied_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-                    );
-                    """
-                )
+            conn.exec_driver_sql(
+                """
+                CREATE TABLE IF NOT EXISTS schema_migrations (
+                    version VARCHAR(255) PRIMARY KEY,
+                    applied_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                );
+                """
             )
             conn.commit()
 
             # Fetch already applied migrations
-            result = conn.execute(text("SELECT version FROM schema_migrations;"))
+            result = conn.exec_driver_sql("SELECT version FROM schema_migrations;")
             applied = {row[0] for row in result.fetchall()}
 
             for sql_file in sql_files:
@@ -57,8 +55,7 @@ def run_sql_migrations() -> None:
                     logger.info(f"Applying new database migration: {sql_file.name}")
                     sql_content = sql_file.read_text(encoding="utf-8")
                     if sql_content.strip():
-                        # Execute SQL statements
-                        conn.execute(text(sql_content))
+                        conn.exec_driver_sql(sql_content)
                         conn.execute(
                             text("INSERT INTO schema_migrations (version) VALUES (:ver);"),
                             {"ver": sql_file.name},
