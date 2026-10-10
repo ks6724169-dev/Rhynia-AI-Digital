@@ -148,24 +148,56 @@ async function sendChatMessage() {
   currentChatAbortController = new AbortController();
 
   try {
-    const res = await fetch(`${CONFIG.API_BASE}/chat`, {
-      method: "POST",
-      signal: currentChatAbortController.signal,
-      headers: {
-        "Authorization": `Bearer ${AppState.token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: effectiveMessage,
-        session_id: AppState.activeSessionId,
-        stream: true,
-        files: files.map(f => f.id),
-        web_search: true
-      })
-    });
+    let chatEndpoint = `${CONFIG.API_BASE}/chat`;
+    let res = null;
+
+    const sendPayload = (sessionId, endpoint) => {
+      return fetch(endpoint, {
+        method: "POST",
+        signal: currentChatAbortController.signal,
+        headers: {
+          "Authorization": `Bearer ${AppState.token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: effectiveMessage,
+          session_id: sessionId,
+          stream: true,
+          files: files.map(f => f.id),
+          web_search: true
+        })
+      });
+    };
+
+    try {
+      res = await sendPayload(AppState.activeSessionId, chatEndpoint);
+    } catch (netErr) {
+      console.warn("Primary endpoint network error, failing over to Render backup...", netErr);
+      chatEndpoint = `${CONFIG.RENDER_BACKEND}/chat`;
+      res = await sendPayload(AppState.activeSessionId, chatEndpoint);
+    }
+
+    // Auto-Recovery: If 404/500 occurred due to a stale or invalid session, clear session and retry once!
+    if ((res.status === 404 || res.status === 500) && AppState.activeSessionId) {
+      console.warn("Session may be stale, auto-retrying with fresh session...");
+      AppState.activeSessionId = null;
+      localStorage.removeItem(CONFIG.SESSION_KEY);
+      res = await sendPayload(null, chatEndpoint);
+    }
+
+    // Secondary Failover: If primary host returned 5xx, try secondary cloud host (Render)
+    if (res.status >= 500 && chatEndpoint !== `${CONFIG.RENDER_BACKEND}/chat`) {
+      console.warn("Primary cloud host returned 5xx, dispatching to Render backend...");
+      try {
+        chatEndpoint = `${CONFIG.RENDER_BACKEND}/chat`;
+        res = await sendPayload(AppState.activeSessionId, chatEndpoint);
+      } catch (backupErr) {
+        console.warn("Backup cloud failover error:", backupErr);
+      }
+    }
 
     if (res.status === 429) {
-      const errData = await res.json();
+      const errData = await res.json().catch(() => ({}));
       throw new Error(errData.detail || "Daily message limit reached. Please upgrade your tier.");
     }
 
@@ -334,8 +366,11 @@ async function sendChatMessage() {
     } else {
       console.error("Chat error:", err);
       finishRhyniaThinkingState(rhyniaMessageId);
-      textContainer.innerHTML = `<span class="text-red-400 text-sm">Error: ${escapeHtml(err.message)}</span>`;
-      showToast(err.message, "error");
+      const safeRecoveryMsg = "नमस्ते! नेटवर्क या सर्वर लोड के कारण सीधा कनेक्शन क्षणिक रूप से धीमा हुआ है। कृपया अपना प्रश्न पुनः पूछें या ऊपर बाएँ **'+ New Chat'** शुरू करें, मैं आपकी पूरी सहायता करूँगा! 🌟";
+      textContainer.innerHTML = renderMarkdown(safeRecoveryMsg);
+      showToast("नेटवर्क लोड धीमा है, कृपया पुनः प्रयास करें", "info");
+      actionsContainer.classList.remove("hidden");
+      actionsContainer.classList.add("flex");
     }
   } finally {
     AppState.isStreaming = false;

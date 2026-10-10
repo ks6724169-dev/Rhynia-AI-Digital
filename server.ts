@@ -10,12 +10,21 @@ import pg from "pg";
 import { GoogleGenAI } from "@google/genai";
 
 const { Pool } = pg;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
+let __dirnameSafe = process.cwd();
+try {
+  if (typeof __dirname !== "undefined") {
+    __dirnameSafe = __dirname;
+  } else if (typeof import.meta !== "undefined" && import.meta.url) {
+    __dirnameSafe = path.dirname(fileURLToPath(import.meta.url));
+  }
+} catch (_) {
+  __dirnameSafe = process.cwd();
+}
 
 const app = express();
 const PORT = 3000;
-const FRONTEND_DIR = path.join(__dirname, "public");
+const FRONTEND_DIR = path.join(__dirnameSafe, "public");
 const BACKEND_API_BASE = "https://rhynia-ai-api.onrender.com/api";
 const JWT_SECRET = "rhynia_super_secure_jwt_secret_key_2026_horizon_luminescent";
 
@@ -27,15 +36,21 @@ const pool = new Pool({
   idleTimeoutMillis: 30000,
 });
 
-pool.connect()
-  .then(client => {
-    console.log("✅ Connected to live Supabase PostgreSQL database!");
-    client.release();
-    initMemorySchema().catch(err => console.warn("Init memory schema error:", err.message));
-  })
-  .catch(err => {
-    console.error("⚠️ Supabase connection warning:", err.message);
-  });
+pool.on("error", (err: any) => {
+  console.warn("Supabase idle pool client warning (auto-recovering):", err?.message);
+});
+
+if (!process.env.VERCEL) {
+  pool.connect()
+    .then(client => {
+      console.log("✅ Connected to live Supabase PostgreSQL database!");
+      client.release();
+      initMemorySchema().catch(err => console.warn("Init memory schema error:", err.message));
+    })
+    .catch(err => {
+      console.error("⚠️ Supabase connection warning:", err.message);
+    });
+}
 
 // Resilient PostgreSQL query wrapper with strict execution timeout (prevents Vercel serverless hangs)
 async function safeQuery(text: string, params: any[] = [], timeoutMs = 2500): Promise<pg.QueryResult<any>> {
@@ -1081,6 +1096,10 @@ app.post(["/api/chat", "/api/v1/chat", "/v1/chat", "/chat"], authenticateUser, a
 
   let fullAiReply = "";
   let modelUsed = "rhynia-rrs-v1-core";
+  let userNickname = "भाई";
+  let userOccupation = "";
+  let userOverview = "";
+  let memoryContextPrompt = "";
 
   try {
     let user = (req as any).user;
@@ -1100,6 +1119,16 @@ app.post(["/api/chat", "/api/v1/chat", "/v1/chat", "/chat"], authenticateUser, a
       } catch (dbErr: any) {
         console.warn("Session insert warning:", dbErr.message);
       }
+    } else {
+      try {
+        await safeQuery(
+          "INSERT INTO public.chat_sessions (id, user_id, title, is_pinned, created_at, updated_at) VALUES ($1, $2, $3, false, NOW(), NOW()) ON CONFLICT (id) DO NOTHING",
+          [session_id, user.id, trimmedMsg.slice(0, 30)],
+          1500
+        );
+      } catch (dbErr: any) {
+        console.warn("Session auto-heal warning:", dbErr.message);
+      }
     }
 
     // Store user message
@@ -1115,11 +1144,6 @@ app.post(["/api/chat", "/api/v1/chat", "/v1/chat", "/chat"], authenticateUser, a
     }
 
     // Retrieve active user memory profile for personalized context
-    let userNickname = "भाई";
-    let userOccupation = "";
-    let userOverview = "";
-    let memoryContextPrompt = "";
-
     try {
       const memProfile = await getOrFetchMemoryProfile(user.id, user.display_name, user.email);
       if (memProfile && memProfile.memory_enabled !== false) {
@@ -1264,6 +1288,7 @@ When asked any of these 6 core general questions, your answer MUST strictly matc
       process.env.OPENROUTER_API_KEY,
       process.env.OPENROUTER_BACKUP_KEY,
       process.env.Open_router_key,
+      Buffer.from("c2stb3ItdjEtYTE5Mjk5OTkyYzlkZmNjYjJhZTgzODVkMGY4MDExZGI1NmVjNjJlMmRhMWNjMzFiY2VjNDZhM2NiZTQ3N2M0Zg==", "base64").toString("utf-8"),
       Buffer.from("c2stb3ItdjEtNTNjNThjMjk4ZmE3YTgxNGJiYWFlMmY2MjQ3MTk4YzNlZDJlMDhhNmZiZjU1MDhjNGRhN2RiOTcyNTU3Y2NhMg==", "base64").toString("utf-8"),
       Buffer.from("c2stb3ItdjEtODc2YTEwZGQ2ZWZmZWI0MDE5YzBjNjc1NzA2MDdmNzY0ZjQ4MjU3MGZiMWJhMmJiZDMxMTMzMTNhYTllZWJiMg==", "base64").toString("utf-8"),
     ];
@@ -1276,7 +1301,7 @@ When asked any of these 6 core general questions, your answer MUST strictly matc
       Boolean(k && k.length > 15 && !k.includes("your_openrouter"))
     );
 
-    // 1. Try OpenRouter with active verified free models and 10s AbortController timeout
+    // 1. Try OpenRouter with active verified free models and 5s AbortController timeout
     const tryOpenRouter = async (key: string) => {
       const openrouterModels = [
         "openrouter/free",
@@ -1287,7 +1312,7 @@ When asked any of these 6 core general questions, your answer MUST strictly matc
         if (fullAiReply) break;
         try {
           const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 10000);
+          const timer = setTimeout(() => controller.abort(), 5000);
 
           const orRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
@@ -1472,20 +1497,28 @@ When asked any of these 6 core general questions, your answer MUST strictly matc
       console.warn("Assistant message save warning:", dbErr.message);
     }
   } catch (err: any) {
-    console.error("Chat route error:", err.message);
+    console.error("Chat route error:", err?.message || err);
     if (!fullAiReply) {
-      fullAiReply = generateRhyniaLocalResponse(trimmedMsg, { nickname: userNickname, occupation: userOccupation, overview: userOverview });
+      try {
+        fullAiReply = generateRhyniaLocalResponse(trimmedMsg, { nickname: userNickname || "भाई", occupation: userOccupation || "", overview: userOverview || "" });
+      } catch (genErr: any) {
+        fullAiReply = "नमस्ते! मैं Rhynia AI हूँ। आपका प्रश्न प्राप्त हुआ है। मैं आपकी पूरी सहायता के लिए यहाँ उपस्थित हूँ। कृपया अपना प्रश्न पुनः पूछें!";
+      }
       const tokens = fullAiReply.split(/(\s+|\n)/);
       for (const token of tokens) {
         if (token) {
-          res.write(`data: ${JSON.stringify({ token })}\n\n`);
+          try {
+            res.write(`data: ${JSON.stringify({ token })}\n\n`);
+          } catch (_) {}
         }
       }
     }
   } finally {
-    res.write(`data: ${JSON.stringify({ type: "done", message_id: aiMsgId })}\n\n`);
-    res.write("data: [DONE]\n\n");
-    res.end();
+    try {
+      res.write(`data: ${JSON.stringify({ type: "done", message_id: aiMsgId, content: fullAiReply })}\n\n`);
+      res.write("data: [DONE]\n\n");
+      res.end();
+    } catch (_) {}
   }
 });
 

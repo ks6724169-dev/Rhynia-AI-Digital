@@ -7,6 +7,7 @@ import base64
 import json
 import logging
 import re
+import uuid
 import zipfile
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -185,23 +186,32 @@ async def send_chat_message(
     # 2. Enforce Plan Limits
     limit = enforce_daily_quota(current_user, db)
 
-    # 3. Resolve or Create Session
+    # 3. Resolve or Create Session (Auto-recovers from stale IDs seamlessly)
     session_id = req.session_id
+    session = None
     if session_id:
-        session = (
-            db.query(ChatSession)
-            .filter(ChatSession.id == session_id, ChatSession.user_id == current_user.id)
-            .first()
-        )
-        if not session:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")
-    else:
+        try:
+            session = (
+                db.query(ChatSession)
+                .filter(ChatSession.id == session_id, ChatSession.user_id == current_user.id)
+                .first()
+            )
+        except Exception as q_err:
+            logger.warning(f"Session query warning: {q_err}")
+            session = None
+
+    if not session:
         title_snippet = clean_message[:35] + ("..." if len(clean_message) > 35 else "")
         session = ChatSession(user_id=current_user.id, title=title_snippet)
-        db.add(session)
-        db.commit()
-        db.refresh(session)
-        session_id = session.id
+        try:
+            db.add(session)
+            db.commit()
+            db.refresh(session)
+            session_id = session.id
+        except Exception as se_err:
+            db.rollback()
+            logger.warning(f"Session creation fallback: {se_err}")
+            session_id = str(uuid.uuid4())
 
     # 3B. Thread Message Limit Boundary Check (Phase 2)
     thread_count = db.query(ChatMessage).filter(ChatMessage.session_id == session_id).count()
@@ -636,11 +646,16 @@ async def send_chat_message(
             model_used=model_used,
             token_count=tokens_used,
         )
-        db.add(rhynia_msg)
-        current_user.daily_messages_used += 1
-        current_user.last_active_date = datetime.now(timezone.utc)
-        session.updated_at = datetime.now(timezone.utc)
-        db.commit()
+        try:
+            db.add(rhynia_msg)
+            current_user.daily_messages_used += 1
+            current_user.last_active_date = datetime.now(timezone.utc)
+            if session:
+                session.updated_at = datetime.now(timezone.utc)
+            db.commit()
+        except Exception as save_err:
+            db.rollback()
+            logger.warning(f"Failed to persist non-streaming reply: {save_err}")
 
         # Phase 2: Asynchronously update rolling macro/micro summaries
         asyncio.create_task(memory_service.async_update_rolling_summary(session_id, current_user.id))
@@ -712,11 +727,16 @@ async def send_chat_message(
                 model_used="Rhynia Core",
                 token_count=max(1, len(full_reply) // 4),
             )
-            db.add(rhynia_msg)
-            current_user.daily_messages_used += 1
-            current_user.last_active_date = datetime.now(timezone.utc)
-            session.updated_at = datetime.now(timezone.utc)
-            db.commit()
+            try:
+                db.add(rhynia_msg)
+                current_user.daily_messages_used += 1
+                current_user.last_active_date = datetime.now(timezone.utc)
+                if session:
+                    session.updated_at = datetime.now(timezone.utc)
+                db.commit()
+            except Exception as stream_db_err:
+                db.rollback()
+                logger.warning(f"Failed to persist streaming reply: {stream_db_err}")
 
             # Phase 2: Asynchronously update rolling macro/micro summaries
             asyncio.create_task(memory_service.async_update_rolling_summary(session_id, current_user.id))
