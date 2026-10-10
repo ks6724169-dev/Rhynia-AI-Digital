@@ -236,7 +236,7 @@ async def get_current_user(
             detail="Invalid authentication token.",
         )
 
-    user = db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter((User.id == user_id) | (User.email == user_id)).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
