@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Rhynia AI - Active Chat</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"primary-container": "#a078ff", "on-surface": "#e4e1e9", tertiary: "#4edea3", "error-container": "#93000a", "on-tertiary-fixed": "#002113", surface: "#131318", background: "#131318", "surface-container-highest": "#35343a", "on-background": "#e4e1e9", "on-primary": "#3c0091", "on-error-container": "#ffdad6", "on-secondary-fixed-variant": "#004395", "secondary-container": "#0566d9", "tertiary-container": "#00a572", "secondary-fixed-dim": "#adc6ff", "on-secondary-container": "#e6ecff", "surface-container-lowest": "#0e0e13", "on-primary-container": "#340080", "primary-fixed-dim": "#d0bcff", "surface-container": "#1f1f24", "on-tertiary-fixed-variant": "#005236", "surface-tint": "#d0bcff", error: "#ffb4ab", "inverse-on-surface": "#303035", "tertiary-fixed": "#6ffbbe", outline: "#958ea0", "surface-bright": "#39393e", "on-secondary-fixed": "#001a42", primary: "#d0bcff", "outline-variant": "#494454", "on-primary-fixed-variant": "#5516be", "surface-container-low": "#1b1b20", "primary-fixed": "#e9ddff", secondary: "#adc6ff", "surface-dim": "#131318", "secondary-fixed": "#d8e2ff", "inverse-primary": "#6d3bd7", "on-tertiary": "#003824", "inverse-surface": "#e4e1e9", "tertiary-fixed-dim": "#4edea3", "on-tertiary-container": "#00311f", "on-error": "#690005", "surface-variant": "#35343a", "on-surface-variant": "#cbc3d7", "on-secondary": "#002e6a", "on-primary-fixed": "#23005c", "surface-container-high": "#2a292f"}, borderRadius: {DEFAULT: "1rem", lg: "2rem", xl: "3rem", full: "9999px"}, spacing: {"gutter-desktop": "1.5rem", "space-2xl": "3.5rem", "space-lg": "1.5rem", gutter: "1rem", "space-sm": "0.5rem", "margin-tablet": "2rem", "space-md": "1rem", "margin-desktop": "3rem", "space-xl": "2.25rem", "space-xs": "0.25rem", margin: "1rem"}, fontFamily: {"body-lg": ["Inter"], "label-md": ["Inter"], "headline-xl": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-sm": ["Inter"], "headline-sm": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-sm": ["Inter"], code: ["Inter"], "body-md": ["Inter"], headline: ["Plus Jakarta Sans"], display: ["Plus Jakarta Sans"], body: ["Inter"], label: ["Inter"]}, fontSize: {"body-lg": ["16px", {lineHeight: "26px", letterSpacing: "-0.005em", fontWeight: "400"}], "label-md": ["13px", {lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "500"}], "headline-xl": ["40px", {lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "600"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600"}], "headline-lg-mobile": ["24px", {lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600"}], "body-sm": ["12px", {lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "400"}], "headline-sm": ["18px", {lineHeight: "24px", letterSpacing: "0em", fontWeight: "500"}], "headline-xl-mobile": ["28px", {lineHeight: "36px", letterSpacing: "-0.015em", fontWeight: "600"}], "headline-md": ["22px", {lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "500"}], "label-sm": ["11px", {lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "600"}], code: ["13px", {lineHeight: "20px", letterSpacing: "0em", fontWeight: "400"}], "body-md": ["14px", {lineHeight: "22px", letterSpacing: "0em", fontWeight: "400"}]}}}};</script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+    /* Layer 1 Glassmorphic subtle top bevel */
+    .glass-panel {
+      background: rgba(22, 22, 31, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
+    }
+    /* Layer 2 Composer Glow */
+    .floating-composer {
+      background: rgba(26, 26, 38, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(139, 92, 246, 0.22);
+      box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.7), 0 0 24px -4px rgba(160, 120, 255, 0.16);
+    }
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(149, 142, 160, 0.2);
+      border-radius: 9999px;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col relative selection:bg-primary selection:text-on-primary">
+<!-- TOP APP BAR -->
+<!-- NAVIGATION DRAWER (Shared Anchor Blueprint) -->
+<aside class="fixed inset-y-0 left-0 z-50 flex flex-col justify-between p-margin-tablet w-80 max-w-[85vw] bg-surface-container-low border-r border-outline-variant/20 shadow-2xl rounded-r-2xl transform -translate-x-full transition-transform duration-300 ease-in-out" id="drawer">
+<div class="flex flex-col gap-6">
+<!-- Drawer Header / Profile -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant/40 flex items-center justify-center text-primary font-headline-sm font-bold shadow-inner">
+            RA
+          </div>
+<div>
+<div class="text-headline-sm font-headline-sm font-bold text-on-surface tracking-tight">Rhynia AI</div>
+<div class="text-label-sm font-label-sm text-outline">alex_rhynia • <span class="text-primary font-semibold">Pro Tier</span></div>
+</div>
+</div>
+<button aria-label="Close menu" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors" id="drawer-close">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Quick Action Mode Filter Pills -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-label-sm font-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+          Creative
+        </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant text-label-sm font-label-sm border border-outline-variant/20">
+          Reasoning
+        </span>
+</div>
+<!-- Timeline Links strictly from JSON -->
+<div class="flex flex-col gap-1.5">
+<div class="text-label-sm font-label-sm text-outline uppercase tracking-wider px-4 pt-2 font-semibold">alex_rhynia • <span class="text-primary font-semibold">Pro Tier</span></div>
+<a class="flex items-center gap-3 bg-surface-container-highest text-primary font-medium rounded-xl px-4 py-3 active:scale-[0.99] transition-transform duration-100" href="#">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+<span class="text-body-md font-body-md">Today</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60 transition-colors duration-150 px-4 py-3 rounded-xl active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span class="text-body-md font-body-md">Yesterday</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60 transition-colors duration-150 px-4 py-3 rounded-xl active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-[20px]">date_range</span>
+<span class="text-body-md font-body-md">Previous 7 Days</span>
+</a>
+</div>
+</div>
+<!-- Drawer Footer Bottom Actions -->
+<div class="pt-4 border-t border-outline-variant/20 flex flex-col gap-2">
+<button class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">tune</span>
+<span class="text-body-md font-body-md font-medium">Model Parameters</span>
+</div>
+<span class="text-label-sm font-label-sm text-outline">alex_rhynia • <span class="text-primary font-semibold">Pro Tier</span></span>
+</button>
+</div>
+</aside>
+<!-- DRAWER BACKDROP -->
+<div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity" id="drawer-backdrop"></div>
+<!-- CONVERSATION STREAM -->
+<header class="sticky top-0 z-40 w-full fluent-glass border-b border-white/10 px-margin py-2.5">
+<div class="max-w-screen-md mx-auto flex items-center justify-between">
+<!-- Top Left: Hamburger Menu Button to open sidebar drawer -->
+<button aria-label="Open sidebar menu" class="w-10 h-10 rounded-full fluent-btn-pill text-slate-300 hover:text-white flex items-center justify-center transition-all active:scale-95" id="menu-trigger">
+<span class="material-symbols-outlined text-[22px]">menu</span>
+</button>
+<!-- Center: Subtle Rhynia AI Brand / Status Indicator -->
+<!-- Top Right: Action Buttons (New Chat & Overflow Options) -->
+<div class="flex items-center gap-1.5 relative">
+<button aria-label="New conversation" class="w-10 h-10 rounded-full fluent-btn-pill text-slate-300 hover:text-white flex items-center justify-center transition-all active:scale-95" title="New chat">
+<span class="material-symbols-outlined text-[20px]">edit_square</span>
+</button>
+<button aria-label="More options" class="w-10 h-10 rounded-full fluent-btn-pill text-slate-300 hover:text-white flex items-center justify-center transition-all active:scale-95" id="options-trigger" title="Chat options">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+<!-- Options Dropdown Menu -->
+<div class="hidden absolute top-12 right-0 w-48 py-1.5 rounded-2xl bg-slate-900/90 backdrop-blur-2xl border border-white/10 shadow-2xl z-50" id="options-menu">
+<button class="w-full px-3.5 py-2 flex items-center gap-2.5 text-on-surface hover:bg-surface-container-highest transition-colors text-left text-body-sm font-body-sm">
+<span class="material-symbols-outlined text-[18px] text-primary">share</span>
+<span class="">Share session</span>
+</button>
+<button class="w-full px-3.5 py-2 flex items-center gap-2.5 text-on-surface hover:bg-surface-container-highest transition-colors text-left text-body-sm font-body-sm">
+<span class="material-symbols-outlined text-[18px] text-tertiary">bookmark_border</span>
+<span class="">Bookmark</span>
+</button>
+<button class="w-full px-3.5 py-2 flex items-center gap-2.5 text-error hover:bg-error-container/20 transition-colors text-left text-body-sm font-body-sm">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+<span class="">Clear chat</span>
+</button>
+</div>
+</div>
+</div>
+</header><main class="flex-1 w-full max-w-screen-md mx-auto pb-36 px-margin flex flex-col justify-start pt-4"><div class="flex flex-col gap-8 w-full py-4"><div class="flex flex-col items-end w-full pl-8 sm:pl-16"><div class="text-body-lg text-slate-100 font-medium text-right leading-relaxed tracking-tight max-w-2xl py-1">Can you outline a go-to-market strategy for our enterprise cloud architecture migration tool? Include target personas, launch phases, and a sample config block.</div></div><div class="flex flex-col gap-5 w-full pr-2"><div class="space-y-5 text-slate-300 text-body-md leading-relaxed"><p class="text-[15px] leading-relaxed text-slate-300 font-normal">Here is an enterprise go-to-market framework tailored specifically for automated cloud topology &amp; architecture migration.</p><div class="space-y-2.5 pt-1"><h4 class="text-[17px] font-semibold text-slate-100 tracking-tight flex items-center gap-2"><span class="w-1.5 h-4 rounded-full bg-sky-400"></span>1. Target Buyer Personas</h4><ul class="space-y-2 pl-4 text-slate-300"><li class="list-disc"><strong class="text-white font-medium">VP of Cloud Platform / VP Infrastructure:</strong> Focused on operational risk reduction, zero unplanned downtime, and SLA governance.</li><li class="list-disc"><strong class="text-white font-medium">Principal Enterprise Architects:</strong> Need declarative reproducibility, multi-region parity, and dependency mapping.</li><li class="list-disc"><strong class="text-white font-medium">FinOps &amp; Security Directors:</strong> Prioritize compliance benchmarks (SOC2, HIPAA) and instantaneous post-cutover egress cost visibility.</li></ul></div><div class="space-y-2.5 pt-2"><h4 class="text-[17px] font-semibold text-slate-100 tracking-tight flex items-center gap-2"><span class="w-1.5 h-4 rounded-full bg-indigo-400"></span>2. Phased Rollout Strategy</h4><div class="grid grid-cols-1 gap-2.5 pt-1"><div class="flex items-start gap-3 p-2 rounded-xl hover:bg-white/[0.03] transition-colors"><span class="w-6 h-6 rounded-lg bg-sky-500/10 border border-sky-400/20 text-sky-300 flex items-center justify-center text-xs font-semibold mt-0.5 shrink-0">1</span><div class="text-slate-300 text-body-md leading-relaxed"><strong class="text-white font-medium">Phase 1: Shadow Discovery (Days 1–30):</strong> Passive non-intrusive traffic inspection and asset inventory compilation without modifying production routing.</div></div><div class="flex items-start gap-3 p-2 rounded-xl hover:bg-white/[0.03] transition-colors"><span class="w-6 h-6 rounded-lg bg-sky-500/10 border border-sky-400/20 text-sky-300 flex items-center justify-center text-xs font-semibold mt-0.5 shrink-0">2</span><div class="text-slate-300 text-body-md leading-relaxed"><strong class="text-white font-medium">Phase 2: Canary Synthetic Migration (Days 31–60):</strong> Replay sanitized staging transactions against target cloud VPC instances. Validate state consistency.</div></div><div class="flex items-start gap-3 p-2 rounded-xl hover:bg-white/[0.03] transition-colors"><span class="w-6 h-6 rounded-lg bg-sky-500/10 border border-sky-400/20 text-sky-300 flex items-center justify-center text-xs font-semibold mt-0.5 shrink-0">3</span><div class="text-slate-300 text-body-md leading-relaxed"><strong class="text-white font-medium">Phase 3: Automated DNS Cutover &amp; Fallback (Days 61+):</strong> Bi-directional sync with instant rollback guarantees on latency deviations over 15ms.</div></div></div></div><div class="space-y-2 pt-2"><h4 class="text-[17px] font-semibold text-slate-100 tracking-tight flex items-center gap-2"><span class="w-1.5 h-4 rounded-full bg-emerald-400"></span>3. Migration Blueprint Config</h4><div class="fluent-code-box rounded-2xl p-4 mt-2 font-mono"><div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-white/10"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-red-400/60"></span><span class="w-2.5 h-2.5 rounded-full bg-amber-400/60"></span><span class="w-2.5 h-2.5 rounded-full bg-emerald-400/60"></span><span class="text-[12px] uppercase tracking-wider text-sky-300 font-semibold ml-2">YAML Config</span></div><span class="material-symbols-outlined text-[16px] text-slate-400">terminal</span></div><pre class="text-[13px] leading-relaxed text-slate-200 overflow-x-auto font-mono"><code>version: '2024.1'  
+topology:
+  source_provider: aws-us-east-1
+  target_provider: gcp-us-central1
+  strategy: shadow_canary
+telemetry:
+  max_latency_drift_ms: 15
+  automatic_failover: true
+validation_rules:
+  - enforce_soc2_type2
+  - zero_egress_unencrypted</code></pre></div></div></div><div class="flex items-center gap-1.5 pt-2 text-slate-400"><button class="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-full hover:text-white hover:bg-white/10 active:scale-95 transition-all text-xs font-medium" id="btn-copy" title="Copy response"><span class="material-symbols-outlined text-[18px]">content_copy</span><span class="">Copy</span></button><button class="w-8 h-8 rounded-full inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all" id="btn-thumbs-up" title="Good response"><span class="material-symbols-outlined text-[18px]">thumb_up</span></button><button class="w-8 h-8 rounded-full inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all" id="btn-thumbs-down" title="Poor response"><span class="material-symbols-outlined text-[18px]">thumb_down</span></button><button class="w-8 h-8 rounded-full inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all" id="btn-speaker" title="Read aloud"><span class="material-symbols-outlined text-[18px]">volume_up</span></button><button class="w-8 h-8 rounded-full inline-flex items-center justify-center hover:text-white hover:bg-white/10 active:scale-95 transition-all" id="btn-share" title="Share snippet"><span class="material-symbols-outlined text-[18px]">share</span></button></div></div></div></main>
+<!-- DOCKED INPUT BAR COMPOSER CONTAINER -->
+<div class="fixed bottom-0 left-0 right-0 z-40 px-margin pb-4 pt-2 bg-gradient-to-t from-background via-background/90 to-transparent">
+<div class="max-w-screen-md mx-auto">
+<!-- Action Prompt Chips / Suggestions -->
+<!-- Tactile Input Composer Pill -->
+<div class="apple-composer rounded-full min-h-[56px] px-3 py-1.5 flex items-center gap-2 transition-all duration-200 focus-within:ring-2 focus-within:ring-sky-400/30 focus-within:border-white/25">
+<!-- Camera / File Attachment Trigger (+) Button -->
+<div class="relative">
+<button aria-label="Attach file or use camera" class="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all active:scale-95" id="attach-trigger" type="button">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+<!-- Attach Popover Dropdown -->
+<div class="hidden absolute bottom-14 left-0 w-48 py-1.5 rounded-2xl bg-slate-900/90 backdrop-blur-2xl border border-white/10 shadow-2xl z-50" id="attach-menu">
+<button class="w-full px-3.5 py-2.5 flex items-center gap-3 text-slate-200 hover:bg-white/10 transition-colors text-left text-body-sm font-body-sm">
+<span class="material-symbols-outlined text-[18px] text-sky-400">photo_camera</span>
+<span class="">Camera</span>
+</button>
+<button class="w-full px-3.5 py-2.5 flex items-center gap-3 text-slate-200 hover:bg-white/10 transition-colors text-left text-body-sm font-body-sm">
+<span class="material-symbols-outlined text-[18px] text-indigo-400">folder_open</span>
+<span class="">File Manager</span>
+</button>
+<button class="w-full px-3.5 py-2.5 flex items-center gap-3 text-slate-200 hover:bg-white/10 transition-colors text-left text-body-sm font-body-sm">
+<span class="material-symbols-outlined text-[18px] text-emerald-400">palette</span>
+<span class="">Design System</span>
+</button>
+</div>
+</div>
+<!-- Follow-up Input Field -->
+<div class="flex-1 min-w-0">
+<input autocomplete="off" class="w-full bg-transparent border-0 focus:ring-0 text-body-md text-slate-100 placeholder:text-slate-400/60 px-2 py-1 outline-none" id="chat-input" placeholder="Ask Rhynia a follow-up…" type="text"/>
+</div>
+<!-- Audio Voice Dictation Trigger -->
+<button aria-label="Voice input" class="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors" id="mic-trigger" type="button">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+<!-- Send (➤) Button -->
+<button aria-label="Send follow-up" class="w-10 h-10 rounded-full flex items-center justify-center gradient-send text-white hover:brightness-110 active:scale-90 transition-all flex-shrink-0" id="send-button" type="button"><span class="material-symbols-outlined text-[19px] ml-0.5">send</span></button>
+</div>
+<!-- Legal / Brand micro badge -->
+</div>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+    // Popover Menu Toggle
+    const optionsTrigger = document.getElementById('options-trigger');
+    const optionsMenu = document.getElementById('options-menu');
+
+    optionsTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      optionsMenu.classList.toggle('hidden');
+      attachMenu.classList.add('hidden');
+    });
+
+    // Attach Menu Toggle
+    const attachTrigger = document.getElementById('attach-trigger');
+    const attachMenu = document.getElementById('attach-menu');
+
+    attachTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      attachMenu.classList.toggle('hidden');
+      optionsMenu.classList.add('hidden');
+    });
+
+    // Drawer Open / Close Logic
+    const menuTrigger = document.getElementById('menu-trigger');
+    const drawer = document.getElementById('drawer');
+    const drawerBackdrop = document.getElementById('drawer-backdrop');
+    const drawerClose = document.getElementById('drawer-close');
+
+    function openDrawer() {
+      drawer.classList.remove('-translate-x-full');
+      drawerBackdrop.classList.remove('hidden');
+    }
+
+    function closeDrawer() {
+      drawer.classList.add('-translate-x-full');
+      drawerBackdrop.classList.add('hidden');
+    }
+
+    menuTrigger.addEventListener('click', openDrawer);
+    drawerClose.addEventListener('click', closeDrawer);
+    drawerBackdrop.addEventListener('click', closeDrawer);
+
+    // Close overlays on outside click
+    window.addEventListener('click', () => {
+      optionsMenu.classList.add('hidden');
+      attachMenu.classList.add('hidden');
+    });
+
+    // Quick Action Feedback (Copy button status feedback)
+    const btnCopy = document.getElementById('btn-copy');
+    btnCopy.addEventListener('click', () => {
+      const originalHTML = btnCopy.innerHTML;
+      btnCopy.innerHTML = '<span class="material-symbols-outlined text-[16px] text-tertiary">check</span><span class="hidden xs:inline text-tertiary font-medium">Copied!</span>';
+      setTimeout(() => {
+        btnCopy.innerHTML = originalHTML;
+      }, 2000);
+    });
+
+    // Thumbs Feedback
+    const btnThumbsUp = document.getElementById('btn-thumbs-up');
+    const btnThumbsDown = document.getElementById('btn-thumbs-down');
+
+    btnThumbsUp.addEventListener('click', () => {
+      btnThumbsUp.classList.toggle('text-primary');
+      btnThumbsUp.classList.toggle('bg-primary/20');
+      btnThumbsDown.classList.remove('text-error', 'bg-error/20');
+    });
+
+    btnThumbsDown.addEventListener('click', () => {
+      btnThumbsDown.classList.toggle('text-error');
+      btnThumbsDown.classList.toggle('bg-error/20');
+      btnThumbsUp.classList.remove('text-primary', 'bg-primary/20');
+    });
+
+    // Enter Key on input
+    const chatInput = document.getElementById('chat-input');
+    const sendButton = document.getElementById('send-button');
+
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && chatInput.value.trim() !== '') {
+        triggerSend();
+      }
+    });
+
+    sendButton.addEventListener('click', () => {
+      if (chatInput.value.trim() !== '') {
+        triggerSend();
+      }
+    });
+
+    function triggerSend() {
+      chatInput.value = '';
+      chatInput.placeholder = 'Rhynia is formulating thoughts…';
+      setTimeout(() => {
+        chatInput.placeholder = 'Ask Rhynia a follow-up…';
+      }, 1500);
+    }
+  </script>
+</body></html>

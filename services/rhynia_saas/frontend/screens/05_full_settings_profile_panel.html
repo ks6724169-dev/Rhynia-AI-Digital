@@ -1,0 +1,368 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Settings &amp; Profile - Fluent Design</title>
+<!-- Google Fonts: Inter & Plus Jakarta Sans / Segoe UI lookalike font styling -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<!-- Early Theme Detection (Zero FOUC) -->
+<script>
+  (function() {
+    try {
+      var savedTheme = localStorage.getItem("rhynia_theme");
+      if (savedTheme === "light") {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.classList.add("light");
+      } else {
+        document.documentElement.classList.add("dark");
+        document.documentElement.classList.remove("light");
+      }
+    } catch(e) {}
+  })();
+</script>
+<link rel="stylesheet" href="../style.css"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-tertiary": "#00382f",
+          "secondary": "#8ecdff",
+          "primary": "#0078d4",
+          "primary-hover": "#1084d9",
+          "fluent-blue": "#0078d4",
+          "fluent-teal": "#00a4ef",
+          "fluent-subtle-stroke": "rgba(255, 255, 255, 0.08)",
+          "fluent-card-stroke": "rgba(255, 255, 255, 0.06)",
+          "fluent-mica-bg": "#131313",
+          "fluent-card": "#1f1f1f",
+          "fluent-card-secondary": "#282828",
+          "fluent-card-hover": "#303030",
+          "surface-variant": "#353535"
+        },
+        fontFamily: {
+          sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+          headline: ["Plus Jakarta Sans", "Inter", "sans-serif"]
+        },
+        borderRadius: {
+          fluent: "8px",
+          "fluent-lg": "12px",
+          "fluent-xl": "16px"
+        }
+      }
+    }
+  };
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    font-size: 20px;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  /* Fluent 2 Mica / Acrylic subtly layered card styles */
+  .fluent-mica-card {
+    background-color: #1f1f1f;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  .fluent-sub-card {
+    background-color: #282828;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .fluent-sub-card:hover {
+    background-color: #303030;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  /* Fluent Toggle switch */
+  .fluent-toggle-checkbox:checked {
+    background-color: #0078d4;
+    border-color: #0078d4;
+  }
+  .fluent-toggle-checkbox:checked + .fluent-toggle-thumb {
+    transform: translateX(18px);
+    background-color: #ffffff;
+  }
+</style>
+</head>
+<body class="bg-[#131313] text-[#e5e2e1] font-sans antialiased min-h-screen selection:bg-[#0078d4] selection:text-white relative overflow-x-hidden p-3 sm:p-4">
+<!-- Ambient Mica Glow (subtle background gradient standard in Windows 11 Fluent) -->
+<div class="fixed top-0 left-1/2 -translate-x-1/2 w-[680px] h-[280px] bg-[#0078d4]/10 blur-[130px] rounded-full pointer-events-none -z-10"></div>
+<div class="fixed bottom-0 right-1/4 w-[350px] h-[350px] bg-[#00a4ef]/5 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+<!-- Main Settings Panel Container -->
+<div class="min-h-screen flex flex-col justify-between max-w-[700px] mx-auto py-2 pb-8">
+<main class="flex-1 space-y-4">
+<!-- Profile Section: Fluent Mica Card -->
+<section class="fluent-mica-card rounded-fluent-xl p-6 sm:p-8 flex flex-col items-center text-center relative transition-colors duration-200">
+<div class="relative shrink-0 mb-4">
+<!-- Circular profile picture with Fluent subtle layered ring -->
+<div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full p-0.5 bg-white/10 ring-1 ring-white/15 shadow-md">
+<div class="w-full h-full rounded-full overflow-hidden bg-[#1f1f1f] flex items-center justify-center">
+<img alt="Alex Rhynia" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCj0EaB742_2EyFf53PkMVZptTh5m3I5ymoqf4jGDHLMnyDptvqTFVGIurMmiNkjlA1LVe5isy7V0NwDsJPqU5ed9LgrANwxQv4lyaTu6zwu-vbX1VboxcpQ14UuqKWpfx0t_gHzh79jIIYflnp2jGVB4io4pC6XyI3HmnmT_Ni65T5lmbobuZgQt1hbsQbfU2fwCnJS9Gs4UoyibQ9zjUl1XHlo4kObQhHYf0lruxfyYGHGAgqS75v">
+</div>
+</div>
+<!-- Fluent Edit Pencil Badge -->
+<button aria-label="Change profile photo" class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#0078d4] hover:bg-[#1084d9] text-white flex items-center justify-center shadow-lg border-2 border-[#1f1f1f] active:scale-95 transition-all duration-150" type="button">
+<span class="material-symbols-outlined text-[15px]">edit</span>
+</button>
+</div>
+<h2 class="text-2xl sm:text-[26px] font-semibold text-white tracking-tight font-headline">Alex Rhynia</h2>
+
+</section>
+<!-- Account Details Card -->
+<section class="fluent-mica-card rounded-fluent-xl p-5 sm:p-6 space-y-4">
+<div class="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[#0078d4] text-[20px]">badge</span>
+<h3 class="text-sm font-semibold text-white tracking-tight">Account Details</h3>
+</div>
+<span class="text-xs font-normal text-[#c0c7d4] bg-[#282828] px-2.5 py-1 rounded-[4px] border border-white/[0.06]">Primary Credentials</span>
+</div>
+<div class="flex flex-col gap-2.5">
+<div class="fluent-sub-card p-3.5 rounded-fluent transition-colors">
+<span class="text-xs text-[#8a919e] flex items-center gap-1.5 mb-1 font-normal">
+<span class="material-symbols-outlined text-[15px] text-[#0078d4]">mail</span>Email ID
+          </span>
+<p class="text-sm font-medium text-white truncate pl-5">alex.rhynia@example.com</p>
+</div>
+<div class="fluent-sub-card p-3.5 rounded-fluent transition-colors">
+<span class="text-xs text-[#8a919e] flex items-center gap-1.5 mb-1 font-normal">
+<span class="material-symbols-outlined text-[15px] text-[#0078d4]">phone_iphone</span>Mobile Number
+          </span>
+<p class="text-sm font-medium text-white pl-5">+91 98765 43210</p>
+</div>
+</div>
+</section>
+<!-- Preferences Card -->
+<section class="fluent-mica-card rounded-fluent-xl p-5 sm:p-6 space-y-4">
+<div class="flex items-center gap-2.5 pb-3 border-b border-white/[0.06]">
+<span class="material-symbols-outlined text-[#0078d4] text-[20px]">tune</span>
+<h3 class="text-sm font-semibold text-white tracking-tight">Preferences</h3>
+</div>
+<div class="space-y-2">
+<!-- Appearance -->
+<div onclick="toggleAppearanceTheme()" class="fluent-sub-card flex items-center justify-between p-3 rounded-fluent transition-colors cursor-pointer select-none" title="Click to toggle Light / Dark Mode">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-fluent bg-white/[0.04] flex items-center justify-center text-[#0078d4]">
+<span id="settings-theme-icon" class="material-symbols-outlined text-[18px]">dark_mode</span>
+</div>
+<div>
+<p class="text-sm font-normal text-white">Appearance</p>
+<p id="settings-theme-label" class="text-xs text-[#8a919e]">Dark Horizon</p>
+</div>
+</div>
+<div class="flex items-center gap-2.5 pointer-events-none">
+<button type="button" id="settings-theme-btn-text" class="px-2.5 py-1 rounded bg-[#353535] hover:bg-[#404040] text-xs font-medium text-white transition-colors border border-white/10">Switch to Light</button>
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input id="settings-theme-checkbox" class="sr-only peer" type="checkbox">
+<div class="w-10 h-5 bg-[#353535] rounded-full transition-colors duration-200 peer-checked:bg-[#0078d4] border border-white/[0.1]"></div>
+<div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-5 shadow-sm"></div>
+</label>
+</div>
+</div>
+<!-- Accent Color -->
+<div class="relative flex flex-col p-3 rounded-fluent bg-[#282828] border border-white/5 transition-colors">
+  <div onclick="toggleAccentColorPicker()" class="flex items-center justify-between cursor-pointer select-none">
+    <div class="flex items-center gap-3">
+      <div id="settings-accent-preview" class="w-8 h-8 rounded-fluent bg-[#0078d4] flex items-center justify-center text-white shadow-sm transition-colors">
+        <span class="material-symbols-outlined text-[18px]">palette</span>
+      </div>
+      <div>
+        <p class="text-sm font-normal text-white">Accent Color</p>
+        <p class="text-xs text-[#8a919e]">Theme highlights & glow</p>
+      </div>
+    </div>
+    <button aria-label="Accent color options" class="p-1.5 rounded-[4px] text-[#8a919e] hover:text-white hover:bg-white/[0.06] transition-colors pointer-events-none">
+      <span class="material-symbols-outlined text-[18px]">expand_more</span>
+    </button>
+  </div>
+
+  <!-- Accent Color Palette Swatches (15 Curated Colors) -->
+  <div id="accent-color-picker-flyout" class="hidden mt-3 pt-3 border-t border-white/10 grid grid-cols-5 sm:grid-cols-5 gap-3 justify-items-center p-1">
+    <!-- Row 1: Blues & Purples -->
+    <button type="button" onclick="selectAccentColor('#0078D4')" class="w-8 h-8 rounded-full bg-[#0078D4] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Azure Blue"></button>
+    <button type="button" onclick="selectAccentColor('#00A4EF')" class="w-8 h-8 rounded-full bg-[#00A4EF] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Sky Cyan"></button>
+    <button type="button" onclick="selectAccentColor('#4F46E5')" class="w-8 h-8 rounded-full bg-[#4F46E5] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Royal Indigo"></button>
+    <button type="button" onclick="selectAccentColor('#7C5CFF')" class="w-8 h-8 rounded-full bg-[#7C5CFF] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Purple Luminescence"></button>
+    <button type="button" onclick="selectAccentColor('#A855F7')" class="w-8 h-8 rounded-full bg-[#A855F7] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Neon Violet"></button>
+
+    <!-- Row 2: Pinks, Reds & Oranges -->
+    <button type="button" onclick="selectAccentColor('#EC4899')" class="w-8 h-8 rounded-full bg-[#EC4899] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Hot Pink"></button>
+    <button type="button" onclick="selectAccentColor('#D93025')" class="w-8 h-8 rounded-full bg-[#D93025] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Ruby Energy"></button>
+    <button type="button" onclick="selectAccentColor('#FF5722')" class="w-8 h-8 rounded-full bg-[#FF5722] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Coral Flame"></button>
+    <button type="button" onclick="selectAccentColor('#EA580C')" class="w-8 h-8 rounded-full bg-[#EA580C] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Sunset Orange"></button>
+    <button type="button" onclick="selectAccentColor('#FFB900')" class="w-8 h-8 rounded-full bg-[#FFB900] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Amber Horizon"></button>
+
+    <!-- Row 3: Yellows, Greens & Teals -->
+    <button type="button" onclick="selectAccentColor('#EAB308')" class="w-8 h-8 rounded-full bg-[#EAB308] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Sunburst Yellow"></button>
+    <button type="button" onclick="selectAccentColor('#84CC16')" class="w-8 h-8 rounded-full bg-[#84CC16] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Lime Electric"></button>
+    <button type="button" onclick="selectAccentColor('#107C41')" class="w-8 h-8 rounded-full bg-[#107C41] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Emerald Green"></button>
+    <button type="button" onclick="selectAccentColor('#0D9488')" class="w-8 h-8 rounded-full bg-[#0D9488] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Ocean Turquoise"></button>
+    <button type="button" onclick="selectAccentColor('#06B6D4')" class="w-8 h-8 rounded-full bg-[#06B6D4] ring-2 ring-white/20 hover:scale-110 active:scale-95 transition-all shadow-md" title="Aqua Mint"></button>
+  </div>
+</div>
+<!-- Language -->
+<div class="relative flex flex-col p-3 rounded-fluent bg-[#282828] border border-white/5 transition-colors">
+<div onclick="toggleLanguageSelector()" class="flex items-center justify-between cursor-pointer select-none">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-fluent bg-white/[0.04] flex items-center justify-center text-[#0078d4]">
+<span class="material-symbols-outlined text-[18px]">language</span>
+</div>
+<div>
+<p data-i18n="language" class="text-sm font-normal text-white">Language</p>
+<p id="settings-language-label" class="text-xs text-neutral-400 current-lang-label">English (English (US))</p>
+</div>
+</div>
+<button type="button" aria-label="Language options" class="p-1.5 rounded-[4px] text-[#8a919e] hover:text-white hover:bg-white/[0.06] transition-colors pointer-events-none">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+</div>
+<!-- 42 Languages Dynamic Flyout -->
+<div id="language-selector-flyout" class="hidden mt-3 pt-3 border-t border-white/10"></div>
+</div>
+<!-- Notifications with Fluent Switch -->
+<div class="fluent-sub-card flex items-center justify-between p-3 rounded-fluent transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-fluent bg-white/[0.04] flex items-center justify-center text-[#0078d4]">
+<span class="material-symbols-outlined text-[18px]">notifications</span>
+</div>
+<p data-i18n="notifications" class="text-sm font-normal text-white">Notifications</p>
+</div>
+<!-- Fluent Style Toggle Switch (pill container with sliding thumb) -->
+<label class="relative inline-flex items-center cursor-pointer select-none">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-10 h-5 bg-[#353535] rounded-full peer-focus:outline-none transition-colors duration-200 peer-checked:bg-[#0078d4] border border-white/[0.1]"></div>
+<div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200 peer-checked:translate-x-5 shadow-sm"></div>
+</label>
+</div>
+<!-- Memory Row with Sub-screen -->
+<div onclick="if(window.openMemoryScreen) openMemoryScreen()" class="fluent-sub-card flex items-center justify-between p-3 rounded-fluent transition-colors cursor-pointer select-none hover:bg-white/[0.06]">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-fluent bg-white/[0.04] flex items-center justify-center text-[#0078d4]">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+</div>
+<div>
+<p class="text-sm font-normal text-white">Memory</p>
+<p class="text-xs text-[#8a919e]">Personalization &amp; AI Context</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-semibold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded">Active</span>
+<span class="material-symbols-outlined text-[18px] text-[#8a919e]">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Free Storage Card -->
+<section class="fluent-mica-card rounded-fluent-xl p-5 sm:p-6 space-y-4">
+<div class="flex items-center justify-between flex-wrap gap-2 pb-1">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[#0078d4] text-[20px]">hard_drive</span>
+<h3 data-i18n="free_storage" class="text-sm font-semibold text-white tracking-tight">Free Storage</h3>
+</div>
+<span class="text-xs font-medium text-[#8ecdff] bg-[#0078d4]/15 px-2.5 py-1 rounded-[4px] border border-[#0078d4]/30">
+          38 MB of 500 MB used (7.6%)
+        </span>
+</div>
+<div class="space-y-3 pt-1">
+<!-- Fluent progress track -->
+<div class="w-full h-1.5 bg-[#303030] rounded-full overflow-hidden flex border border-white/[0.04]">
+<div class="h-full bg-[#0078d4] transition-all duration-300 rounded-l-full" style="width: 4.8%;"></div>
+<div class="h-full bg-[#00a4ef] transition-all duration-300" style="width: 2.8%;"></div>
+<div class="h-full bg-transparent flex-1"></div>
+</div>
+<!-- Progress Legend -->
+<div class="flex flex-wrap items-center gap-4 text-xs text-[#c0c7d4]">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#0078d4] shrink-0"></span>
+<span class=""><span data-i18n="threads">Threads</span> <strong class="text-white font-medium">24 MB</strong></span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#00a4ef] shrink-0"></span>
+<span class=""><span data-i18n="media">Media</span> <strong class="text-white font-medium">14 MB</strong></span>
+</div>
+<div class="flex items-center gap-2 ml-auto">
+<span class="w-2 h-2 rounded-full bg-[#8a919e] shrink-0"></span>
+<span class=""><strong class="text-white font-medium">462 MB</strong> <span data-i18n="free">Free</span></span>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Actions -->
+<section class="pt-2">
+<button id="btn-logout" class="w-full py-2.5 px-4 rounded-fluent bg-[#93000a]/15 hover:bg-[#93000a]/25 border border-[#ffb4ab]/20 hover:border-[#ffb4ab]/35 text-[#ffb4ab] flex items-center justify-center gap-2 font-medium text-sm transition-all duration-150 active:scale-[0.99]" type="button">
+<span class="material-symbols-outlined text-[18px]">logout</span>
+<span data-i18n="logout">Log Out</span>
+</button>
+</section>
+</main>
+</div>
+
+<script src="../modules/i18n.js"></script>
+<script>
+  function applyTheme(theme) {
+    const isLight = (theme === "light");
+    if (isLight) {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
+    } else {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    }
+    localStorage.setItem("rhynia_theme", isLight ? "light" : "dark");
+    const label = document.getElementById("settings-theme-label");
+    if (label) label.textContent = isLight ? "Light Mode" : "Dark Horizon";
+    const icon = document.getElementById("settings-theme-icon");
+    if (icon) icon.textContent = isLight ? "light_mode" : "dark_mode";
+    const btn = document.getElementById("settings-theme-btn-text");
+    if (btn) btn.textContent = isLight ? "Switch to Dark" : "Switch to Light";
+    const chk = document.getElementById("settings-theme-checkbox");
+    if (chk) chk.checked = isLight;
+  }
+  function toggleAppearanceTheme() {
+    const isDark = document.documentElement.classList.contains("dark");
+    applyTheme(isDark ? "light" : "dark");
+  }
+  function toggleAccentColorPicker() {
+    const picker = document.getElementById("accent-color-picker-flyout");
+    if (picker) picker.classList.toggle("hidden");
+  }
+  function selectAccentColor(hexCode) {
+    applyAccentColor(hexCode);
+    toggleAccentColorPicker();
+  }
+  function applyAccentColor(hexCode) {
+    if (!hexCode) return;
+    localStorage.setItem("rhynia_accent_color", hexCode);
+    document.documentElement.style.setProperty("--primary", hexCode);
+    document.documentElement.style.setProperty("--fluent-azure", hexCode);
+
+    let styleEl = document.getElementById("dynamic-accent-style");
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = "dynamic-accent-style";
+      document.head.appendChild(styleEl);
+    }
+    styleEl.textContent = `
+      .bg-\\[\\#0078D4\\], .bg-\\[\\#0078d4\\], .bg-primary, .peer\\:checked ~ .peer-checked\\:bg-\\[\\#0078D4\\], .peer\\:checked ~ .peer-checked\\:bg-\\[\\#0078d4\\], #settings-accent-preview { background-color: ${hexCode} !important; }
+      .text-\\[\\#0078D4\\], .text-\\[\\#0078d4\\], .text-primary { color: ${hexCode} !important; }
+      .border-\\[\\#0078D4\\], .border-\\[\\#0078d4\\], .border-primary { border-color: ${hexCode} !important; }
+    `;
+    const preview = document.getElementById("settings-accent-preview");
+    if (preview) preview.style.backgroundColor = hexCode;
+  }
+  document.addEventListener("DOMContentLoaded", () => {
+    const saved = localStorage.getItem("rhynia_theme") || "dark";
+    applyTheme(saved);
+    const savedAccent = localStorage.getItem("rhynia_accent_color") || "#0078D4";
+    applyAccentColor(savedAccent);
+    if (window.I18n) window.I18n.init();
+  });
+</script>
+</body></html>

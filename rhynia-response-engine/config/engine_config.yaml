@@ -1,0 +1,56 @@
+# Rhynia Response Engine (RRS v1.0) Global Configuration
+version: "1.0.0"
+
+# Module 01: Input Processor Config
+input_processor:
+  max_text_length: 50000
+  strip_control_chars: true
+  enable_injection_detection: true
+
+# Module 02: Understanding Engine Config
+understanding_engine:
+  default_language: "hi-IN"
+  supported_languages: ["hi-IN", "en-US", "hi-Latn"]
+  ambiguity_threshold: 0.65
+
+# Module 03: Response Planner Config
+response_planner:
+  default_length: "medium"
+  enforce_hierarchy: true
+  allow_tables: true
+  allow_charts: true
+
+# Module 04: Reasoning Engine Config
+reasoning_engine:
+  verification_depth: 2
+  max_logic_steps: 10
+  fact_threshold: 0.85
+
+# Module 05: Knowledge & Tool Layer Config
+knowledge_tool_layer:
+  enable_web_search: true
+  search_timeout_seconds: 5.0
+  enable_diagram_service: true
+  code_sandbox_timeout_seconds: 10.0
+
+# Module 06: Presentation Engine Config
+presentation_engine:
+  style: "modern_clean"
+  strip_external_source_links: true
+  enable_interactive_charts: true
+  render_latex_math: true
+
+# Module 07: Quality Control Engine Config (100-Point Architecture)
+quality_control_engine:
+  pass_threshold: 80.0
+  revise_threshold: 50.0
+  max_revision_retries: 2
+  weights:
+    coverage: 15.0
+    accuracy: 20.0
+    logic: 10.0
+    completeness: 10.0
+    relevance: 10.0
+    language_and_tone: 5.0
+    formatting: 10.0
+    safety: 20.0 # Critical gate

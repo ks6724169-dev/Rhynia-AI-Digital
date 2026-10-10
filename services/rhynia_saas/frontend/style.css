@@ -1,0 +1,3749 @@
+/**
+ * Rhynia Intelligence SaaS — Fluent Dark Horizon Design System
+ * Theme: Carbon Black Void (#131313), Electric Azure (#0078D4), Acrylic Mica
+ * Brand Compliance: Strictly Rhynia
+ */
+
+:root {
+  --bg-primary: #000000;
+  --bg-surface: #121212;
+  --bg-surface-high: #1a1a1a;
+  --bg-surface-low: #0a0a0a;
+  --bg-surface-lowest: #000000;
+  --bg-sidebar: #080808;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-focus: #0078d4;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-secondary: #cbd5e1;
+
+  /* Accent: Electric Azure Blue */
+  --accent: #0078d4;
+  --accent-hover: #1084d8;
+  --accent-active: #0060ab;
+  --accent-tint: #a3c9ff;
+  --accent-secondary: #00a4ef;
+  --danger-red: #d93025;
+  --danger-container: #93000a;
+
+  /* Typography */
+  --font-display: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Dimensions & Elevation */
+  --btn-round-size: 44px;
+  --input-radius: 9999px;
+  --card-radius: 16px;
+  --modal-radius: 20px;
+}
+
+/* ========================================================= */
+/* PREVENT CHROME / SAFARI AUTOFILL WHITE BACKGROUND OVERRIDE */
+/* ========================================================= */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #1b1c1c inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  transition: background-color 50000s ease-in-out 0s !important;
+  background-color: transparent !important;
+}
+
+html.light input:-webkit-autofill,
+html.light input:-webkit-autofill:hover,
+html.light input:-webkit-autofill:focus,
+html.light input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+
+/* Light Mode Overrides */
+html.light {
+  --bg-primary: #f8f9fa;
+  --bg-surface: #ffffff;
+  --bg-surface-high: #f0f2f5;
+  --bg-surface-low: #ffffff;
+  --bg-surface-lowest: #ffffff;
+  --bg-sidebar: #f0f2f5;
+  --border-subtle: rgba(0, 0, 0, 0.1);
+  --border-focus: #0078d4;
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  --text-secondary: #374151;
+}
+
+/* High Contrast Overrides */
+html.contrast {
+  --bg-primary: #000000;
+  --bg-surface: #121212;
+  --bg-surface-high: #1e1e1e;
+  --bg-surface-low: #000000;
+  --bg-surface-lowest: #000000;
+  --bg-sidebar: #0a0a0a;
+  --border-subtle: #ffffff;
+  --border-focus: #00e5ff;
+  --text-main: #ffffff;
+  --text-muted: #e0e0e0;
+  --accent: #00e5ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Material Symbols Icon Configuration */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* Fluent 2 Acrylic / Mica elevation pill */
+.fluent-composer-pill {
+  background: rgba(32, 32, 32, 0.88);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+.fluent-composer-pill:focus-within {
+  border-color: rgba(0, 120, 212, 0.7);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 120, 212, 0.35);
+}
+
+/* Fluent Flyout Menu */
+.fluent-flyout {
+  background: rgba(43, 43, 43, 0.95);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Fluent Input Field (Bottom border accent) */
+.fluent-input-wrapper {
+  position: relative;
+  background: #1b1c1c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+  transition: all 0.15s ease-in-out;
+}
+
+.fluent-input-wrapper:focus-within {
+  background: #252525;
+  border-bottom: 2px solid var(--accent);
+}
+
+/* Fluent Acrylic Border and Cards */
+.fluent-card {
+  background: #202020;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.fluent-sub-card {
+  background: #282828;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.fluent-sub-card:hover {
+  background: #303030;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Custom Thin Scrollbar */
+.custom-scrollbar::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track,
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* Caret blinking animation for active OTP slot */
+@keyframes caretBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.caret-blink {
+  animation: caretBlink 1s ease-in-out infinite;
+}
+
+/* Toast Container & Notification */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  min-width: 260px;
+  max-width: 90vw;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(30, 30, 30, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast.success { border-left: 3px solid #107c41; }
+.toast.error { border-left: 3px solid #d93025; }
+.toast.info { border-left: 3px solid #0078d4; }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(12px) scale(0.95); }
+}
+
+/* Markdown formatting in AI responses */
+.markdown-body {
+  font-size: 26px;
+  line-height: 1.82;
+  color: #e2e8f0;
+}
+
+.markdown-body p {
+  margin: 0 0 18px 0;
+  font-size: 26px;
+  line-height: 1.82;
+}
+
+.markdown-body p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body ul, .markdown-body ol {
+  margin: 0 0 18px 0;
+  padding-left: 28px;
+}
+
+.markdown-body li {
+  margin-bottom: 12px;
+  font-size: 26px;
+  line-height: 1.82;
+}
+
+.markdown-body pre {
+  background: #181818;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  margin: 12px 0;
+}
+
+.markdown-body code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.markdown-body pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* ============================================================ */
+/* LIGHT MODE STYLES (Instant Theme Switcher)                   */
+/* ============================================================ */
+html.light,
+html.light body {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+html.light #view-app,
+html.light #screen-settings-panel,
+html.light main.fluent-mica-bg,
+html.light .fluent-mica-bg,
+html.light .bg-\[\#131313\] {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+/* Header */
+html.light header,
+html.light .bg-\[\#1a1a1a\],
+html.light .bg-\[\#1a1a1a\]\/95 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-color: #e5e7eb !important;
+}
+
+html.light header button {
+  color: #4b5563 !important;
+}
+
+html.light header button:hover {
+  color: #111827 !important;
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Typography Overrides */
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4,
+html.light .text-white,
+html.light .text-on-surface {
+  color: #111827 !important;
+}
+
+html.light .text-neutral-200,
+html.light .text-neutral-300,
+html.light .text-neutral-400,
+html.light .text-neutral-500,
+html.light .text-\[\#c0c7d4\],
+html.light .text-\[\#8a919e\],
+html.light .text-\[\#e5e2e1\],
+html.light .text-\[\#d0d0d0\],
+html.light .text-on-surface-variant {
+  color: #4b5563 !important;
+}
+
+/* PRESERVE WHITE TEXT ON PRIMARY ACCENT BUTTONS & BADGES */
+html.light .bg-\[\#0078D4\],
+html.light .bg-\[\#0078D4\] *,
+html.light .bg-primary,
+html.light .bg-primary *,
+html.light button.bg-\[\#0078D4\],
+html.light button.bg-\[\#0078D4\] *,
+html.light button.bg-primary,
+html.light button.bg-primary *,
+html.light .user-avatar-initial,
+html.light .keep-white {
+  color: #ffffff !important;
+}
+
+/* Hover background & text overrides for light mode */
+html.light .hover\:text-white:hover {
+  color: #111827 !important;
+}
+
+html.light .hover\:bg-white\/10:hover,
+html.light .hover\:bg-white\/5:hover,
+html.light .hover\:bg-white\/\[0\.06\]:hover,
+html.light .hover\:bg-white\/\[0\.04\]:hover {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .hover\:bg-\[\#303030\]:hover,
+html.light .hover\:bg-\[\#404040\]:hover,
+html.light .hover\:bg-\[\#252525\]:hover,
+html.light .hover\:bg-\[\#333333\]:hover {
+  background-color: #e5e7eb !important;
+}
+
+/* Borders in Light Mode */
+html.light .border-white\/5,
+html.light .border-white\/10,
+html.light .border-white\/15,
+html.light .border-white\/20,
+html.light .border-\[\#2d2d2d\],
+html.light .border-\[\#333333\],
+html.light .border-\[\#383838\],
+html.light .divide-white\/5 > :not([hidden]) ~ :not([hidden]),
+html.light .border-white\/\[0\.06\],
+html.light .border-white\/\[0\.04\],
+html.light .border-white\/\[0\.1\],
+html.light .border-outline-variant\/15 {
+  border-color: #e5e7eb !important;
+}
+
+/* Sidebar Drawer */
+html.light #sidebar-drawer,
+html.light aside {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+}
+
+html.light #sidebar-drawer > div:first-child,
+html.light #sidebar-drawer > div:last-child,
+html.light #drawer-search-container {
+  background-color: #f9fafb !important;
+  border-color: #e5e7eb !important;
+}
+
+html.light #drawer-search-input {
+  background-color: #ffffff !important;
+  border-color: #d1d5db !important;
+  color: #111827 !important;
+}
+
+html.light #sidebar-drawer .bg-\[\#272727\],
+html.light #sidebar-drawer .bg-\[\#303030\],
+html.light #sidebar-drawer .bg-\[\#202020\],
+html.light #sidebar-drawer .bg-\[\#2a2a2a\] {
+  background-color: #f3f4f6 !important;
+  border-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+html.light #sidebar-drawer .text-white,
+html.light #sidebar-drawer .text-neutral-200,
+html.light #sidebar-drawer .text-\[\#c0c7d4\] {
+  color: #1f2937 !important;
+}
+
+/* Settings & Profile Panel (Screen 05) */
+html.light .fluent-mica-card,
+html.light #screen-settings-panel section,
+html.light #screen-settings-panel .bg-\[\#1f1f1f\],
+html.light .bg-\[\#1f1f1f\] {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  color: #111827 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .fluent-sub-card,
+html.light #screen-settings-panel .bg-\[\#282828\],
+html.light .bg-\[\#282828\] {
+  background-color: #f9fafb !important;
+  border-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+html.light .fluent-sub-card:hover,
+html.light #screen-settings-panel .bg-\[\#282828\]:hover {
+  background-color: #f3f4f6 !important;
+}
+
+html.light #screen-settings-panel button.bg-\[\#353535\],
+html.light button.bg-\[\#353535\] {
+  background-color: #e5e7eb !important;
+  color: #111827 !important;
+  border-color: #d1d5db !important;
+}
+
+html.light #screen-settings-panel button.bg-\[\#353535\]:hover,
+html.light button.bg-\[\#353535\]:hover {
+  background-color: #d1d5db !important;
+}
+
+/* Fluent Toggle Switches in Light Mode */
+html.light .w-10.h-5.bg-\[\#353535\] {
+  background-color: #d1d5db !important;
+}
+
+html.light .peer:checked ~ .w-10.h-5.bg-\[\#353535\] {
+  background-color: #0078D4 !important;
+}
+
+/* Language & Popover Flyouts */
+html.light #language-selector-flyout button,
+html.light .bg-white\/5 {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+html.light #language-selector-flyout button:hover {
+  background-color: #0078D4 !important;
+  color: #ffffff !important;
+}
+
+/* Storage Bar & Metrics in Light Mode */
+html.light #storage-val-threads,
+html.light #storage-val-media,
+html.light #storage-val-free {
+  color: #111827 !important;
+}
+
+html.light .bg-\[\#303030\] {
+  background-color: #e5e7eb !important;
+}
+
+html.light #settings-storage-badge {
+  background-color: rgba(0, 120, 212, 0.1) !important;
+  border-color: rgba(0, 120, 212, 0.25) !important;
+  color: #0078D4 !important;
+}
+
+/* Log Out Button in Light Mode: Sleek Black / Dark Neutral, No Red */
+html.light #btn-logout,
+html.light button[onclick*="logoutUser"],
+html.light .bg-\[\#93000a\]\/20,
+html.light .bg-\[\#93000a\]\/15,
+html.light .bg-error-container\/20 {
+  background-color: #f3f4f6 !important;
+  border: 1px solid #d1d5db !important;
+  color: #111827 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Colorless Muted Send Button when input is empty */
+#btn-send-message.btn-send-disabled,
+button.btn-send-disabled {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #71717a !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  opacity: 0.45 !important;
+}
+
+html.light #btn-send-message.btn-send-disabled,
+html.light button.btn-send-disabled {
+  background-color: #e5e7eb !important;
+  color: #9ca3af !important;
+  opacity: 0.5 !important;
+}
+
+html.light #btn-logout:hover,
+html.light button[onclick*="logoutUser"]:hover,
+html.light .bg-\[\#93000a\]\/20:hover,
+html.light .bg-\[\#93000a\]\/15:hover,
+html.light .bg-error-container\/20:hover {
+  background-color: #111827 !important;
+  border-color: #111827 !important;
+  color: #ffffff !important;
+}
+
+html.light #btn-logout span,
+html.light button[onclick*="logoutUser"] span,
+html.light .bg-\[\#93000a\]\/20 span,
+html.light .bg-\[\#93000a\]\/15 span {
+  color: inherit !important;
+}
+
+/* Edit Profile Modal (ChatGPT Sheet Style) */
+html.light #edit-profile-modal > div,
+html.light #edit-profile-modal-sheet {
+  background-color: #ffffff !important;
+  color: #0d0d0d !important;
+  border-top-color: #e5e7eb !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light #edit-profile-modal input {
+  background-color: transparent !important;
+  border: none !important;
+  color: #0d0d0d !important;
+}
+
+/* 3-Dots Menu & Attachment Context Menu */
+html.light #three-dots-menu,
+html.light #attachmentMenu,
+html.light .bg-\[\#252525\] {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light #three-dots-menu button,
+html.light #attachmentMenu button {
+  color: #1f2937 !important;
+}
+
+html.light #three-dots-menu button:hover,
+html.light #attachmentMenu button:hover {
+  background-color: #f3f4f6 !important;
+}
+
+html.light #attachmentMenu .bg-\[\#1e1e1e\] {
+  background-color: #f3f4f6 !important;
+  border-color: #e5e7eb !important;
+}
+
+/* Docked Composer Pill */
+html.light .fluent-composer-pill,
+html.light .bg-\[\#1e1e1e\],
+html.light .bg-\[\#1e1e1e\]\/95 {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light #chat-input {
+  color: #111827 !important;
+}
+
+html.light #chat-input::placeholder {
+  color: #9ca3af !important;
+}
+
+html.light #plusToggle,
+html.light #micBtn {
+  color: #4b5563 !important;
+}
+
+html.light #plusToggle:hover,
+html.light #micBtn:hover {
+  color: #111827 !important;
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light #input-attachment-chips .bg-\[\#202020\],
+html.light #input-attachment-chips .bg-\[\#252525\] {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+/* Chat Messages */
+html.light .ai-text-body {
+  color: #1f2937 !important;
+}
+
+html.light .ai-text-body strong {
+  color: #111827 !important;
+}
+
+html.light .ai-text-body code {
+  background-color: #f3f4f6 !important;
+  color: #0078D4 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+html.light .ai-text-body pre {
+  background-color: #f9fafb !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+html.light .ai-actions-bar {
+  color: #6b7280 !important;
+}
+
+html.light .ai-actions-bar button:hover {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  color: #111827 !important;
+}
+
+/* User Bubble in Light Mode */
+html.light #chat-messages-container .text-white {
+  color: #111827 !important;
+}
+
+/* Auth Screens (Screen 07 - 11) */
+html.light #view-login main,
+html.light #view-register main,
+html.light #view-sms-otp main,
+html.light #view-email-otp main,
+html.light #view-forgot-password main,
+html.light .bg-\[\#0e0e0e\],
+html.light .bg-\[\#0e0e0e\]\/90 {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-color: #e5e7eb !important;
+  color: #111827 !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light .fluent-input,
+html.light input[id^="otp-"],
+html.light .bg-\[\#1b1c1c\],
+html.light .bg-\[\#1E1E1E\] {
+  background-color: #f9fafb !important;
+  border-color: #d1d5db !important;
+  color: #111827 !important;
+}
+
+html.light .fluent-input input {
+  color: #111827 !important;
+}
+
+html.light #view-login .bg-\[\#1b1c1c\]:hover {
+  background-color: #f3f4f6 !important;
+}
+
+/* Dynamic Send Button Disabled/Colorless State */
+#btn-send-message.btn-send-disabled {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #71717a !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  opacity: 0.45 !important;
+}
+
+html.light #btn-send-message.btn-send-disabled {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  color: #9ca3af !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  opacity: 0.45 !important;
+}
+
+#feedback-modal-backdrop {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: rgba(0, 0, 0, 0.55) !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+#feedback-modal-backdrop.hidden {
+  display: none !important;
+}
+
+.fluent-feedback-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-top-left-radius: 32px !important;
+  border-top-right-radius: 32px !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+#feedback-tags-container {
+  display: grid !important;
+  grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+@media (min-width: 640px) {
+  #feedback-tags-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+.feedback-chip {
+  user-select: none;
+}
+
+#feedback-info-flyout {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+html.light #feedback-modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.25) !important;
+}
+
+html.light .fluent-feedback-card {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light #feedback-modal-title {
+  color: #111827 !important;
+}
+
+html.light .feedback-chip {
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+  border-color: #e5e7eb !important;
+}
+
+html.light .feedback-chip:hover {
+  background-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+html.light .fluent-feedback-textarea {
+  background-color: #f9fafb !important;
+  border-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+html.light .fluent-feedback-textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+html.light #feedback-modal-notice {
+  color: #6b7280 !important;
+}
+
+html.light #feedback-info-flyout {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light #feedback-info-flyout p {
+  color: #4b5563 !important;
+}
+
+html.light #feedback-info-flyout .font-medium,
+html.light #feedback-info-title {
+  color: #111827 !important;
+}
+
+@keyframes slideUpBottomSheet {
+  from {
+    transform: translateY(100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slideUpBottomSheet 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ========================================================= */
+/* COMPREHENSIVE CHATGPT-GRADE LIGHT MODE DESIGN SYSTEM      */
+/* ========================================================= */
+
+html.light {
+  --bg-primary: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-surface-high: #f3f4f6;
+  --bg-surface-low: #ffffff;
+  --bg-surface-lowest: #f9fafb;
+  --bg-sidebar: #ffffff;
+  --border-subtle: #e5e7eb;
+  --border-focus: #0078d4;
+  --text-main: #0d0d0d;
+  --text-muted: #64748b;
+  --text-secondary: #334155;
+}
+
+/* Force All Buttons, Icons and Labels in Light Mode to have PURE BLACK Font Color */
+html.light button,
+html.light button span,
+html.light button .material-symbols-outlined,
+html.light .material-symbols-outlined,
+html.light #view-app header button,
+html.light #view-app header button .material-symbols-outlined,
+html.light #model-selector-btn,
+html.light #model-selector-btn span,
+html.light #three-dots-menu button,
+html.light #model-selector-menu button,
+html.light .fluent-flyout button,
+html.light #attachmentMenu button,
+html.light #btn-new-chat-sidebar,
+html.light .session-item button,
+html.light .ai-actions-bar button,
+html.light .ai-actions-bar button .material-symbols-outlined,
+html.light #plusToggle,
+html.light #micBtn,
+html.light .feedback-chip {
+  color: #0d0d0d !important;
+}
+
+/* Exception: Filled Primary Action Buttons keep crisp white text */
+html.light button.bg-\[\#0078D4\],
+html.light button.bg-blue-600,
+html.light #btn-send-message:not(.btn-send-disabled),
+html.light #btn-send-message:not(.btn-send-disabled) .material-symbols-outlined,
+html.light .bg-purple-600,
+html.light .bg-purple-600 .material-symbols-outlined {
+  color: #ffffff !important;
+}
+
+/* Main App Workspace in Light Mode */
+html.light #view-app {
+  background-color: #ffffff !important;
+}
+
+html.light #view-app header {
+  background: #ffffff !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+  box-shadow: none !important;
+}
+
+/* Header Buttons & Controls in Light Mode (ChatGPT Style) */
+html.light #view-app header button {
+  color: #0d0d0d !important;
+  border-color: #e5e7eb !important;
+  background-color: #f4f4f5 !important;
+  box-shadow: none !important;
+  border-radius: 9999px !important;
+}
+
+html.light #view-app header button:hover {
+  background-color: #e4e4e7 !important;
+  color: #0078d4 !important;
+}
+
+/* Model Selector Button in Light Mode */
+html.light #model-selector-btn,
+html.light button[onclick="toggleModelMenu()"] {
+  background-color: #f4f4f5 !important;
+  color: #0d0d0d !important;
+  border-color: #e5e7eb !important;
+  border-radius: 9999px !important;
+  font-weight: 600 !important;
+}
+
+html.light #model-selector-btn:hover,
+html.light button[onclick="toggleModelMenu()"]:hover {
+  background-color: #e4e4e7 !important;
+  color: #0078d4 !important;
+}
+
+/* Flyout Menus & Dropdowns in Light Mode */
+html.light #three-dots-menu,
+html.light #model-selector-menu,
+html.light .fluent-flyout,
+html.light #attachmentMenu {
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04) !important;
+  border-radius: 1rem !important;
+}
+
+html.light #three-dots-menu button,
+html.light #model-selector-menu button,
+html.light .fluent-flyout button,
+html.light #attachmentMenu button {
+  color: #0d0d0d !important;
+  font-weight: 500 !important;
+}
+
+html.light #three-dots-menu button:hover,
+html.light #model-selector-menu button:hover,
+html.light .fluent-flyout button:hover,
+html.light #attachmentMenu button:hover {
+  background-color: #f4f4f5 !important;
+  color: #0078d4 !important;
+}
+
+/* Sidebar / Drawer in Light Mode (ChatGPT Drawer Style) */
+html.light #navigation-drawer,
+html.light #sidebar-drawer {
+  background-color: #ffffff !important;
+  border-right: 1px solid #f3f4f6 !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light #btn-new-chat-sidebar,
+html.light button[onclick="createNewChat()"] {
+  background-color: #0078D4 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 2px 8px rgba(0, 120, 212, 0.25) !important;
+  font-weight: 600 !important;
+}
+
+html.light #btn-new-chat-sidebar *,
+html.light button[onclick="createNewChat()"] * {
+  color: #ffffff !important;
+}
+
+/* Sidebar Sessions List */
+html.light .session-item,
+html.light #session-list > div {
+  color: #0d0d0d !important;
+  border-color: transparent !important;
+  border-radius: 0.75rem !important;
+}
+
+html.light .session-item:hover,
+html.light #session-list > div:hover {
+  background-color: #f4f4f5 !important;
+  color: #0d0d0d !important;
+}
+
+html.light .session-item.active,
+html.light #session-list > div.active {
+  background-color: #e0f2fe !important;
+  color: #0078d4 !important;
+  font-weight: 600 !important;
+}
+
+html.light .session-item button,
+html.light #session-list button {
+  color: #64748b !important;
+}
+
+html.light .session-item button:hover,
+html.light #session-list button:hover {
+  background-color: #e4e4e7 !important;
+  color: #0d0d0d !important;
+}
+
+/* Empty State & Prompt Cards in Light Mode */
+html.light #screen-empty-state h2,
+html.light #screen-empty-state .font-semibold,
+html.light #screen-empty-state .font-bold {
+  color: #0d0d0d !important;
+}
+
+html.light #screen-empty-state p,
+html.light #screen-empty-state .text-neutral-400 {
+  color: #64748b !important;
+}
+
+html.light .fluent-action-card,
+html.light #screen-empty-state .bg-\[\#18191d\],
+html.light #screen-empty-state .bg-\[\#121317\] {
+  background-color: #f4f4f5 !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 1rem !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease !important;
+}
+
+html.light .fluent-action-card:hover,
+html.light #screen-empty-state .bg-\[\#18191d\]:hover {
+  background-color: #e4e4e7 !important;
+  border-color: #0078d4 !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Chat Message Stream & Text in Light Mode */
+html.light #chat-messages-container > div {
+  border-bottom-color: #f3f4f6 !important;
+}
+
+html.light #chat-messages-container .text-white {
+  color: #0d0d0d !important;
+}
+
+html.light .ai-text-body {
+  color: #0d0d0d !important;
+  font-weight: 450 !important;
+}
+
+html.light .ai-text-body strong,
+html.light .ai-text-body b {
+  color: #0d0d0d !important;
+  font-weight: 700 !important;
+}
+
+/* AI Action Buttons Bar under messages (Copy, Speak, Like, Dislike, Regenerate, Edit) */
+html.light .ai-actions-bar {
+  color: #64748b !important;
+}
+
+html.light .ai-actions-bar button {
+  background-color: #f4f4f5 !important;
+  color: #0d0d0d !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 9999px !important;
+  padding: 6px 12px !important;
+}
+
+html.light .ai-actions-bar button:hover {
+  background-color: #e4e4e7 !important;
+  color: #0078d4 !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* User Bubble in Light Mode */
+html.light .user-bubble {
+  background-color: #f4f4f5 !important;
+  color: #0d0d0d !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 1.25rem !important;
+}
+
+/* Composer Bar in Light Mode (ChatGPT Pill Style) */
+html.light .fluent-composer-pill,
+html.light .bg-\[\#1e1e1e\]\/95,
+html.light .bg-\[\#1e1e1e\] {
+  background-color: #f4f4f5 !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light #chat-input {
+  color: #0d0d0d !important;
+}
+
+html.light #chat-input::placeholder {
+  color: #8e8e8e !important;
+}
+
+html.light #plusToggle,
+html.light #micBtn {
+  background-color: transparent !important;
+  color: #0d0d0d !important;
+  border: none !important;
+}
+
+html.light #plusToggle:hover,
+html.light #micBtn:hover {
+  background-color: #e4e4e7 !important;
+  color: #0078d4 !important;
+  border-radius: 9999px !important;
+}
+
+html.light #btn-send-message.btn-send-disabled {
+  background-color: #e5e7eb !important;
+  color: #a1a1aa !important;
+}
+
+html.light #btn-send-message:not(.btn-send-disabled) {
+  background-color: #0078d4 !important;
+  color: #ffffff !important;
+  border-radius: 9999px !important;
+}
+
+/* Floating Down Arrow Button Above Composer */
+html.light #btn-scroll-bottom,
+html.light button[onclick="scrollToBottom()"] {
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #0d0d0d !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  border-radius: 9999px !important;
+}
+
+/* Settings Panel & Cards in Light Mode (Matches ChatGPT Screenshot 215744 & 215751) */
+html.light #screen-settings-panel {
+  background-color: #ffffff !important;
+  color: #0d0d0d !important;
+}
+
+html.light #screen-settings-panel .fluent-mica-card,
+html.light #screen-settings-panel .bg-\[\#121317\],
+html.light #screen-settings-panel .bg-\[\#18191d\],
+html.light #screen-settings-panel .bg-\[\#1f1f1f\],
+html.light #screen-settings-panel .bg-\[\#202020\],
+html.light #screen-settings-panel .bg-\[\#282828\] {
+  background-color: #f4f4f5 !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 1.25rem !important;
+  box-shadow: none !important;
+}
+
+html.light #screen-settings-panel h2,
+html.light #screen-settings-panel h3,
+html.light #screen-settings-panel .font-bold,
+html.light #screen-settings-panel .font-semibold,
+html.light #screen-settings-panel .text-white {
+  color: #0d0d0d !important;
+}
+
+html.light #screen-settings-panel .text-neutral-400,
+html.light #screen-settings-panel .text-neutral-300 {
+  color: #64748b !important;
+}
+
+html.light #screen-settings-panel button {
+  color: #0d0d0d !important;
+}
+
+/* Attachment Menu Context in Light Mode */
+html.light #attachmentMenu {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light #attachmentMenu button {
+  color: #1f2937 !important;
+}
+
+html.light #attachmentMenu button:hover {
+  background-color: #f3f4f6 !important;
+}
+
+html.light #attachmentMenu button div {
+  background-color: #f3f4f6 !important;
+  border-color: #e5e7eb !important;
+}
+
+/* Navigation Drawer in Light Mode */
+html.light #navigation-drawer {
+  background-color: #ffffff !important;
+  border-right: 1px solid #e5e7eb !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Settings & Profile Full Screen (Screen 05) in Light Mode */
+html.light #screen-settings-panel {
+  background-color: #f8f9fa !important;
+  color: #111827 !important;
+}
+
+html.light #screen-settings-panel .fluent-mica-card {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+}
+
+html.light #screen-settings-panel h2,
+html.light #screen-settings-panel h3,
+html.light #screen-settings-panel .text-white {
+  color: #111827 !important;
+}
+
+html.light #screen-settings-panel .text-neutral-400 {
+  color: #6b7280 !important;
+}
+
+html.light #screen-settings-panel .text-neutral-300 {
+  color: #4b5563 !important;
+}
+
+html.light #screen-settings-panel .bg-\[\#1f1f1f\],
+html.light #screen-settings-panel .bg-\[\#202020\],
+html.light #screen-settings-panel .bg-\[\#282828\] {
+  background-color: #f9fafb !important;
+  border-color: #e5e7eb !important;
+}
+
+html.light #screen-settings-panel button[onclick="closeSettingsPanel()"] {
+  color: #374151 !important;
+}
+
+html.light #screen-settings-panel button[onclick="closeSettingsPanel()"]:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light #screen-settings-panel button.bg-\[\#353535\] {
+  background-color: #e5e7eb !important;
+  color: #111827 !important;
+  border-color: #d1d5db !important;
+}
+
+html.light #screen-settings-panel button.bg-\[\#353535\]:hover {
+  background-color: #d1d5db !important;
+}
+
+html.light #screen-settings-panel .w-10.h-5.bg-\[\#353535\] {
+  background-color: #d1d5db !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light #screen-settings-panel .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light #screen-settings-panel .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Edit Profile Modal in Light Mode */
+html.light #edit-profile-modal > div,
+html.light .bg-\[\#242424\] {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+html.light #edit-profile-modal input {
+  background-color: #f9fafb !important;
+  border-color: #e5e7eb !important;
+  color: #111827 !important;
+}
+
+html.light #edit-profile-modal input:focus {
+  border-color: #0078D4 !important;
+  background-color: #ffffff !important;
+}
+
+/* ========================================================= */
+/* NOTIFICATION SETTINGS EXPANDABLE PANEL & CONTROLS         */
+/* ========================================================= */
+
+#notification-settings-panel {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#notif-children-group.opacity-40 * {
+  cursor: not-allowed !important;
+}
+
+/* Light Mode Overrides for Notification Panel */
+html.light #notification-settings-panel .bg-\[\#202020\],
+html.light #notification-settings-panel .bg-\[\#202020\]\/70 {
+  background-color: #f3f4f6 !important;
+  border-color: #e5e7eb !important;
+}
+
+html.light #notification-settings-panel .text-white {
+  color: #111827 !important;
+}
+
+html.light #notification-settings-panel .text-neutral-400 {
+  color: #6b7280 !important;
+}
+
+html.light #notification-settings-panel .w-10.h-5.bg-\[\#353535\] {
+  background-color: #d1d5db !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light #notification-settings-panel .peer:checked ~ .w-10.h-5 {
+  background-color: #0078D4 !important;
+}
+
+/* ========================================================= */
+/* CODE BLOCK & MARKDOWN TABLE EXPORTER STYLES               */
+/* ========================================================= */
+
+.code-block-container {
+  backdrop-filter: blur(8px);
+}
+
+.svg-preview-box svg {
+  max-width: 100%;
+  max-height: 380px;
+  height: auto;
+}
+
+/* Light Mode Overrides for Code Blocks & Tables */
+html.light .code-block-container {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .code-block-container .bg-\[\#202020\] {
+  background-color: #f3f4f6 !important;
+  border-color: #e5e7eb !important;
+}
+
+html.light .code-block-container .text-neutral-300,
+html.light .code-block-container .text-neutral-400 {
+  color: #4b5563 !important;
+}
+
+html.light .code-block-container .code-raw-box pre code {
+  color: #1f2937 !important;
+}
+
+html.light .code-block-container .svg-preview-box {
+  background-color: #f8f9fa !important;
+}
+
+/* Fluent Markdown Data Table System */
+.markdown-table-wrapper {
+  background-color: #121417 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+}
+
+.markdown-table-wrapper table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+/* Distinct Header Row: Custom Background, Highlighted Font Color & Vertical Divider */
+.markdown-table-wrapper thead tr {
+  background-color: #1c2128 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+
+.markdown-table-wrapper thead th {
+  color: #58a6ff !important; /* Header font color alag (Fluent Azure Highlight) */
+  background-color: #1c2128 !important; /* Header cell color different */
+  font-weight: 600;
+  font-size: 20px !important;
+  padding: 14px 18px !important;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.markdown-table-wrapper thead th:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, 0.12) !important; /* Vertical column line */
+}
+
+/* Body Cells: Uniform Background, Uniform Font Color & Vertical Divider */
+.markdown-table-wrapper tbody tr {
+  background-color: #121417 !important; /* Niche all cell color same */
+  transition: background-color 0.15s ease;
+}
+
+.markdown-table-wrapper tbody tr:hover {
+  background-color: #1a1e24 !important;
+}
+
+.markdown-table-wrapper tbody tr:not(:last-child) td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; /* Horizontal row line */
+}
+
+.markdown-table-wrapper tbody td {
+  color: #e6edf3 !important; /* All cell font color same */
+  padding: 14px 18px !important;
+  font-size: 20px !important;
+  line-height: 1.6 !important;
+}
+
+.markdown-table-wrapper tbody td strong,
+.markdown-table-wrapper tbody td b,
+.markdown-table-wrapper thead th strong,
+.markdown-table-wrapper thead th b {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+}
+
+.markdown-table-wrapper tbody td:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, 0.09) !important; /* Vertical column line */
+}
+
+/* Light Mode Overrides for Table */
+html.light .markdown-table-wrapper {
+  background-color: #ffffff !important;
+  border-color: #d0d7de !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .markdown-table-wrapper .bg-\[\#1c2128\],
+html.light .markdown-table-wrapper .bg-\[\#202020\] {
+  background-color: #f6f8fa !important;
+  border-color: #d0d7de !important;
+}
+
+html.light .markdown-table-wrapper thead tr {
+  background-color: #eef2f7 !important; /* Light Mode: Header cell color different */
+}
+
+html.light .markdown-table-wrapper thead th {
+  background-color: #eef2f7 !important;
+  color: #005fb8 !important; /* Light Mode: Header font color alag (Fluent Deep Blue) */
+  border-bottom: 1px solid #d0d7de !important;
+}
+
+html.light .markdown-table-wrapper thead th:not(:last-child) {
+  border-right: 1px solid #d0d7de !important; /* Light Mode: Vertical column line */
+}
+
+html.light .markdown-table-wrapper tbody tr {
+  background-color: #ffffff !important; /* Light Mode: Niche all cell color same */
+}
+
+html.light .markdown-table-wrapper tbody tr:hover {
+  background-color: #f3f6f9 !important;
+}
+
+html.light .markdown-table-wrapper tbody tr:not(:last-child) td {
+  border-bottom: 1px solid #e1e4e8 !important;
+}
+
+html.light .markdown-table-wrapper tbody td {
+  color: #1f2328 !important; /* Light Mode: All cell font color same */
+}
+
+html.light .markdown-table-wrapper tbody td:not(:last-child) {
+  border-right: 1px solid #e1e4e8 !important; /* Light Mode: Vertical column line */
+}
+
+/* ========================================================= */
+/* SMARTART & MERMAID DIAGRAM STYLES                         */
+/* ========================================================= */
+.mermaid-block-container {
+  border-radius: 12px;
+  background-color: #121417;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  margin: 1.25rem 0;
+  overflow: hidden;
+}
+
+.mermaid-diagram-box {
+  background-color: #0e1013;
+  padding: 1.25rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+  min-height: 120px;
+}
+
+.mermaid-diagram-box svg,
+.fluent-mermaid-svg {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Crisp rendering of SVG SmartArt in light mode */
+html.light .mermaid-block-container {
+  background-color: #ffffff;
+  border-color: #d0d7de;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+html.light .mermaid-block-container .bg-\[\#1c2128\] {
+  background-color: #f6f8fa !important;
+  border-color: #d0d7de !important;
+}
+
+html.light .mermaid-diagram-box {
+  background-color: #fcfcfc !important;
+}
+
+/* Standalone SVG SmartArt Container styling */
+.svg-preview-box svg {
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 8px;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.25));
+}
+
+/* Suppress Mermaid error banners from polluting page body without hiding the measuring sandbox */
+body > div:has(svg.error-icon),
+body > div:has(.error-text),
+svg[aria-roledescription="error"] {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Mermaid Typography and Fluent Polish */
+.mermaid-diagram-box .node rect,
+.mermaid-diagram-box .node polygon,
+.mermaid-diagram-box .node circle,
+.mermaid-diagram-box .node ellipse {
+  fill: #181d24 !important;
+  stroke: #0078D4 !important;
+  stroke-width: 1.5px !important;
+}
+
+.mermaid-diagram-box .edgePath .path,
+.mermaid-diagram-box .flowchart-link {
+  stroke: #0078D4 !important;
+  stroke-width: 2px !important;
+}
+
+.mermaid-diagram-box .marker {
+  fill: #0078D4 !important;
+  stroke: #0078D4 !important;
+}
+
+.mermaid-diagram-box text,
+.mermaid-diagram-box tspan,
+.mermaid-diagram-box .mindmap-node text,
+.mermaid-diagram-box .mindmap-node span,
+.mermaid-diagram-box .node text,
+.mermaid-diagram-box .label text,
+.mermaid-diagram-box .nodeLabel,
+.fluent-mermaid-svg text,
+.fluent-mermaid-svg tspan {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  font-size: 10.5px !important;
+}
+
+html.light .mermaid-diagram-box .node rect,
+html.light .mermaid-diagram-box .node polygon,
+html.light .mermaid-diagram-box .node circle,
+html.light .mermaid-diagram-box .node ellipse {
+  fill: #f0f6ff !important;
+  stroke: #0078D4 !important;
+  stroke-width: 1.5px !important;
+}
+
+html.light .mermaid-diagram-box text,
+html.light .mermaid-diagram-box tspan,
+html.light .mermaid-diagram-box .mindmap-node text,
+html.light .mermaid-diagram-box .mindmap-node span,
+html.light .mermaid-diagram-box .node text,
+html.light .mermaid-diagram-box .label text,
+html.light .mermaid-diagram-box .nodeLabel,
+html.light .fluent-mermaid-svg text,
+html.light .fluent-mermaid-svg tspan {
+  fill: #0f172a !important;
+  color: #0f172a !important;
+  font-weight: 500 !important;
+  font-size: 10.5px !important;
+}
+
+/* ========================================================= */
+/* MICROSOFT WORD BULLET LIBRARY & EXECUTIVE HEADINGS        */
+/* ========================================================= */
+.ms-heading {
+  margin-top: 2rem;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  line-height: 1.4;
+}
+
+.ms-heading-1 {
+  font-size: 1.95rem;
+  color: #ffffff;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.25rem;
+  margin-top: 2.25rem;
+  padding-bottom: 0.35rem;
+}
+
+.ms-heading-2 {
+  font-size: 1.7rem;
+  color: #ffffff;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 1.1rem;
+  margin-top: 2rem;
+}
+
+.ms-heading-3 {
+  font-size: 1.5rem;
+  color: #f1f5f9;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 0.9rem;
+  margin-top: 1.75rem;
+}
+
+.ms-heading-4 {
+  font-size: 1.35rem;
+  color: #e2e8f0;
+}
+
+.ms-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 0.6rem 0;
+  padding-left: 0.75rem;
+  line-height: 1.82;
+  font-size: 26px;
+  color: #e2e8f0;
+}
+
+.ms-bullet-item strong {
+  font-size: 26px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+}
+
+.ms-bullet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
+  user-select: none;
+  flex-shrink: 0;
+  margin-top: 0.5rem;
+}
+
+.ms-bullet-diamond {
+  color: #0078D4; /* Microsoft Azure */
+  font-size: 1.1rem;
+}
+
+.ms-bullet-arrow {
+  color: #00b4d8; /* Microsoft Fluent Cyan */
+  font-size: 1.15rem;
+}
+
+.ms-bullet-check {
+  color: #10b981; /* Fluent Emerald */
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.ms-bullet-square {
+  color: #e2e8f0 !important; /* Matches neutral body text */
+  font-size: 1rem;
+}
+
+.ms-bullet-circle {
+  color: #ffffff !important; /* Pure Crisp White ChatGPT Dot */
+  font-size: 1.6rem !important;
+  line-height: 1 !important;
+  display: inline-block !important;
+}
+
+.ms-bullet-open-circle {
+  color: #cbd5e1; /* Slate Light */
+  font-size: 1.1rem;
+}
+
+.ms-num-bullet {
+  color: #e2e8f0 !important; /* Matches clean body text, NOT blue */
+  font-weight: 600;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  line-height: 1.625;
+}
+
+/* Light Mode support for MS Word Bullets */
+html.light .ms-heading-1,
+html.light .ms-heading-2,
+html.light .ms-heading-3,
+html.light .ms-heading-4 {
+  color: #0f172a;
+}
+
+html.light .ms-bullet-item {
+  color: #334155;
+}
+
+html.light .ms-num-bullet,
+html.light .ms-bullet-square {
+  color: #1e293b !important;
+}
+
+html.light .ms-heading-1 {
+  border-bottom-color: rgba(0, 0, 0, 0.08);
+}
+
+/* ========================================================= */
+/* RHYNIA MICROSOFT OFFICE VISUAL CHART ENGINE               */
+/* ========================================================= */
+
+.rhynia-chart-card {
+  position: relative;
+  border-radius: 0.875rem;
+  overflow: hidden;
+  margin: 1.25rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #121417;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.rhynia-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 1rem;
+  background-color: #1a1e24;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rhynia-chart-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  background: rgba(0, 120, 212, 0.15);
+  color: #4cc2ff;
+  border: 1px solid rgba(0, 120, 212, 0.3);
+}
+
+.chart-canvas-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  padding: 1.25rem;
+  background-color: #101215;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-canvas-container canvas {
+  max-width: 100% !important;
+  max-height: 380px !important;
+  display: block;
+}
+
+.chart-data-box {
+  padding: 1rem;
+  background-color: #101215;
+  overflow-x: auto;
+  max-height: 380px;
+}
+
+.chart-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  font-family: var(--font-mono, monospace);
+  color: #e2e8f0;
+}
+
+.chart-data-table th {
+  background-color: #1c2128;
+  color: #60a5fa;
+  padding: 0.5rem 0.875rem;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.chart-data-table td {
+  padding: 0.45rem 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.chart-data-table tr:nth-child(even) td {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Light Mode Support for Charts */
+html.light .rhynia-chart-card {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+html.light .rhynia-chart-header {
+  background-color: #f8fafc;
+  border-bottom-color: #e2e8f0;
+}
+
+html.light .chart-canvas-container,
+html.light .chart-data-box {
+  background-color: #ffffff;
+}
+
+html.light .chart-data-table {
+  color: #1e293b;
+}
+
+html.light .chart-data-table th {
+  background-color: #f1f5f9;
+  color: #0078d4;
+  border-color: #e2e8f0;
+}
+
+html.light .chart-data-table td {
+  border-color: #f1f5f9;
+}
+
+html.light .chart-data-table tr:nth-child(even) td {
+  background-color: #f8fafc;
+}
+
+/* ========================================================= */
+/* RHYNIA COMPACT BLUE SOURCE LINKS & CITATIONS              */
+/* ========================================================= */
+
+.rhynia-source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.125rem 0.55rem;
+  margin: 0.1rem 0.2rem;
+  font-size: 0.75rem; /* 12px - chota sa */
+  font-weight: 500;
+  line-height: 1.25rem;
+  color: #4cc2ff !important; /* Fluent Azure Blue */
+  background: rgba(0, 120, 212, 0.15);
+  border: 1px solid rgba(0, 120, 212, 0.35);
+  border-radius: 9999px; /* Capsule pill */
+  text-decoration: none !important;
+  vertical-align: middle;
+  word-break: break-word;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.rhynia-source-link:hover {
+  background: rgba(0, 120, 212, 0.28);
+  border-color: rgba(76, 194, 255, 0.65);
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 120, 212, 0.3);
+}
+
+.rhynia-source-link:active {
+  transform: translateY(0);
+}
+
+.rhynia-source-link .source-icon {
+  font-size: 13px !important;
+  line-height: 1;
+  color: #4cc2ff;
+  flex-shrink: 0;
+}
+
+.rhynia-source-link .source-text {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rhynia-source-link .external-icon {
+  font-size: 11px !important;
+  line-height: 1;
+  opacity: 0.75;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.rhynia-source-link:hover .external-icon {
+  opacity: 1;
+  transform: translate(1px, -1px);
+}
+
+/* Citation Number Pill (e.g. [1], [2]) */
+.rhynia-citation-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.35rem;
+  margin: 0 0.15rem;
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 600;
+  color: #4cc2ff !important;
+  background: rgba(0, 120, 212, 0.18);
+  border: 1px solid rgba(0, 120, 212, 0.4);
+  border-radius: 9999px;
+  vertical-align: super;
+  text-decoration: none !important;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.rhynia-citation-pill:hover {
+  background: #0078D4;
+  border-color: #4cc2ff;
+  color: #ffffff !important;
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(0, 120, 212, 0.4);
+}
+
+/* Light Theme overrides for Links */
+html.light .rhynia-source-link {
+  color: #0078D4 !important;
+  background: rgba(0, 120, 212, 0.08);
+  border-color: rgba(0, 120, 212, 0.28);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+html.light .rhynia-source-link:hover {
+  color: #004e8c !important;
+  background: rgba(0, 120, 212, 0.18);
+  border-color: #0078D4;
+  box-shadow: 0 3px 8px rgba(0, 120, 212, 0.2);
+}
+
+html.light .rhynia-source-link .source-icon {
+  color: #0078D4;
+}
+
+html.light .rhynia-citation-pill {
+  color: #0078D4 !important;
+  background: rgba(0, 120, 212, 0.1);
+  border-color: rgba(0, 120, 212, 0.32);
+}
+
+html.light .rhynia-citation-pill:hover {
+  background: #0078D4;
+  color: #ffffff !important;
+}
+
+/* ========================================================= */
+/* RHYNIA EDUCATIONAL IMAGE CARDS & GALLERIES               */
+/* ========================================================= */
+.rhynia-image-gallery {
+  width: 100%;
+  margin: 1.25rem 0;
+}
+
+.rhynia-image-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  user-select: none;
+}
+
+.rhynia-image-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 120, 212, 0.6) !important;
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.5), 0 0 18px rgba(0, 120, 212, 0.15) !important;
+}
+
+.rhynia-img-wrapper {
+  background: #0e0e0e;
+}
+
+/* Light Theme Overrides for Image Cards */
+html.light .rhynia-image-card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .rhynia-image-card:hover {
+  border-color: #0078D4 !important;
+  box-shadow: 0 10px 24px -4px rgba(0, 120, 212, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light .rhynia-img-wrapper {
+  background: #f8fafc !important;
+}
+
+html.light .rhynia-image-card .bg-\[\#1c1c1c\] {
+  background: #f1f5f9 !important;
+  border-top-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .rhynia-image-card .text-neutral-300,
+html.light .rhynia-image-card .text-white {
+  color: #1e293b !important;
+}
+
+html.light .rhynia-image-card button,
+html.light .rhynia-image-card a {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #334155 !important;
+}
+
+html.light .rhynia-image-card button:hover,
+html.light .rhynia-image-card a:hover {
+  background: rgba(0, 120, 212, 0.12) !important;
+  color: #0078D4 !important;
+}
+
+/* ========================================================= */
+/* RHYNIA RECOMMENDED FOLLOW-UP QUESTIONS INTERACTIVE PILLS  */
+/* ========================================================= */
+.rhynia-recommended-questions-box {
+  position: relative;
+  background: #121417;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1rem 1.15rem;
+  margin: 1.5rem 0 1rem 0;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35);
+}
+
+.rhynia-followup-pill {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.rhynia-followup-pill:hover {
+  transform: translateX(4px);
+  border-color: rgba(76, 194, 255, 0.5) !important;
+  background: rgba(0, 120, 212, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(0, 120, 212, 0.25);
+}
+
+/* Light Theme Overrides */
+html.light .rhynia-recommended-questions-box {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .rhynia-recommended-questions-box .text-white {
+  color: #0f172a !important;
+}
+
+html.light .rhynia-followup-pill {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+html.light .rhynia-followup-pill span {
+  color: #334155 !important;
+}
+
+html.light .rhynia-followup-pill:hover {
+  background: #f0f7ff !important;
+  border-color: #0078D4 !important;
+  box-shadow: 0 4px 12px rgba(0, 120, 212, 0.15);
+}
+
+html.light .rhynia-followup-pill:hover span {
+  color: #0078D4 !important;
+}
+
+html.light .rhynia-followup-pill .material-symbols-outlined {
+  color: #94a3b8 !important;
+}
+
+html.light .rhynia-followup-pill:hover .material-symbols-outlined {
+  color: #0078D4 !important;
+}
+
+/* ========================================================= */
+/* RHYNIA EXECUTIVE PRESENTATION PLAYER & SLIDE DECK         */
+/* ========================================================= */
+.rhynia-deck-wrapper {
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rhynia-deck-wrapper:hover {
+  box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.5);
+}
+
+#rhynia-presentation-fs-stage {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+html.light .rhynia-deck-wrapper {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light .rhynia-deck-wrapper .bg-black\/40,
+html.light .rhynia-deck-wrapper .bg-black\/30 {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .rhynia-deck-wrapper .text-white {
+  color: #0f172a !important;
+}
+
+html.light .rhynia-deck-wrapper .text-neutral-300,
+html.light .rhynia-deck-wrapper .text-neutral-200 {
+  color: #334155 !important;
+}
+
+html.light .rhynia-deck-wrapper .text-neutral-400 {
+  color: #64748b !important;
+}
+
+html.light .rhynia-deck-wrapper tr.bg-white\/10 {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+html.light .rhynia-deck-wrapper .bg-white\/5 {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* ========================================================= */
+/* MOBILE RESPONSIVE OPTIMIZATION SYSTEM (ChatGPT-Grade UI)  */
+/* ========================================================= */
+.user-bubble {
+  word-break: break-word;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+html.light .user-bubble {
+  background: #f1edfb !important;
+  color: #1e1b4b !important;
+  border-color: rgba(99, 102, 241, 0.12) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 1024px) {
+  /* Prevent horizontal scrolling & mobile viewport clipping */
+  html, body {
+    width: 100%;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    touch-action: pan-y pinch-zoom !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: auto !important;
+  }
+
+  /* Main Container: Safe Area Awareness & Fixed Header Offset */
+  #main-chat-container {
+    padding-top: 112px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-bottom: calc(190px + env(safe-area-inset-bottom, 24px)) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    touch-action: pan-y pinch-zoom !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Top Navigation Bar: FIXED Floating Transparent (No Card/Bar Strip, Only Left & Right Buttons Visible) */
+  #view-app header,
+  header {
+    height: 100px !important;
+    min-height: 100px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 50 !important;
+    border: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    pointer-events: none !important;
+  }
+
+  #btn-hamburger-menu,
+  #header-right-capsule,
+  #three-dots-menu {
+    pointer-events: auto !important;
+  }
+
+  /* ☰ Menu button: 84 × 84 px Touch Target inside Pill */
+  #btn-hamburger-menu {
+    width: 84px !important;
+    height: 84px !important;
+    min-width: 84px !important;
+    min-height: 84px !important;
+    border-radius: 9999px !important;
+    background: #212121 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  #btn-hamburger-menu .material-symbols-outlined {
+    font-size: 48px !important;
+  }
+
+  /* Right Capsule container */
+  #header-right-capsule {
+    padding: 6px 14px !important;
+    border-radius: 9999px !important;
+    background: #212121 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+    gap: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  /* ✏️ New Chat Button inside Right Capsule: 72 × 72 px */
+  header button[onclick="startNewChat()"] {
+    width: 72px !important;
+    height: 72px !important;
+    min-width: 72px !important;
+    min-height: 72px !important;
+    border-radius: 9999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  header button[onclick="startNewChat()"] .material-symbols-outlined {
+    font-size: 40px !important;
+  }
+
+  /* ⋮ More Button inside Right Capsule: 72 × 72 px */
+  #btn-three-dots-trigger {
+    width: 72px !important;
+    height: 72px !important;
+    min-width: 72px !important;
+    min-height: 72px !important;
+    border-radius: 9999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  #btn-three-dots-trigger .material-symbols-outlined {
+    font-size: 40px !important;
+  }
+
+  /* 3-Dots Flyout Menu Positioned Comfortably Below Top Bar (Extra Large Popup Width & Fonts) */
+  #three-dots-menu {
+    top: 112px !important;
+    right: 18px !important;
+    width: 440px !important;
+    max-width: 92vw !important;
+    border-radius: 36px !important;
+    padding: 20px 18px !important;
+  }
+
+  #three-dots-menu button {
+    min-height: 98px !important;
+    padding: 22px 24px !important;
+    font-size: 34px !important;
+    font-weight: 800 !important;
+    border-radius: 24px !important;
+    gap: 22px !important;
+  }
+  #three-dots-menu button .material-symbols-outlined {
+    font-size: 48px !important;
+  }
+
+  /* Bottom Composer Wrapper: Floating Above Android Navigation Bar / Gesture Pill */
+  #view-app > div.fixed.bottom-0,
+  div:has(> .fluent-composer-pill) {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 24px)) !important;
+  }
+
+  /* Bottom Input Bar (Stadium Capsule Pill): Extra-Large ~100 px Height */
+  .fluent-composer-pill {
+    min-height: 100px !important;
+    height: auto !important;
+    padding: 14px 22px !important;
+    gap: 16px !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6) !important;
+  }
+
+  /* ➕ Attachment Button: 74 × 74 px Touch Target, 42px Icon */
+  #plusToggle {
+    width: 74px !important;
+    height: 74px !important;
+    min-width: 74px !important;
+    min-height: 74px !important;
+    border-radius: 9999px !important;
+  }
+
+  #plusToggle .material-symbols-outlined {
+    font-size: 42px !important;
+  }
+
+  /* Input Text Field: 22 px Font, Smooth Line Height */
+  #chat-input {
+    font-size: 22px !important;
+    line-height: 1.5 !important;
+    padding: 16px 12px !important;
+  }
+
+  /* 🎙️ Microphone Voice Dictation Button: 78 × 78 px Touch Target, 44px Icon */
+  #micBtn {
+    width: 78px !important;
+    height: 78px !important;
+    min-width: 78px !important;
+    min-height: 78px !important;
+    border-radius: 9999px !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  #micBtn:hover {
+    background-color: rgba(255, 255, 255, 0.18) !important;
+  }
+
+  #micBtn .material-symbols-outlined {
+    font-size: 44px !important;
+  }
+
+  /* 🟣 Voice / Send Button: 78 × 78 px Touch Target, 40px Icon */
+  #btn-send-message {
+    width: 78px !important;
+    height: 78px !important;
+    min-width: 78px !important;
+    min-height: 78px !important;
+    border-radius: 9999px !important;
+  }
+
+  #btn-send-message .material-symbols-outlined {
+    font-size: 40px !important;
+  }
+
+  /* Chat Messages: User Bubble (Extra Large & Clear 26px) */
+  .user-bubble {
+    font-size: 26px !important;
+    min-height: auto !important;
+    padding: 16px 24px !important;
+    border-radius: 20px 20px 4px 20px !important;
+    max-width: 90% !important;
+    line-height: 1.68 !important;
+    display: inline-block !important;
+    align-items: initial !important;
+  }
+
+  /* AI Message Text: Extra Large & Clear 26px, 1.82 Line Height */
+  .ai-text-body,
+  .ai-text-body p,
+  .ai-text-body li,
+  .ms-bullet-item {
+    font-size: 26px !important;
+    line-height: 1.82 !important;
+    color: #e2e8f0 !important;
+  }
+
+  .ai-text-body strong,
+  .ms-bullet-item strong {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+  }
+
+  .ai-text-body code {
+    font-size: 16px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+  }
+
+  .ai-text-body pre {
+    font-size: 15px !important;
+    padding: 14px 16px !important;
+  }
+
+  /* Action Buttons Bar: Extra Large 58px Touch Area, 32px Icons, 20px Gap (Copy, Speaker, Good, Bad, Share) */
+  .ai-actions-bar {
+    gap: 20px !important;
+    padding-top: 18px !important;
+    margin-bottom: 28px !important;
+    padding-bottom: 12px !important;
+  }
+
+  .ai-actions-bar button {
+    width: 58px !important;
+    height: 58px !important;
+    min-width: 58px !important;
+    min-height: 58px !important;
+    border-radius: 16px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .ai-actions-bar .material-symbols-outlined {
+    font-size: 32px !important;
+  }
+
+  /* Table Uniformity on Mobile: Large 20px font matching mobile text */
+  .markdown-table-wrapper table,
+  .markdown-table-wrapper tbody,
+  .markdown-table-wrapper thead,
+  .markdown-table-wrapper tr,
+  .markdown-table-wrapper th,
+  .markdown-table-wrapper td,
+  .markdown-table-wrapper td strong,
+  .markdown-table-wrapper th strong,
+  .markdown-table-wrapper td span,
+  .markdown-table-wrapper td b {
+    font-size: 20px !important;
+    line-height: 1.6 !important;
+  }
+
+  .markdown-table-wrapper th,
+  .markdown-table-wrapper td {
+    padding: 14px 18px !important;
+  }
+
+  .markdown-table-wrapper td strong,
+  .markdown-table-wrapper td b {
+    font-weight: 600 !important;
+    color: #ffffff !important;
+  }
+
+  /* Flowchart Compact Text on Mobile: 10.5px */
+  .mermaid-diagram-box text,
+  .mermaid-diagram-box tspan,
+  .mermaid-diagram-box .node text,
+  .mermaid-diagram-box .label text,
+  .mermaid-diagram-box .nodeLabel,
+  .fluent-mermaid-svg text,
+  .fluent-mermaid-svg tspan {
+    font-size: 10.5px !important;
+    font-weight: 500 !important;
+  }
+
+  /* Empty State Hero on Big Display */
+  #screen-empty-state {
+    padding-top: 4rem !important;
+    padding-bottom: 3rem !important;
+  }
+
+  #screen-empty-state img {
+    width: 260px !important;
+    height: 260px !important;
+  }
+
+  #screen-empty-state h2 {
+    font-size: 2.6rem !important;
+  }
+
+  /* Navigation Drawer on Mobile: Extra wide, unibody cohesive sidebar */
+  #sidebar-drawer {
+    width: 96vw !important;
+    max-width: 500px !important;
+    min-width: 340px !important;
+    background-color: #171717 !important;
+    overscroll-behavior: contain !important;
+  }
+
+  /* Prevent background chat scrolling when drawer is open */
+  body.drawer-open,
+  html.drawer-open {
+    overflow: hidden !important;
+    height: 100vh !important;
+    width: 100% !important;
+    touch-action: none !important;
+  }
+
+  body.drawer-open #main-chat-container {
+    pointer-events: none !important;
+    user-select: none !important;
+  }
+
+  /* Code Blocks & Tables Touch Scrolling */
+  .markdown-body table {
+    display: block !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    font-size: 16px !important;
+  }
+
+  .markdown-body pre {
+    padding: 18px !important;
+    font-size: 16px !important;
+    border-radius: 18px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* ========================================================= */
+  /* SCREEN 04: NAVIGATION DRAWER (Unibody ChatGPT Scale)      */
+  /* ========================================================= */
+  #sidebar-drawer {
+    width: 98vw !important;
+    max-width: 620px !important;
+  }
+
+  @media (min-width: 768px) {
+    #sidebar-drawer {
+      width: 600px !important;
+      max-width: 660px !important;
+    }
+  }
+
+  #sidebar-drawer > div:first-child {
+    height: 96px !important;
+    padding-left: 24px !important;
+    padding-right: 22px !important;
+    border-bottom: 0 !important;
+    background-color: #171717 !important;
+  }
+
+  #sidebar-drawer > div:first-child span.text-base,
+  #sidebar-drawer > div:first-child span.text-lg,
+  #sidebar-drawer > div:first-child span.text-2xl,
+  #sidebar-drawer > div:first-child span.text-3xl,
+  #sidebar-drawer > div:first-child span.text-4xl,
+  #sidebar-drawer > div:first-child span.font-extrabold {
+    font-size: 38px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  /* Drawer Top Search Button: 68 × 68 px Card with 42px Magnifying Glass */
+  #drawer-search-btn {
+    width: 68px !important;
+    height: 68px !important;
+    min-width: 68px !important;
+    min-height: 68px !important;
+    border-radius: 20px !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  #drawer-search-btn .material-symbols-outlined {
+    font-size: 42px !important;
+    color: #f3f4f6 !important;
+  }
+
+  #drawer-search-container {
+    padding: 14px 20px !important;
+    background-color: #171717 !important;
+    border-bottom: 0 !important;
+  }
+
+  #drawer-search-input {
+    min-height: 56px !important;
+    height: 56px !important;
+    font-size: 18px !important;
+    border-radius: 16px !important;
+    padding-left: 52px !important;
+    padding-right: 52px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  #drawer-search-container .material-symbols-outlined {
+    font-size: 26px !important;
+  }
+
+  #drawer-search-container button {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  #sidebar-drawer .custom-scrollbar {
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+    background-color: #171717 !important;
+  }
+
+  /* Section Header Word (Pinned & Recent): 28px Extra Large Bold Font */
+  #drawer-pinned-header,
+  #drawer-recent-header {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 10px 8px !important;
+    margin-bottom: 14px !important;
+  }
+
+  #drawer-pinned-header span.header-title,
+  #drawer-recent-header span.header-title {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em !important;
+    color: #f5f5f5 !important;
+  }
+
+  #drawer-pinned-header span.header-icon,
+  #drawer-recent-header span.header-icon {
+    font-size: 30px !important;
+    color: #a3a3a3 !important;
+  }
+
+  /* Noticeable Space between Pinned and Recent Sections */
+  #drawer-pinned-section {
+    margin-bottom: 30px !important;
+    padding-bottom: 10px !important;
+  }
+
+  #drawer-recent-section {
+    margin-top: 18px !important;
+  }
+
+  /* Extra Large, Bold Recently Chat Titles: 26px Font Size */
+  #drawer-pinned-list span.truncate,
+  #drawer-recent-list span.truncate {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    line-height: 1.35 !important;
+    color: #e5e5e5 !important;
+  }
+
+  #drawer-pinned-list button,
+  #drawer-recent-list button {
+    min-height: 70px !important;
+    padding: 16px 20px !important;
+    font-size: 26px !important;
+    border-radius: 18px !important;
+  }
+
+  #drawer-pinned-list .material-symbols-outlined,
+  #drawer-recent-list .material-symbols-outlined {
+    font-size: 34px !important;
+  }
+
+  /* Seamless Footer Container (no top border, identical background) */
+  #sidebar-drawer > div:last-child {
+    height: 98px !important;
+    min-height: 98px !important;
+    padding: 16px 24px !important;
+    border-top: 0 !important;
+    background-color: #171717 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+  }
+
+  /* Bottom Left New Chat Icon Button: 68 × 68 px Card with 42px Edit Icon */
+  #drawer-new-chat-btn,
+  #sidebar-drawer > div:last-child button[onclick*="startNewChat"] {
+    width: 68px !important;
+    height: 68px !important;
+    min-width: 68px !important;
+    min-height: 68px !important;
+    border-radius: 20px !important;
+    padding: 0 !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+  }
+
+  #drawer-new-chat-btn:active,
+  #sidebar-drawer > div:last-child button[onclick*="startNewChat"]:active {
+    transform: scale(0.95) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+  }
+
+  #drawer-new-chat-btn .material-symbols-outlined,
+  #sidebar-drawer > div:last-child button[onclick*="startNewChat"] .material-symbols-outlined {
+    font-size: 42px !important;
+    color: #f3f4f6 !important;
+  }
+
+  /* Bottom Right Settings Button: 68 × 68 px Card with 42px Settings Icon */
+  #drawer-settings-btn {
+    width: 68px !important;
+    height: 68px !important;
+    min-width: 68px !important;
+    min-height: 68px !important;
+    border-radius: 20px !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+  }
+
+  #drawer-settings-btn:active {
+    transform: scale(0.95) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+  }
+
+  #drawer-settings-btn .material-symbols-outlined {
+    font-size: 42px !important;
+    color: #f3f4f6 !important;
+  }
+
+  /* ========================================================= */
+  /* SCREEN 05: SETTINGS & PROFILE PANEL (Same Large Scale)    */
+  /* ========================================================= */
+  #screen-settings-panel {
+    padding: 16px 18px 80px !important;
+  }
+
+  /* Back to Chat Button: 64px Touch Target, 34px Icon */
+  #screen-settings-panel button[onclick="closeSettingsPanel()"] {
+    min-height: 60px !important;
+    height: 60px !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    padding: 0 20px !important;
+    border-radius: 18px !important;
+    gap: 14px !important;
+  }
+
+  #screen-settings-panel button[onclick="closeSettingsPanel()"] .material-symbols-outlined {
+    font-size: 34px !important;
+  }
+
+  /* Profile Avatar: Grand Prominent Size ~200px */
+  #screen-settings-panel .w-48.h-48,
+  #screen-settings-panel .w-56.h-56,
+  #screen-settings-panel .w-32.h-32 {
+    width: 200px !important;
+    height: 200px !important;
+    min-width: 200px !important;
+    min-height: 200px !important;
+  }
+
+  #screen-settings-panel .user-avatar-initial {
+    font-size: 78px !important;
+    line-height: 1 !important;
+  }
+
+  /* Profile Edit Pencil Badge: 60 × 60 px */
+  #screen-settings-panel section button[onclick="toggleEditProfileModal(true)"] {
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
+    border-radius: 9999px !important;
+  }
+
+  #screen-settings-panel section button[onclick="toggleEditProfileModal(true)"] .material-symbols-outlined,
+  #screen-settings-panel section button[onclick="toggleEditProfileModal(true)"] span {
+    font-size: 30px !important;
+  }
+
+  /* Settings Cards: Luxurious Large Padding & Rounded Corners */
+  #screen-settings-panel .fluent-mica-card {
+    padding: 28px 24px !important;
+    border-radius: 32px !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  #screen-settings-panel .fluent-mica-card h3 {
+    font-size: 1.85rem !important;
+    font-weight: 800 !important;
+  }
+
+  #screen-settings-panel .fluent-mica-card p {
+    font-size: 1.35rem !important;
+  }
+
+  /* Settings Header Category Icon Badges: 48 × 48 px with 28px Icons */
+  #screen-settings-panel .fluent-mica-card .w-12.h-12 {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    border-radius: 14px !important;
+  }
+
+  #screen-settings-panel .fluent-mica-card .w-12.h-12 .material-symbols-outlined {
+    font-size: 28px !important;
+  }
+
+  /* Option Item Icon Badges: 52 × 52 px with 30px Icons */
+  #screen-settings-panel .fluent-mica-card .w-14.h-14 {
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
+    border-radius: 16px !important;
+  }
+
+  #screen-settings-panel .fluent-mica-card .w-14.h-14 .material-symbols-outlined {
+    font-size: 30px !important;
+  }
+
+  /* Inner Option Rows: Generous Padding */
+  #screen-settings-panel .fluent-mica-card .p-4 {
+    padding: 16px 18px !important;
+    border-radius: 18px !important;
+  }
+
+  /* Large Toggle Switches: 52 × 30 px with 22px Knob */
+  #screen-settings-panel .w-12.h-7 {
+    width: 52px !important;
+    height: 30px !important;
+  }
+
+  #screen-settings-panel .w-5.h-5 {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  /* Accent Color Swatch Buttons */
+  #accent-color-picker-flyout button {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  /* Log Out Button: 64px Height, 30px Icon, 18px Bold Font */
+  #btn-logout {
+    min-height: 64px !important;
+    height: 64px !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    border-radius: 18px !important;
+    gap: 12px !important;
+  }
+
+  #btn-logout .material-symbols-outlined {
+    font-size: 30px !important;
+  }
+
+  /* ========================================================= */
+  /* SCREENS 07 - 11: AUTH & ONBOARDING (Same Large Scale)     */
+  /* ========================================================= */
+  #view-login main,
+  #view-register main,
+  #view-sms-otp main,
+  #view-email-otp main,
+  #view-forgot-password main {
+    max-width: 460px !important;
+    padding: 28px 22px !important;
+    border-radius: 28px !important;
+  }
+
+  /* Auth Header Back Circular Buttons: 64 × 64 px Touch Target, 36px Icon */
+  #view-register header button,
+  #view-sms-otp header button,
+  #view-email-otp header button,
+  #view-forgot-password header button {
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px !important;
+    min-height: 64px !important;
+    border-radius: 9999px !important;
+  }
+
+  #view-register header button .material-symbols-outlined,
+  #view-sms-otp header button .material-symbols-outlined,
+  #view-email-otp header button .material-symbols-outlined,
+  #view-forgot-password header button .material-symbols-outlined {
+    font-size: 36px !important;
+  }
+
+  /* Hero Section Icon Badges (OTP & Reset): 76 × 76 px, 40px Icon */
+  #view-sms-otp section .w-14.h-14,
+  #view-email-otp section .w-14.h-14,
+  #view-forgot-password section .w-14.h-14 {
+    width: 76px !important;
+    height: 76px !important;
+    min-width: 76px !important;
+    min-height: 76px !important;
+    border-radius: 22px !important;
+  }
+
+  #view-sms-otp section .w-14.h-14 .material-symbols-outlined,
+  #view-email-otp section .w-14.h-14 .material-symbols-outlined,
+  #view-forgot-password section .w-14.h-14 .material-symbols-outlined {
+    font-size: 40px !important;
+  }
+
+  /* Auth Input Fields: 62px Height, 18px Font, 32px Material Icons */
+  #view-login .fluent-input,
+  #view-register .fluent-input,
+  #view-forgot-password .fluent-input {
+    min-height: 62px !important;
+    height: 62px !important;
+    border-radius: 16px !important;
+    padding: 0 18px !important;
+  }
+
+  #view-login .fluent-input input,
+  #view-register .fluent-input input,
+  #view-forgot-password .fluent-input input {
+    font-size: 18px !important;
+  }
+
+  #view-login .fluent-input .material-symbols-outlined,
+  #view-register .fluent-input .material-symbols-outlined,
+  #view-forgot-password .fluent-input .material-symbols-outlined {
+    font-size: 32px !important;
+  }
+
+  /* Password Toggle Visibility Button */
+  #login-password-eye-btn,
+  #register-password-eye-btn {
+    width: 48px !important;
+    height: 48px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  #login-password-eye-btn .material-symbols-outlined,
+  #register-password-eye-btn .material-symbols-outlined {
+    font-size: 30px !important;
+  }
+
+  /* Primary Submit Buttons: 64px Height, 18px Font, 34px Arrow Icon */
+  #login-submit-btn,
+  #register-submit-btn,
+  #btn-verify-sms-otp,
+  #btn-verify-email-otp,
+  #btn-send-reset-otp {
+    min-height: 64px !important;
+    height: 64px !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    border-radius: 16px !important;
+    gap: 12px !important;
+  }
+
+  #login-submit-btn .material-symbols-outlined,
+  #register-submit-btn .material-symbols-outlined,
+  #btn-verify-sms-otp .material-symbols-outlined,
+  #btn-verify-email-otp .material-symbols-outlined,
+  #btn-send-reset-otp .material-symbols-outlined {
+    font-size: 34px !important;
+  }
+
+  /* Social Auth Buttons (Google, Mobile): 60px Height, 32px Icons */
+  #view-login section button.h-10,
+  #view-login section button[onclick*="showToast"],
+  #view-login section button[onclick*="switchView"] {
+    min-height: 60px !important;
+    height: 60px !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    border-radius: 14px !important;
+    padding: 0 20px !important;
+  }
+
+  #view-login section button.h-10 .material-symbols-outlined,
+  #view-login section button[onclick*="showToast"] .material-symbols-outlined,
+  #view-login section button[onclick*="switchView"] .material-symbols-outlined {
+    font-size: 32px !important;
+  }
+
+  /* OTP Slots: Large 54 × 66 px Touch-Friendly Boxes, 28px Font */
+  #view-sms-otp input[id^="otp-"],
+  #view-email-otp input[id^="otp-"] {
+    width: 54px !important;
+    height: 66px !important;
+    font-size: 28px !important;
+    border-radius: 16px !important;
+  }
+
+  /* OTP Paste from Clipboard Button: 48px Height, 28px Icon */
+  button[onclick*="pasteOtpFromClipboard"] {
+    min-height: 48px !important;
+    padding: 10px 20px !important;
+    font-size: 15px !important;
+    gap: 10px !important;
+  }
+
+  button[onclick*="pasteOtpFromClipboard"] .material-symbols-outlined {
+    font-size: 28px !important;
+  }
+
+  /* ========================================================= */
+  /* SCREEN 06: EDIT PROFILE MODAL (Edge-to-Edge Bottom Sheet) */
+  /* ========================================================= */
+  #edit-profile-modal {
+    z-index: 100 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    align-items: flex-end !important;
+    justify-content: flex-end !important;
+  }
+
+  #edit-profile-modal > div,
+  #edit-profile-modal-sheet {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: auto !important;
+    min-height: unset !important;
+    max-height: 88vh !important;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-bottom: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    border-radius: 32px 32px 0 0 !important;
+    padding: 16px 20px 24px !important;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+  }
+
+  #edit-profile-modal-sheet .relative.mx-auto {
+    margin-bottom: 20px !important;
+  }
+
+  #edit-profile-modal form {
+    max-width: 540px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+  }
+
+  /* Outlined Notched Inputs with Transparent Native Input */
+  #edit-profile-modal input {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    min-height: 48px !important;
+    height: 48px !important;
+    font-size: 24px !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  #edit-profile-modal button[type="submit"] {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-radius: 9999px !important;
+    min-height: 72px !important;
+    height: 72px !important;
+    font-size: 24px !important;
+    font-weight: 800 !important;
+    border: none !important;
+    max-width: 400px !important;
+    width: 100% !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  html.dark #edit-profile-modal button[type="submit"] {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* ========================================================= */
+  /* ATTACHMENT MENU & FLYOUTS (Extra Large Popup & Font Sizes)    */
+  /* ========================================================= */
+  #attachmentMenu {
+    width: 440px !important;
+    max-width: 92vw !important;
+    border-radius: 36px !important;
+    padding: 20px 18px !important;
+    bottom: calc(100% + 20px) !important;
+    left: 12px !important;
+    background-color: #121212 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9) !important;
+  }
+
+  #attachmentMenu button {
+    min-height: 98px !important;
+    padding: 22px 26px !important;
+    font-size: 34px !important;
+    font-weight: 800 !important;
+    border-radius: 24px !important;
+    gap: 22px !important;
+  }
+  #attachmentMenu button span:first-child {
+    font-size: 52px !important;
+    line-height: 1 !important;
+  }
+  #attachmentMenu button span:last-child {
+    font-size: 34px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  /* Three-Dots Menu (Context Menu: Extra Large Width & Fonts) */
+  #three-dots-menu {
+    width: 440px !important;
+    max-width: 92vw !important;
+    border-radius: 36px !important;
+    padding: 20px 18px !important;
+  }
+
+  #three-dots-menu button {
+    min-height: 98px !important;
+    padding: 22px 24px !important;
+    font-size: 34px !important;
+    font-weight: 800 !important;
+    border-radius: 24px !important;
+    gap: 22px !important;
+  }
+  #three-dots-menu button .material-symbols-outlined {
+    font-size: 48px !important;
+  }
+
+  /* Feedback Modal Controls */
+  #feedback-modal-card header button,
+  #feedback-modal-card #feedback-info-toggle-btn {
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 54px !important;
+    min-height: 54px !important;
+    border-radius: 9999px !important;
+  }
+
+  #feedback-modal-card header button .material-symbols-outlined,
+  #feedback-modal-card #feedback-info-toggle-btn .material-symbols-outlined {
+    font-size: 32px !important;
+  }
+
+  /* Presentation Player Controls: 64 × 64 px with 36px Icons */
+  #rhynia-presentation-fs-stage button,
+  .rhynia-deck-wrapper button {
+    min-width: 64px !important;
+    min-height: 64px !important;
+    width: 64px !important;
+    height: 64px !important;
+    border-radius: 16px !important;
+  }
+
+  #rhynia-presentation-fs-stage button .material-symbols-outlined,
+  .rhynia-deck-wrapper button .material-symbols-outlined {
+    font-size: 36px !important;
+  }
+}
+
+/* ========================================================= */
+/* SETTINGS SCREEN BUTTONS & TYPOGRAPHY (Extra Large Scale)  */
+/* ========================================================= */
+#screen-settings-panel button:not(#settings-theme-btn-text) {
+  font-size: 1.45rem !important;
+  font-weight: 800 !important;
+}
+
+#screen-settings-panel #btn-logout {
+  font-size: 2.15rem !important;
+  font-weight: 900 !important;
+  min-height: 88px !important;
+}
+
+#screen-settings-panel #settings-theme-btn-text {
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: unset !important;
+  line-height: 1.2 !important;
+}
+
+#screen-settings-panel section button:not(#settings-theme-btn-text) {
+  font-size: 1.35rem !important;
+  font-weight: 800 !important;
+}
+
+#edit-profile-modal button {
+  font-size: 1.35rem !important;
+  font-weight: 800 !important;
+}
+
+#screen-settings-panel .fluent-mica-card {
+  border-radius: 32px !important;
+  margin-bottom: 28px !important;
+}
+
+#screen-settings-panel h2,
+#screen-settings-panel #settings-user-name {
+  font-size: 2.85rem !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.02em !important;
+}
+
+#screen-settings-panel h3 {
+  font-size: 2.1rem !important;
+  font-weight: 850 !important;
+}
+
+#screen-settings-panel p {
+  font-size: 1.35rem !important;
+  line-height: 1.45 !important;
+}
+
+#screen-settings-panel .text-sm {
+  font-size: 1.15rem !important;
+}
+
+#screen-settings-panel .text-xs {
+  font-size: 1.05rem !important;
+}
+
+/* Ensure uniform clean white font color across Settings (except red logout) */
+#screen-settings-panel h2,
+#screen-settings-panel h3,
+#screen-settings-panel p,
+#screen-settings-panel span:not(#btn-logout span),
+#screen-settings-panel strong,
+#screen-settings-panel button:not(#btn-logout) {
+  color: #ffffff !important;
+}
+
+#screen-settings-panel #btn-logout,
+#screen-settings-panel #btn-logout span {
+  color: #ffb4ab !important;
+  font-size: 2.15rem !important;
+  font-weight: 900 !important;
+}
+
+#settings-language-select,
+#settings-accent-select {
+  color: #ffffff !important;
+  background-color: #353535 !important;
+  font-size: 0.875rem !important;
+  font-weight: 700 !important;
+  padding: 6px 30px 6px 10px !important;
+  max-width: 140px !important;
+  width: auto !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  border-radius: 10px !important;
+}
+
+#settings-language-select option,
+#settings-accent-select option {
+  background-color: #242424 !important;
+  color: #ffffff !important;
+  padding: 8px 10px !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+}
+
+/* ========================================================= */
+/* USER MESSAGE LONG-PRESS CONTEXT MENU (ChatGPT Exact UI)  */
+/* ========================================================= */
+#user-msg-context-menu {
+  background-color: #222225 !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 34px !important;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.95) !important;
+  animation: userMsgMenuPop 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  padding: 14px !important;
+}
+
+@keyframes userMsgMenuPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+#user-msg-ctx-time {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: #b0b0b0 !important;
+  padding: 10px 20px 8px !important;
+}
+
+#user-msg-context-menu button {
+  display: flex !important;
+  align-items: center !important;
+  gap: 18px !important;
+  width: 100% !important;
+  height: 84px !important;
+  min-height: 84px !important;
+  padding: 0 22px !important;
+  border-radius: 20px !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  font-size: 27px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  transition: background-color 0.15s ease, transform 0.1s ease !important;
+}
+
+#user-msg-context-menu button:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+#user-msg-context-menu button:active {
+  background-color: rgba(255, 255, 255, 0.14) !important;
+  transform: scale(0.98) !important;
+}
+
+#user-msg-context-menu button .material-symbols-outlined {
+  font-size: 38px !important;
+  color: #e5e5e5 !important;
+}
+
+.user-bubble {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -webkit-touch-callout: none !important;
+  cursor: pointer !important;
+}
+
+/* ========================================================= */
+/* KATEX MATHEMATICS & FORMULA RENDERING (ChatGPT Parity)    */
+/* ========================================================= */
+.rhynia-math-display {
+  display: block;
+  margin: 1rem 0;
+  padding: 0.6rem 0.85rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  -webkit-overflow-scrolling: touch;
+}
+
+.katex {
+  font-size: 1.15em !important;
+  color: #f8fafc;
+  text-rendering: auto;
+}
+
+html.light .katex {
+  color: #0f172a !important;
+}
+
+.katex-display {
+  margin: 0.4em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 0;
+}
+
+.katex-display > .katex {
+  font-size: 1.25em !important;
+  display: inline-block;
+  text-align: center;
+}
+
+/* Boxed answer styling in KaTeX (\boxed{...}) */
+.katex .boxed,
+.katex .boxpad {
+  border: 1.5px solid #38bdf8 !important;
+  padding: 5px 10px !important;
+  border-radius: 8px !important;
+  background: rgba(56, 189, 248, 0.12) !important;
+  display: inline-block;
+}
+
+html.light .katex .boxed,
+html.light .katex .boxpad {
+  border: 1.5px solid #0284c7 !important;
+  background: rgba(2, 132, 199, 0.08) !important;
+}
+
+/* ========================================================= */
+/* SCREEN: SELECT TEXT (Dedicated Pure OLED Black View)      */
+/* ========================================================= */
+#screen-select-text.hidden {
+  display: none !important;
+}
+
+#screen-select-text {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  z-index: 95 !important;
+  padding: 16px 20px !important;
+}
+
+#screen-select-text header {
+  border-bottom: 0 !important;
+  padding-bottom: 8px !important;
+}
+
+#screen-select-text header button,
+#btn-select-text-back {
+  width: 72px !important;
+  height: 72px !important;
+  min-width: 72px !important;
+  min-height: 72px !important;
+  border-radius: 9999px !important;
+  background-color: #1e1e20 !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6) !important;
+  pointer-events: auto !important;
+}
+
+#screen-select-text header button:active,
+#btn-select-text-back:active {
+  transform: scale(0.9) !important;
+  background-color: #2e2e32 !important;
+}
+
+#screen-select-text header button .material-symbols-outlined,
+#btn-select-text-back .material-symbols-outlined {
+  font-size: 42px !important;
+  color: #ffffff !important;
+}
+
+#select-text-content {
+  font-size: 25px !important;
+  line-height: 1.8 !important;
+  color: #ffffff !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  padding-top: 48px !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+/* ========================================================= */
+/* APPEARANCE THEME FLOATING POPUP MENU (ChatGPT Exact UI)  */
+/* ========================================================= */
+#appearance-popup-menu {
+  background-color: #222225 !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 30px !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95) !important;
+  animation: userMsgMenuPop 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  padding: 12px !important;
+}
+
+#appearance-popup-menu .theme-option-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  height: 80px !important;
+  min-height: 80px !important;
+  padding: 0 22px !important;
+  border-radius: 20px !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  font-size: 25px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  transition: background-color 0.15s ease, transform 0.1s ease !important;
+}
+
+#appearance-popup-menu .theme-option-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+#appearance-popup-menu .theme-option-btn:active {
+  background-color: rgba(255, 255, 255, 0.14) !important;
+  transform: scale(0.98) !important;
+}
+
+#appearance-popup-menu .theme-check-icon {
+  font-size: 34px !important;
+  color: #ffffff !important;
+}
+
+/* ========================================================= */
+/* ACCENT COLOR FLOATING POPUP MENU (ChatGPT Exact UI)      */
+/* ========================================================= */
+#accent-popup-menu {
+  background-color: #222225 !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 32px !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95) !important;
+  animation: userMsgMenuPop 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  padding: 14px !important;
+  scrollbar-width: none !important;
+}
+
+#accent-popup-menu::-webkit-scrollbar {
+  display: none !important;
+}
+
+#accent-popup-menu .accent-option-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  height: 68px !important;
+  min-height: 68px !important;
+  padding: 0 20px !important;
+  border-radius: 20px !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  transition: background-color 0.15s ease, transform 0.1s ease !important;
+}
+
+#accent-popup-menu .accent-option-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+#accent-popup-menu .accent-option-btn:active {
+  background-color: rgba(255, 255, 255, 0.14) !important;
+  transform: scale(0.98) !important;
+}
+
+#accent-popup-menu .accent-check-icon {
+  font-size: 34px !important;
+  color: #ffffff !important;
+  flex-shrink: 0 !important;
+}
+
+#accent-popup-menu .accent-check-icon.hidden {
+  display: none !important;
+}
+
+/* ========================================================= */
+/* APP LANGUAGE MODAL DIALOG (ChatGPT Exact UI)             */
+/* ========================================================= */
+#app-language-modal {
+  animation: fadeIn 0.15s ease forwards;
+}
+
+#app-language-modal .language-option-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 20px !important;
+  width: 100% !important;
+  height: 76px !important;
+  min-height: 76px !important;
+  padding: 0 20px !important;
+  border-radius: 20px !important;
+  background: transparent !important;
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  transition: background-color 0.15s ease, transform 0.1s ease !important;
+}
+
+#app-language-modal .language-option-row:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+#app-language-modal .language-option-row:active {
+  background-color: rgba(255, 255, 255, 0.14) !important;
+  transform: scale(0.99) !important;
+}
+
+#app-language-modal .radio-indicator {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  border-radius: 9999px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  transition: all 0.15s ease !important;
+}
+
+#app-language-modal .radio-indicator span {
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 9999px !important;
+  background-color: #ffffff !important;
+}
+
+/* Rhynia Live Thinking Indicator Animations */
+@keyframes rhyniaOrbitCycle {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.rhynia-orbit-cycle {
+  transform-origin: center center;
+  animation: rhyniaOrbitCycle 1.4s linear infinite;
+}
+
+@keyframes rhyniaPulseDot {
+  0%, 100% {
+    transform: scale(0.65);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 1;
+    box-shadow: 0 0 10px #38bdf8, 0 0 16px rgba(56, 189, 248, 0.9);
+  }
+}
+
+.rhynia-wave-dot-1 {
+  animation: rhyniaPulseDot 1.1s infinite ease-in-out;
+  animation-delay: 0s;
+}
+.rhynia-wave-dot-2 {
+  animation: rhyniaPulseDot 1.1s infinite ease-in-out;
+  animation-delay: 0.22s;
+}
+.rhynia-wave-dot-3 {
+  animation: rhyniaPulseDot 1.1s infinite ease-in-out;
+  animation-delay: 0.44s;
+}
+
+/* ========================================================= */
+/* CHATGPT-GRADE AUTO-SCROLL & VIEWPORT PRESENCE SYSTEM       */
+/* ========================================================= */
+html, body {
+  scroll-behavior: smooth;
+  scroll-padding-top: 120px;
+  scroll-padding-bottom: 190px;
+  touch-action: pan-y pinch-zoom !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto !important;
+}
+
+#screen-active-chat,
+#main-chat-container,
+#chat-messages-container {
+  touch-action: pan-y pinch-zoom !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: auto !important;
+}
+
+#screen-active-chat {
+  scroll-behavior: smooth;
+  scroll-padding-top: 120px;
+  scroll-padding-bottom: 190px;
+}
+
+.ai-actions-bar {
+  margin-bottom: 28px !important;
+  padding-bottom: 12px !important;
+}
+
+#chat-scroll-anchor {
+  min-height: 140px !important;
+  height: 140px !important;
+}
+
+.user-bubble,
+.rhynia-thinking-wrapper,
+[id^="ai-msg-"] {
+  scroll-margin-top: 120px;
+  scroll-margin-bottom: 190px;
+}
+
+/* ChatGPT & Gemini Style Floating Scroll-To-Bottom Down Arrow Button */
+#btn-scroll-to-bottom {
+  width: 108px !important;
+  height: 108px !important;
+  min-width: 108px !important;
+  min-height: 108px !important;
+  box-shadow: 0 20px 56px -4px rgba(0, 0, 0, 0.95), 0 0 0 2px rgba(255, 255, 255, 0.32) !important;
+  will-change: transform, opacity;
+}
+
+#btn-scroll-to-bottom .material-symbols-outlined {
+  font-size: 72px !important;
+  font-weight: 700 !important;
+}
+
+@media (min-width: 768px) {
+  #btn-scroll-to-bottom {
+    width: 92px !important;
+    height: 92px !important;
+    min-width: 92px !important;
+    min-height: 92px !important;
+  }
+  #btn-scroll-to-bottom .material-symbols-outlined {
+    font-size: 58px !important;
+  }
+}
+
+#btn-scroll-to-bottom:hover {
+  border-color: rgba(56, 189, 248, 0.85) !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 24px 60px -4px rgba(0, 0, 0, 0.98), 0 0 32px rgba(56, 189, 248, 0.6) !important;
+}
+
+html.light #btn-scroll-to-bottom {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  color: #0f172a !important;
+  border-color: rgba(0, 0, 0, 0.25) !important;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.28) !important;
+}
+
+

@@ -1,0 +1,189 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Dark Space Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="46%" r="58%">
+      <stop offset="0%" stop-color="#0e142e" />
+      <stop offset="50%" stop-color="#070914" />
+      <stop offset="100%" stop-color="#030408" />
+    </radialGradient>
+
+    <!-- Outer Squircle Border Gradient -->
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.8" />
+      <stop offset="30%" stop-color="#818cf8" stop-opacity="0.7" />
+      <stop offset="70%" stop-color="#c084fc" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.6" />
+    </linearGradient>
+
+    <!-- Head Cyan-Purple Gradient -->
+    <linearGradient id="headGrad" x1="20%" y1="80%" x2="80%" y2="20%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="45%" stop-color="#6366f1" />
+      <stop offset="75%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+
+    <!-- Orbit Beam Gradient -->
+    <linearGradient id="orbitGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.9" />
+      <stop offset="40%" stop-color="#818cf8" />
+      <stop offset="80%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#ffffff" />
+    </linearGradient>
+
+    <!-- Celestial Orb Radial Glow -->
+    <radialGradient id="orbGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="40%" stop-color="#a5f3fc" />
+      <stop offset="75%" stop-color="#38bdf8" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Soft Filter Glows -->
+    <filter id="glowCyan" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="7" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="glowOrb" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base with Soft Outer Dark Shadow -->
+  <rect x="18" y="18" width="476" height="476" rx="115" ry="115" 
+        fill="url(#bgGrad)" 
+        stroke="url(#borderGrad)" 
+        stroke-width="2.5" 
+        style="filter: drop-shadow(0 0 24px rgba(56, 189, 248, 0.45));" />
+
+  <!-- 1. Circular Orbit Arc -->
+  <path d="M 125 310 A 165 165 0 1 1 405 310" 
+        fill="none" 
+        stroke="url(#orbitGrad)" 
+        stroke-width="5" 
+        stroke-linecap="round" 
+        style="filter: drop-shadow(0 0 10px #38bdf8);" />
+
+  <!-- Orbit Shining Celestial Star/Orb -->
+  <circle cx="322" cy="90" r="22" fill="url(#orbGlow)" />
+  <circle cx="322" cy="90" r="11" fill="#ffffff" style="filter: drop-shadow(0 0 12px #38bdf8);" />
+
+  <!-- 2. Human Profile Head Facing Right -->
+  <g transform="translate(150, 102)">
+    <!-- Outer Head Silhouette -->
+    <path d="M 35 165 
+             C 25 150 15 130 18 100 
+             C 20 60 45 20 95 18 
+             C 140 16 160 50 160 85 
+             C 160 105 152 120 156 130 
+             C 158 135 168 140 170 148 
+             C 172 155 160 160 162 168 
+             C 164 174 175 182 170 190 
+             C 165 198 152 195 148 205 
+             C 142 220 148 245 150 250 
+             C 130 248 108 240 92 225 
+             C 75 210 70 185 35 165 Z" 
+          fill="url(#headGrad)" 
+          style="filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.8));" />
+
+    <!-- Brain Cavity Background -->
+    <path d="M 38 125 
+             C 34 85 55 45 95 42 
+             C 130 40 145 68 145 100 
+             C 145 125 130 145 110 155 
+             C 85 165 42 155 38 125 Z" 
+          fill="#080c1c" 
+          stroke="url(#headGrad)" 
+          stroke-width="2.8" />
+
+    <!-- Neural Network Synapses -->
+    <g stroke="#38bdf8" stroke-width="2.4" opacity="0.9">
+      <line x1="62" y1="120" x2="75" y2="85" />
+      <line x1="75" y1="85" x2="100" y2="65" />
+      <line x1="100" y1="65" x2="128" y2="80" />
+      <line x1="128" y1="80" x2="115" y2="115" />
+      <line x1="115" y1="115" x2="82" y2="135" />
+      <line x1="82" y1="135" x2="62" y2="120" />
+      <line x1="75" y1="85" x2="115" y2="115" />
+      <line x1="100" y1="65" x2="92" y2="105" />
+      <line x1="92" y1="105" x2="82" y2="135" stroke="#f43f5e" />
+      <line x1="62" y1="120" x2="92" y2="105" />
+      <line x1="128" y1="80" x2="135" y2="125" />
+      <line x1="115" y1="115" x2="135" y2="125" stroke="#ec4899" />
+    </g>
+
+    <!-- Brain Nodes: Pink & Cyan -->
+    <circle cx="62" cy="120" r="5.5" fill="#f43f5e" style="filter: drop-shadow(0 0 6px #f43f5e);" />
+    <circle cx="92" cy="105" r="7" fill="#ec4899" style="filter: drop-shadow(0 0 8px #ec4899);" />
+    <circle cx="82" cy="135" r="5.5" fill="#f43f5e" style="filter: drop-shadow(0 0 6px #f43f5e);" />
+    <circle cx="100" cy="65" r="7" fill="#ec4899" style="filter: drop-shadow(0 0 7px #ec4899);" />
+
+    <circle cx="75" cy="85" r="6" fill="#38bdf8" style="filter: drop-shadow(0 0 6px #38bdf8);" />
+    <circle cx="128" cy="80" r="7" fill="#00f0ff" style="filter: drop-shadow(0 0 8px #00f0ff);" />
+    <circle cx="115" cy="115" r="6.5" fill="#38bdf8" style="filter: drop-shadow(0 0 7px #38bdf8);" />
+    <circle cx="135" cy="125" r="5" fill="#00f0ff" style="filter: drop-shadow(0 0 6px #00f0ff);" />
+  </g>
+
+  <!-- 3. Thought Cloud Bubble (Upper Right) -->
+  <g transform="translate(315, 95)">
+    <circle cx="10" cy="75" r="5" fill="#38bdf8" style="filter: drop-shadow(0 0 4px #38bdf8);" />
+    <circle cx="22" cy="60" r="7" fill="#38bdf8" style="filter: drop-shadow(0 0 5px #38bdf8);" />
+    
+    <path d="M 40 45 
+             C 30 45 25 35 30 25 
+             C 32 15 45 12 55 18 
+             C 62 8 80 8 88 18 
+             C 98 12 110 20 110 32 
+             C 118 38 115 52 105 56 
+             C 100 62 85 64 75 58 
+             C 65 64 48 60 40 45 Z" 
+          fill="#0b1226" 
+          stroke="url(#orbitGrad)" 
+          stroke-width="3.8" 
+          style="filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.85));" />
+          
+    <circle cx="55" cy="36" r="4.5" fill="#ffffff" style="filter: drop-shadow(0 0 4px #38bdf8);" />
+    <circle cx="72" cy="36" r="4.5" fill="#ffffff" style="filter: drop-shadow(0 0 4px #38bdf8);" />
+    <circle cx="89" cy="36" r="4.5" fill="#ffffff" style="filter: drop-shadow(0 0 4px #38bdf8);" />
+  </g>
+
+  <!-- 4. Title: Rhynia -->
+  <text x="256" y="372" 
+        font-family="system-ui, -apple-system, 'Segoe UI', Inter, sans-serif" 
+        font-size="58" 
+        font-weight="900" 
+        text-anchor="middle" 
+        letter-spacing="-0.5" 
+        fill="#ffffff" 
+        style="filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.45)) drop-shadow(0 0 20px rgba(56, 189, 248, 0.7));">Rhynia</text>
+
+  <!-- 5. Bottom Status Pill: सोच रहा है... -->
+  <g transform="translate(156, 400)">
+    <rect x="0" y="0" width="200" height="44" rx="22" ry="22" 
+          fill="#0a1126" 
+          stroke="#38bdf8" 
+          stroke-width="2.2" 
+          style="filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.5));" />
+    
+    <circle cx="24" cy="22" r="8" fill="#38bdf8" opacity="0.5" style="filter: blur(3px);" />
+    <circle cx="24" cy="22" r="6" fill="#00f0ff" style="filter: drop-shadow(0 0 6px #00f0ff);" />
+    
+    <circle cx="42" cy="22" r="3.8" fill="#38bdf8" opacity="0.85" />
+    <circle cx="56" cy="22" r="3.8" fill="#38bdf8" opacity="0.5" />
+
+    <text x="126" y="29" 
+          font-family="'Noto Sans Devanagari', 'Mukta', 'Mangal', system-ui, sans-serif" 
+          font-size="20" 
+          font-weight="700" 
+          text-anchor="middle" 
+          fill="#ffffff" 
+          style="filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6));">सोच रहा है...</text>
+  </g>
+</svg>

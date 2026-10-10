@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Rhynia AI - Navigation Drawer</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-tertiary": "#00382f",
+          "tertiary-fixed-dim": "#1cdec3",
+          "on-tertiary-container": "#ffffff",
+          "on-primary-container": "#ffffff",
+          "on-tertiary-fixed-variant": "#005045",
+          "secondary": "#8ecdff",
+          "surface-tint": "#a3c9ff",
+          "inverse-surface": "#e5e2e1",
+          "tertiary-container": "#008674",
+          "secondary-fixed": "#cbe6ff",
+          "on-secondary-fixed": "#001e30",
+          "error-container": "#93000a",
+          "tertiary": "#1cdec3",
+          "on-primary-fixed-variant": "#004883",
+          "primary": "#0078d4",
+          "error": "#ffb4ab",
+          "outline-variant": "#404752",
+          "on-secondary": "#00344f",
+          "surface-container-high": "#2a2a2a",
+          "primary-fixed-dim": "#a3c9ff",
+          "on-error-container": "#ffdad6",
+          "outline": "#8a919e",
+          "on-primary": "#ffffff",
+          "surface-container-highest": "#353535",
+          "on-surface-variant": "#c0c7d4",
+          "inverse-on-surface": "#303030",
+          "secondary-container": "#00a4ef",
+          "background": "#131313",
+          "on-background": "#e5e2e1",
+          "surface-container": "#202020",
+          "on-secondary-container": "#003653",
+          "surface": "#131313",
+          "on-primary-fixed": "#001c39",
+          "primary-fixed": "#d3e3ff",
+          "surface-container-lowest": "#0e0e0e",
+          "on-surface": "#e5e2e1",
+          "surface-dim": "#131313",
+          "on-tertiary-fixed": "#00201b",
+          "on-error": "#690005",
+          "tertiary-fixed": "#50fbdf",
+          "primary-container": "#0078d4",
+          "on-secondary-fixed-variant": "#004b71",
+          "inverse-primary": "#0060ab",
+          "secondary-fixed-dim": "#8ecdff",
+          "surface-bright": "#393939",
+          "surface-container-low": "#1b1c1c",
+          "surface-variant": "#353535",
+          "fluent-mica": "#202020",
+          "fluent-mica-card": "#272727",
+          "fluent-azure": "#0078D4"
+        },
+        borderRadius: {
+          DEFAULT: "0.25rem",
+          md: "0.375rem",
+          lg: "0.5rem",
+          xl: "0.75rem",
+          "2xl": "1rem",
+          full: "9999px"
+        },
+        fontFamily: {
+          sans: ['"Segoe UI"', '-apple-system', 'BlinkMacSystemFont', 'Inter', 'sans-serif'],
+          segoe: ['"Segoe UI"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif']
+        }
+      }
+    }
+  };
+</script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    body {
+      min-height: max(884px, 100dvh);
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 9999px;
+    }
+    .fluent-acrylic-border {
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 8px 32px rgba(0, 0, 0, 0.65);
+    }
+    .fluent-elevation-flyout {
+      box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface min-h-screen overflow-x-hidden antialiased selection:bg-[#0078D4] selection:text-white font-sans">
+<!-- Background Base App Mockup (Clear view underneath Drawer overlay, NO blur) -->
+<div class="relative w-full min-h-screen flex flex-col bg-[#131313]">
+<header class="h-14 border-b border-[#2d2d2d] bg-[#1a1a1a] px-4 md:px-6 flex items-center justify-between z-10">
+<div class="flex items-center gap-3">
+<button class="p-2 -ml-2 text-on-surface-variant hover:text-white rounded-md transition-colors">
+<span class="material-symbols-outlined text-xl">menu</span>
+</button>
+<div class="flex flex-col">
+<span class="text-sm md:text-base font-semibold text-white flex items-center gap-2">
+          AI Mobile Architecture
+          <span class="material-symbols-outlined text-xs text-[#0078D4]" style="font-variation-settings: 'FILL' 1;">keep</span>
+</span>
+<span class="text-xs text-[#8a919e]">Active • Gemini 1.5 Pro</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button class="p-2 text-on-surface-variant hover:text-white rounded-md transition-colors">
+<span class="material-symbols-outlined text-xl">share</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-white rounded-md transition-colors">
+<span class="material-symbols-outlined text-xl">more_vert</span>
+</button>
+</div>
+</header>
+<main class="flex-1 w-full max-w-3xl mx-auto px-4 py-6 space-y-6 flex flex-col justify-between">
+<div class="space-y-6">
+<div class="flex justify-end">
+<div class="bg-[#0078D4]/20 border border-[#0078D4]/40 text-on-surface p-4 rounded-xl max-w-[85%] md:max-w-[75%]">
+<p class="text-sm font-normal text-white">How should we structure high-concurrency neural inference pipelines for mobile devices while keeping UI interactions 60fps?</p>
+<span class="text-[11px] text-[#8a919e] mt-1.5 block text-right">10:42 AM</span>
+</div>
+</div>
+<div class="flex gap-3.5 items-start">
+<div class="w-8 h-8 rounded-lg bg-[#0078D4] flex-shrink-0 flex items-center justify-center text-white font-semibold text-sm shadow-sm">
+          R
+        </div>
+<div class="space-y-3 flex-1">
+<div class="bg-[#1f1f1f] border border-[#2d2d2d] p-4 rounded-xl space-y-2.5">
+<p class="text-sm text-on-surface font-normal">For high-concurrency neural pipelines on edge devices, implement a decoupled 3-tier architecture:</p>
+<ul class="list-disc pl-5 space-y-1.5 text-xs text-on-surface-variant leading-relaxed">
+<li><strong class="text-white">Worker Thread Isolation:</strong> Offload NPU/GPU dispatch queue to dedicated C++ runtime bindings.</li>
+<li><strong class="text-white">Quantized Batching:</strong> Dynamically buffer token generation at 4-bit weights without blocking the main event loop.</li>
+<li><strong class="text-white">Predictive Frame Synthesis:</strong> Keep gestures synchronous via UI thread shaders.</li>
+</ul>
+</div>
+<div class="flex items-center gap-2 text-xs text-[#8a919e]">
+<button class="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-[#252525] hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">thumb_up</span> 12
+            </button>
+<button class="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-[#252525] hover:text-white transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span> Copy
+            </button>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-4">
+<div class="border border-[#2d2d2d] rounded-xl bg-[#1b1c1c] p-2.5 flex items-center justify-between gap-3 shadow-md">
+<span class="text-xs text-[#8a919e] pl-1.5">Ask follow-up or explore pipeline variants...</span>
+<div class="flex items-center gap-2">
+<button class="p-1.5 text-[#8a919e] hover:text-white transition-colors rounded">
+<span class="material-symbols-outlined text-xl">mic</span>
+</button>
+<div class="w-8 h-8 rounded-lg bg-[#0078D4] text-white flex items-center justify-center hover:bg-[#106ebe] transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-lg">arrow_upward</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Scrim background overlay (subtle dark tint without blur) -->
+<div class="fixed inset-0 bg-black/45 z-40"></div>
+<!-- Microsoft Fluent 2 Navigation Drawer -->
+<!-- Mica dark background (#202020), right border, clean elevation -->
+<aside class="fixed inset-y-0 left-0 z-50 flex flex-col justify-between w-80 max-w-[85vw] bg-[#202020] border-r border-[#333333] fluent-acrylic-border shadow-2xl transition-transform duration-300">
+<!-- Fluent Header: Rhynia Branding + Search Icon -->
+<div class="h-14 px-4 border-b border-[#2d2d2d] flex items-center justify-between bg-[#202020]">
+<div class="flex items-center gap-3">
+<div class="w-7 h-7 rounded-md bg-[#0078D4] flex items-center justify-center text-white font-semibold text-xs shadow-sm">
+        R
+      </div>
+<span class="text-base font-semibold text-white tracking-tight">Rhynia</span>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="Search chat history" class="w-8 h-8 rounded-md text-[#c0c7d4] hover:text-white hover:bg-[#2d2d2d] active:bg-[#353535] flex items-center justify-center transition-colors" title="Search chat history">
+<span class="material-symbols-outlined text-lg">search</span>
+</button>
+</div>
+</div>
+<!-- Drawer Scroll Content -->
+<div class="flex-1 overflow-y-auto custom-scrollbar px-3 py-3 space-y-5">
+<!-- PINNED SECTION -->
+<div class="space-y-1.5">
+<div class="px-2.5 py-1 flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-[#8a919e]">
+<span>Pinned</span>
+<span class="material-symbols-outlined text-xs text-[#8a919e]" style="font-variation-settings: 'FILL' 1;">keep</span>
+</div>
+<!-- Active Pinned Chat Container with Fluent Azure indicator & Mica card -->
+<div class="rounded-lg bg-[#272727] border border-[#383838] p-1.5 shadow-sm space-y-1">
+<!-- Active Chat Item Row with Azure vertical indicator -->
+<div class="relative flex items-center justify-between px-2.5 py-2 rounded-md bg-[#303030] text-white">
+<!-- Fluent Azure Selection Indicator Bar -->
+<div class="absolute left-0 top-1.5 bottom-1.5 w-1 bg-[#0078D4] rounded-r-full"></div>
+<div class="flex items-center gap-2.5 pl-1.5 overflow-hidden">
+<span class="material-symbols-outlined text-base text-[#0078D4] flex-shrink-0" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+<span class="text-xs font-medium text-white truncate">AI Mobile Architecture</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-[#0078D4] flex-shrink-0"></span>
+</div>
+<!-- Vertical Action Buttons (Pin, Rename, Delete) in Fluent Flyout/Card style -->
+<div class="pt-1 pb-0.5 px-0.5 flex flex-col gap-0.5 bg-[#202020] rounded-md border border-[#2d2d2d]">
+<button class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs font-medium text-[#0078D4] hover:bg-[#0078D4]/10 active:bg-[#0078D4]/20 transition-colors text-left" title="Pinned status">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">keep</span>
+<span>Pinned</span>
+</button>
+<button class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs font-medium text-[#e5e2e1] hover:bg-[#2e2e2e] active:bg-[#383838] transition-colors text-left" title="Rename Chat">
+<span class="material-symbols-outlined text-sm text-[#8a919e]">edit</span>
+<span>Rename</span>
+</button>
+<div class="h-px bg-[#2d2d2d] my-0.5 mx-1"></div>
+<button class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded text-xs font-medium text-[#ff7b7b] hover:bg-[#93000a]/20 active:bg-[#93000a]/30 transition-colors text-left" title="Delete Chat">
+<span class="material-symbols-outlined text-sm text-[#ff7b7b]">delete</span>
+<span>Delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- RECENT SECTION (Clean Segoe UI typography) -->
+<div class="space-y-1">
+<div class="px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#8a919e]">
+<span>Recent</span>
+</div>
+<div class="space-y-0.5">
+<button class="w-full flex items-center justify-between gap-2.5 px-2.5 py-2 rounded-md text-left text-[#c0c7d4] hover:text-white hover:bg-[#2a2a2a] active:bg-[#323232] transition-colors">
+<div class="flex items-center gap-2.5 overflow-hidden">
+<span class="material-symbols-outlined text-base text-[#8a919e] flex-shrink-0">chat_bubble_outline</span>
+<span class="text-xs truncate">Creative Prompting Lab</span>
+</div>
+</button>
+<button class="w-full flex items-center justify-between gap-2.5 px-2.5 py-2 rounded-md text-left text-[#c0c7d4] hover:text-white hover:bg-[#2a2a2a] active:bg-[#323232] transition-colors">
+<div class="flex items-center gap-2.5 overflow-hidden">
+<span class="material-symbols-outlined text-base text-[#8a919e] flex-shrink-0">translate</span>
+<span class="text-xs truncate">Global Translation Engine</span>
+</div>
+</button>
+<button class="w-full flex items-center justify-between gap-2.5 px-2.5 py-2 rounded-md text-left text-[#c0c7d4] hover:text-white hover:bg-[#2a2a2a] active:bg-[#323232] transition-colors">
+<div class="flex items-center gap-2.5 overflow-hidden">
+<span class="material-symbols-outlined text-base text-[#8a919e] flex-shrink-0">devices</span>
+<span class="text-xs truncate">UI Component Guidelines</span>
+</div>
+</button>
+<button class="w-full flex items-center justify-between gap-2.5 px-2.5 py-2 rounded-md text-left text-[#c0c7d4] hover:text-white hover:bg-[#2a2a2a] active:bg-[#323232] transition-colors">
+<div class="flex items-center gap-2.5 overflow-hidden">
+<span class="material-symbols-outlined text-base text-[#8a919e] flex-shrink-0">terminal</span>
+<span class="text-xs truncate">Vector Embeddings Benchmark</span>
+</div>
+</button>
+<button class="w-full flex items-center justify-between gap-2.5 px-2.5 py-2 rounded-md text-left text-[#c0c7d4] hover:text-white hover:bg-[#2a2a2a] active:bg-[#323232] transition-colors">
+<div class="flex items-center gap-2.5 overflow-hidden">
+<span class="material-symbols-outlined text-base text-[#8a919e] flex-shrink-0">dataset</span>
+<span class="text-xs truncate">Knowledge Graph Synapses</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+<!-- BOTTOM ACTION BAR: New Chat (+) and User Profile Button -->
+<div class="p-3 border-t border-[#2d2d2d] bg-[#1a1a1a] flex items-center justify-between">
+<!-- Fluent New Chat Button with Azure blue accent -->
+<button aria-label="New Chat" class="h-9 px-3 rounded-md bg-[#0078D4] text-white flex items-center gap-2 shadow-sm hover:bg-[#106ebe] active:bg-[#005a9e] transition-colors font-medium text-xs" title="New Chat">
+<span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 1;">add</span>
+<span>New Chat</span>
+</button>
+<!-- Fluent User Profile Button -->
+<button aria-label="Profile &amp; Settings" class="relative w-9 h-9 rounded-full p-0.5 border border-[#383838] hover:border-[#0078D4] active:scale-95 transition-all flex items-center justify-center group" title="Alex Rhynia - Profile &amp; Settings">
+<img alt="Alex Rhynia" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZQQ4eHExiyNvgLL-9689W_GBMfrS1W1L4R1mGQ3u7RdqTYjRp-_neLm0VUzYUAtgf7gjzokePMW_ChK3qRDa6BVCGy-TfSYnblNakmHyyke-dHWaq8P1f6eEAjdq4ln1JkghuDZEWjGcFDYy-_wc1E6jfKCP5huIJUbGWtmQFH9pUEN_bNWccy4n7fsvkhoQkyICa8Vp8FwFJXwDBpMh_O76w-_-HVmvz57naxGox3f7y22IBi0bU"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#0078D4] border-2 border-[#1a1a1a] rounded-full"></span>
+</button>
+</div>
+</aside>
+<!-- Interactive Demo Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const chatButtons = document.querySelectorAll('.custom-scrollbar button');
+    chatButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Simple click feedback
+      });
+    });
+  });
+</script>
+</body></html>

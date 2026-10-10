@@ -1,0 +1,12 @@
+-- ============================================================
+-- Supabase Official Migrations Folder
+-- Any new .sql file added here is automatically recognized
+-- by Supabase GitHub Integration & Supabase CLI
+-- ============================================================
+
+-- Example:
+-- CREATE TABLE IF NOT EXISTS public.example_table (
+--     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--     title TEXT NOT NULL,
+--     created_at TIMESTAMPTZ DEFAULT now()
+-- );

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Rhynia AI - Chat Context Menu</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"on-error": "#690005", "secondary-container": "#0566d9", "surface-container": "#1f1f24", "on-primary-fixed-variant": "#5516be", outline: "#958ea0", "outline-variant": "#494454", "inverse-surface": "#e4e1e9", primary: "#d0bcff", "tertiary-fixed-dim": "#4edea3", "on-error-container": "#ffdad6", "surface-container-highest": "#35343a", "on-secondary-fixed": "#001a42", "secondary-fixed": "#d8e2ff", "tertiary-fixed": "#6ffbbe", "on-surface-variant": "#cbc3d7", "surface-container-low": "#1b1b20", tertiary: "#4edea3", "on-background": "#e4e1e9", background: "#131318", "on-primary-container": "#340080", "on-tertiary-container": "#00311f", "surface-bright": "#39393e", "on-tertiary-fixed": "#002113", "on-primary": "#3c0091", "surface-container-high": "#2a292f", "primary-fixed": "#e9ddff", "on-secondary-fixed-variant": "#004395", "primary-fixed-dim": "#d0bcff", "on-surface": "#e4e1e9", "on-primary-fixed": "#23005c", "surface-tint": "#d0bcff", "surface-variant": "#35343a", "error-container": "#93000a", error: "#ffb4ab", "inverse-on-surface": "#303035", "secondary-fixed-dim": "#adc6ff", "surface-dim": "#131318", "primary-container": "#a078ff", "inverse-primary": "#6d3bd7", "on-tertiary-fixed-variant": "#005236", "on-secondary": "#002e6a", "surface-container-lowest": "#0e0e13", "on-secondary-container": "#e6ecff", "on-tertiary": "#003824", secondary: "#adc6ff", "tertiary-container": "#00a572", surface: "#131318"}, borderRadius: {DEFAULT: "1rem", lg: "2rem", xl: "3rem", full: "9999px"}, spacing: {"space-xl": "2.25rem", "margin-desktop": "3rem", "margin-tablet": "2rem", "space-lg": "1.5rem", "gutter-desktop": "1.5rem", "space-2xl": "3.5rem", "space-sm": "0.5rem", margin: "1rem", "space-md": "1rem", "space-xs": "0.25rem", gutter: "1rem"}, fontFamily: {"label-md": ["Inter"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-md": ["Inter"], "body-sm": ["Inter"], "headline-lg": ["Plus Jakarta Sans"], "headline-xl": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "body-lg": ["Inter"], "headline-sm": ["Plus Jakarta Sans"], code: ["Inter"], "label-sm": ["Inter"], headline: ["Plus Jakarta Sans"], display: ["Plus Jakarta Sans"], body: ["Inter"], label: ["Inter"]}, fontSize: {"label-md": ["13px", {lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "500"}], "headline-xl-mobile": ["28px", {lineHeight: "36px", letterSpacing: "-0.015em", fontWeight: "600"}], "headline-lg-mobile": ["24px", {lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600"}], "body-md": ["14px", {lineHeight: "22px", letterSpacing: "0em", fontWeight: "400"}], "body-sm": ["12px", {lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "400"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600"}], "headline-xl": ["40px", {lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "600"}], "headline-md": ["22px", {lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "500"}], "body-lg": ["16px", {lineHeight: "26px", letterSpacing: "-0.005em", fontWeight: "400"}], "headline-sm": ["18px", {lineHeight: "24px", letterSpacing: "0em", fontWeight: "500"}], code: ["13px", {lineHeight: "20px", letterSpacing: "0em", fontWeight: "400"}], "label-sm": ["11px", {lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "600"}]}}}};</script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Layer depth and bevel highlights from design system */
+    .glass-panel {
+      background: rgba(26, 26, 38, 0.92);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.75), 0 0 24px -4px rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.22);
+    }
+    .user-bubble-gradient {
+      background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+    }
+    .ai-frosted-backing {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .composer-pill {
+      background: rgba(22, 22, 31, 0.88);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen font-body-md antialiased selection:bg-primary selection:text-on-primary overflow-x-hidden relative" style='font-family: "Plus Jakarta Sans", sans-serif;'>
+<!-- ==================== TOP APP BAR (Shared Component Anchor) ==================== -->
+<header class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-margin h-14 max-w-screen-md mx-auto bg-surface/85 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm" style="background: rgba(11, 20, 28, 0.88); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+<div class="flex items-center gap-2">
+<button aria-label="Open menu drawer" class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors duration-150 rounded-full active:scale-95">
+<span class="material-symbols-outlined text-[22px]">menu</span>
+</button>
+</div>
+<!-- Header Actions Cluster -->
+<div class="flex items-center gap-1 relative">
+<button aria-label="New chat" class="p-2 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors duration-150 rounded-full active:scale-95">
+<span class="material-symbols-outlined text-[20px]">edit_square</span>
+</button>
+<!-- Three-Dot Button (Active / Highlighted with glow ring) -->
+<button aria-label="More options" class="p-2 rounded-full bg-surface-container-highest text-primary shadow-sm ring-2 ring-primary/40 transition-all duration-150 active:scale-95" id="menu-trigger" style="background-color: rgba(65, 143, 255, 0.15); color: rgb(170, 199, 255); border: 1px solid rgba(65, 143, 255, 0.35); box-shadow: rgba(65, 143, 255, 0.2) 0px 0px 14px;">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">more_vert</span>
+</button>
+</div>
+</header>
+<!-- ==================== CHAT CANVAS / BACKGROUND LAYER ==================== -->
+<main class="pt-16 pb-28 px-margin max-w-screen-md mx-auto space-y-space-lg">
+<!-- Mode Badge Indicator -->
+<!-- User Turn -->
+<section class="flex flex-col items-end space-y-space-xs">
+<div class="max-w-[88%] text-right"><p class="font-body-md text-body-md leading-relaxed text-on-surface">Provide an enterprise cloud migration blueprint moving legacy monolithic services to an event-driven multi-region Kubernetes architecture. Include phased rollout personas and sample ingress routing YAML.</p></div>
+</section>
+<!-- AI Response Turn -->
+<section class="flex flex-col items-start space-y-space-xs">
+<!-- AI Model Header -->
+<!-- AI Content Body -->
+<div class="w-full space-y-4"><p class="font-body-md text-body-md text-on-surface leading-relaxed">Here is the multi-stage architecture strategy tailored for high resilience, zero-downtime cutover, and automated canary governance across multiple operational regions.</p><div class="grid grid-cols-1 gap-2.5 pt-1"><div class="flex items-start gap-3 py-1"><span class="p-1.5 rounded-lg bg-primary/10 text-primary material-symbols-outlined text-[18px]">dns</span><div><h4 class="font-label-md text-label-md font-semibold text-on-surface">Phase 1: Dual-Write CDC Sync</h4><p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Debezium Kafka connectors stream transactional delta states between on-prem RDBMS and multi-region clusters without table locks.</p></div></div><div class="flex items-start gap-3 py-1"><span class="p-1.5 rounded-lg bg-tertiary/10 text-tertiary material-symbols-outlined text-[18px]">sync_alt</span><div><h4 class="font-label-md text-label-md font-semibold text-on-surface">Phase 2: Mesh Canary (Istio/eBPF)</h4><p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Global traffic director shifts 5% canary volume with automated circuit breaker rollbacks on latency regression &gt;35ms.</p></div></div></div><div class="rounded-xl overflow-hidden border border-outline-variant/30 bg-surface-container-lowest"><div class="flex items-center justify-between px-3 py-2 bg-surface-container border-b border-outline-variant/20"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-error/70"></span><span class="w-2.5 h-2.5 rounded-full bg-yellow-500/70"></span><span class="w-2.5 h-2.5 rounded-full bg-tertiary/70"></span><span class="font-code text-label-sm text-on-surface-variant ml-1 font-mono uppercase">virtualservice-ingress.yaml</span></div><button class="flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-container-high text-primary hover:text-white font-label-sm text-label-sm transition-colors"><span class="material-symbols-outlined text-[14px]">content_copy</span><span class="">Copy</span></button></div><pre class="p-3 font-code text-[12px] leading-5 text-on-surface-variant overflow-x-auto font-mono"><code><span class="text-primary">apiVersion:</span> networking.istio.io/v1beta1
+<span class="text-primary">kind:</span> VirtualService
+<span class="text-primary">metadata:</span>
+  <span class="text-secondary">name:</span> core-enterprise-router
+<span class="text-primary">spec:</span>
+  <span class="text-secondary">hosts:</span>
+  - <span class="text-tertiary">"api.enterprise.domain.internal"</span>
+  <span class="text-secondary">http:</span>
+  - <span class="text-secondary">route:</span>
+    - <span class="text-secondary">destination:</span>
+        <span class="text-secondary">host:</span> svc-mesh-canary
+      <span class="text-secondary">weight:</span> <span class="text-tertiary-fixed-dim">10</span>
+    - <span class="text-secondary">destination:</span>
+        <span class="text-secondary">host:</span> legacy-monolith-egress
+      <span class="text-secondary">weight:</span> <span class="text-tertiary-fixed-dim">90</span></code></pre></div><div class="flex items-center gap-1 pt-1 text-on-surface-variant"><button class="p-1.5 rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Copy response"><span class="material-symbols-outlined text-[18px]">content_copy</span></button><button class="p-1.5 rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Thumbs up"><span class="material-symbols-outlined text-[18px]">thumb_up</span></button><button class="p-1.5 rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Thumbs down"><span class="material-symbols-outlined text-[18px]">thumb_down</span></button><button class="p-1.5 rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Read aloud"><span class="material-symbols-outlined text-[18px]">volume_up</span></button><button class="p-1.5 rounded-lg hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Share response"><span class="material-symbols-outlined text-[18px]">share</span></button></div></div>
+</section>
+</main>
+<!-- ==================== PERSISTENT COMPOSER PILL ==================== -->
+<div class="fixed bottom-3 left-0 right-0 z-30 px-margin max-w-screen-md mx-auto">
+<div class="composer-pill rounded-full p-1.5 pl-3 flex items-center gap-2 shadow-2xl" style="background: rgba(24, 32, 40, 0.92); backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: rgba(0, 0, 0, 0.55) 0px 12px 32px, rgba(65, 143, 255, 0.1) 0px 0px 16px;">
+<button aria-label="Add attachment" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+<input class="flex-1 bg-transparent text-on-surface placeholder-on-surface-variant/60 font-body-md text-body-md border-none focus:outline-none focus:ring-0 px-1 py-1 cursor-default" disabled="" placeholder="Ask Rhynia a follow-up..." type="text"/>
+<div class="flex items-center gap-1 pr-1">
+<button aria-label="Voice input" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+<button aria-label="Send message" class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg shadow-primary/25 hover:brightness-110 active:scale-95 transition-all" style="background-color: rgb(65, 143, 255); color: rgb(255, 255, 255); box-shadow: rgba(65, 143, 255, 0.35) 0px 4px 14px;">
+<span class="material-symbols-outlined text-[18px]">arrow_upward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ==================== DIMMED BACKDROP OVERLAY ==================== -->
+<div aria-hidden="true" class="fixed inset-0 z-40 transition-opacity duration-200" id="backdrop" style="background: transparent; backdrop-filter: none;"></div>
+<!-- ==================== FLOATING THREE-DOT CONTEXT MENU ==================== -->
+<div aria-orientation="vertical" class="fixed top-14 right-3 z-50 w-72 glass-panel rounded-2xl p-1.5 shadow-2xl transform origin-top-right transition-all duration-200 animate-in fade-in zoom-in-95" id="context-menu" role="menu" style="background: rgba(24, 32, 40, 0.88); backdrop-filter: blur(28px); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: rgba(0, 0, 0, 0.65) 0px 20px 40px -10px, rgba(255, 255, 255, 0.05) 0px 0px 0px 1px;"><div class="p-1.5 space-y-1"><button class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left text-on-surface hover:bg-surface-container-high transition-all duration-150 group active:scale-[0.99]" role="menuitem"><div class="flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-primary/10 border border-primary/25 flex items-center justify-center text-primary group-hover:scale-105 group-hover:bg-primary/20 transition-all"><span class="material-symbols-outlined text-[18px]">ios_share</span></div><span class="font-body-md text-body-md text-on-surface font-medium group-hover:text-primary transition-colors">Share Chat</span></div><span class="material-symbols-outlined text-[16px] text-on-surface-variant/50">chevron_right</span></button><button class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left text-on-surface hover:bg-surface-container-high transition-all duration-150 group active:scale-[0.99]" role="menuitem"><div class="flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-primary/10 border border-primary/25 flex items-center justify-center text-primary group-hover:scale-105 group-hover:bg-primary/20 transition-all"><span class="material-symbols-outlined text-[18px]">keep</span></div><span class="font-body-md text-body-md text-on-surface font-medium group-hover:text-primary transition-colors">Pin Chat</span></div><span class="material-symbols-outlined text-[16px] text-on-surface-variant/50">chevron_right</span></button><button class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left text-on-surface hover:bg-surface-container-high transition-all duration-150 group active:scale-[0.99]" role="menuitem"><div class="flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-primary/10 border border-primary/25 flex items-center justify-center text-primary group-hover:scale-105 group-hover:bg-primary/20 transition-all"><span class="material-symbols-outlined text-[18px]">search</span></div><span class="font-body-md text-body-md text-on-surface font-medium group-hover:text-primary transition-colors">Find in Chat</span></div><span class="material-symbols-outlined text-[16px] text-on-surface-variant/50">chevron_right</span></button><div class="my-1 border-t border-outline-variant/20"></div><button class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left text-[#ff6e6e] hover:bg-[#3d1419]/40 transition-all duration-150 group active:scale-[0.99]" role="menuitem"><div class="flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-[#3d1419] border border-[#ff6e6e]/30 flex items-center justify-center text-[#ff6e6e] group-hover:scale-105 transition-transform"><span class="material-symbols-outlined text-[18px]">delete_outline</span></div><span class="font-body-md text-body-md text-[#ff6e6e] font-medium">Delete Chat</span></div><span class="material-symbols-outlined text-[16px] text-[#ff6e6e]/50">chevron_right</span></button></div></div>
+<script>
+    // Lightweight interactivity for backdrop close/toggle simulation
+    const backdrop = document.getElementById('backdrop');
+    const menu = document.getElementById('context-menu');
+    const trigger = document.getElementById('menu-trigger');
+
+    function toggleMenu() {
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        backdrop.classList.remove('hidden');
+      } else {
+        menu.classList.add('hidden');
+        backdrop.classList.add('hidden');
+      }
+    }
+
+    backdrop.addEventListener('click', toggleMenu);
+    trigger.addEventListener('click', toggleMenu);
+  </script>
+</body></html>

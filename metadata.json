@@ -1,0 +1,11 @@
+{
+  "name": "Rhynia Intelligence",
+  "description": "Rhynia Intelligence SaaS digital workspace and AI platform.",
+  "prompt": "Rhynia Intelligence SaaS",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

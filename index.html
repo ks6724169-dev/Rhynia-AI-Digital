@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Rhynia Intelligence</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png"/>
+  <link rel="apple-touch-icon" href="assets/icon-192.png"/>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#0a0a0a"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Rhynia"/>
+
+  <!-- Google Fonts: Inter, Plus Jakarta Sans, JetBrains Mono -->
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <!-- Material Symbols Outlined -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <!-- KaTeX for High-Fidelity Mathematical Equation Rendering (ChatGPT / LaTeX standard) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Google Identity Services (GIS) Official SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- Official Puter.js AI Gateway SDK (Free Unlimited AI Image Generation) -->
+  <script src="https://js.puter.com/v2/"></script>
+
+  <!-- Early Theme & Accent Detection (Zero FOUC) -->
+  <script>
+    (function() {
+      try {
+        var savedTheme = localStorage.getItem("rhynia_theme");
+        if (savedTheme === "light") {
+          document.documentElement.classList.remove("dark");
+          document.documentElement.classList.add("light");
+        } else {
+          document.documentElement.classList.add("dark");
+          document.documentElement.classList.remove("light");
+        }
+        var savedAccent = localStorage.getItem("rhynia_accent_color");
+        if (savedAccent) {
+          document.documentElement.style.setProperty("--primary", savedAccent);
+          document.documentElement.style.setProperty("--fluent-azure", savedAccent);
+          var s = document.createElement("style");
+          s.id = "dynamic-accent-style";
+          s.textContent = ".bg-\\[\\#0078D4\\], .bg-\\[\\#0078d4\\], .bg-primary, .peer\\:checked ~ .peer-checked\\:bg-\\[\\#0078D4\\], .peer\\:checked ~ .w-10.h-5.bg-\\[\\#353535\\], #btn-send-message:not(.btn-send-disabled), #login-submit-btn, #register-submit-btn, #btn-verify-sms-otp, #btn-verify-email-otp, #btn-send-reset-otp, #storage-bar-threads, #settings-accent-preview { background-color: " + savedAccent + " !important; } .text-\\[\\#0078D4\\], .text-\\[\\#0078d4\\], .text-primary, .text-\\[\\#4cc2ff\\], .text-\\[\\#8ecdff\\] { color: " + savedAccent + " !important; } .border-\\[\\#0078D4\\], .border-\\[\\#0078d4\\], .border-primary { border-color: " + savedAccent + " !important; }";
+          document.head.appendChild(s);
+        }
+      } catch(e) {}
+    })();
+  </script>
+
+  <!-- Tailwind CSS CDN with Container Queries and Forms -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#0078d4",
+            "primary-hover": "#1084d9",
+            "primary-pressed": "#006cbe",
+            "primary-container": "#0078d4",
+            "on-primary-container": "#ffffff",
+            "secondary": "#8ecdff",
+            "secondary-container": "#00a4ef",
+            "surface": "#131313",
+            "surface-card": "#1f1f1f",
+            "surface-highlight": "#2a2a2a",
+            "surface-container": "#202020",
+            "surface-container-low": "#1b1c1c",
+            "surface-container-lowest": "#0e0e0e",
+            "surface-container-high": "#2a2a2a",
+            "surface-container-highest": "#353535",
+            "on-surface": "#e5e2e1",
+            "on-surface-variant": "#c0c7d4",
+            "outline": "#8a919e",
+            "outline-variant": "#404752",
+            "error": "#ffb4ab",
+            "error-container": "#93000a",
+            "fluent-azure": "#0078D4",
+            "fluent-mica": "#202020"
+          },
+          fontFamily: {
+            sans: ['"Segoe UI"', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            headline: ['"Plus Jakarta Sans"', '"Segoe UI"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Cache Control to guarantee immediate updates -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
+
+  <!-- Modular Stylesheet -->
+  <link rel="stylesheet" href="style.css?v=101"/>
+
+  <!-- Mermaid.js v10 for SmartArt & Visual Diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+
+  <!-- Chart.js v4 for Microsoft Office Visual Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-[#000000] text-[#e5e2e1] font-sans antialiased min-h-screen selection:bg-[#0078D4] selection:text-white relative overflow-x-hidden">
+
+  <!-- ========================================================= -->
+  <!-- SCREEN 07: SIGN IN / LOGIN VIEW (Strict Login-First Gate) -->
+  <!-- ========================================================= -->
+  <div id="view-login" class="hidden min-h-screen flex items-center justify-center p-4 relative">
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 flex justify-center">
+      <div class="absolute -top-32 w-[480px] h-[480px] bg-gradient-to-b from-[#0078D4]/20 via-[#00a4ef]/10 to-transparent rounded-full blur-[130px]"></div>
+      <div class="absolute bottom-10 -right-20 w-[300px] h-[300px] bg-[#0078D4]/10 rounded-full blur-[100px]"></div>
+    </div>
+    <main class="w-full max-w-[400px] min-h-[620px] rounded-[32px] flex flex-col justify-between p-7 bg-[#121317]/95 backdrop-blur-2xl border border-white/15 shadow-[0_25px_60px_rgba(0,0,0,0.8)] relative">
+      <div class="w-full flex items-center justify-between pb-2">
+        <span class="text-xs text-neutral-500 font-mono tracking-wider">SECURE GATEWAY</span>
+      </div>
+
+      <!-- Brand Header (Brilliant Typographic Emblem & Glow) -->
+      <section class="flex-1 flex flex-col justify-center py-4">
+        <div class="text-center flex flex-col items-center mb-6">
+          <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-[#0078D4] via-[#00A4EF] to-[#00BCF2] p-0.5 shadow-xl shadow-[#0078D4]/30 mb-3 flex items-center justify-center animate-pulse">
+            <div class="w-full h-full rounded-[22px] bg-[#121316] flex items-center justify-center">
+              <span class="material-symbols-outlined text-[34px] text-transparent bg-clip-text bg-gradient-to-tr from-[#0078D4] to-[#00BCF2]">auto_awesome</span>
+            </div>
+          </div>
+          <h1 class="text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-[#0078D4] font-headline">Rhynia</h1>
+          <p class="text-xs text-neutral-400 mt-1.5 max-w-[280px] leading-relaxed font-medium">Sign in to your Rhynia AI workspace</p>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" class="flex flex-col gap-4" onsubmit="handleLoginSubmit(event)">
+          <!-- Identifier Input -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-medium text-neutral-300 select-none" for="login-identifier-input">Email or Username</label>
+            <div class="fluent-input flex items-center px-3.5 py-2.5 rounded-lg bg-[#1b1c1c] border border-white/10 text-white transition-all">
+              <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">person</span>
+              <input id="login-identifier-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none" placeholder="name@example.com or username" required type="text"/>
+            </div>
+          </div>
+
+          <!-- Password Input -->
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-medium text-neutral-300 select-none" for="login-password-input">Password</label>
+              <button type="button" onclick="switchView('view-forgot-password')" class="text-xs text-[#0078D4] hover:text-[#4cc2ff] hover:underline transition-colors">
+                Forgot password?
+              </button>
+            </div>
+            <div class="fluent-input flex items-center px-3.5 py-2.5 rounded-lg bg-[#1b1c1c] border border-white/10 text-white transition-all">
+              <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">lock</span>
+              <input id="login-password-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none tracking-wider" placeholder="••••••••••••" required type="password"/>
+              <button id="login-password-eye-btn" type="button" onclick="togglePasswordVisibility('login-password-input', 'login-password-eye-icon')" class="text-neutral-400 hover:text-white p-1 rounded transition-colors" title="Toggle password visibility">
+                <span id="login-password-eye-icon" class="material-symbols-outlined text-[18px]">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sign In Submit Button (Larger Font Size Blue Pill Button) -->
+          <button id="login-submit-btn" type="submit" class="w-full max-w-[220px] mx-auto mt-2 h-12 rounded-full bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white font-black text-base sm:text-lg flex items-center justify-center gap-2 border border-white/15 shadow-md active:scale-[0.98] transition-all cursor-pointer">
+            <span>Sign In</span>
+            <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="relative my-5 flex items-center justify-center">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-white/10"></div>
+          </div>
+          <div class="relative px-3 bg-[#0e0e0e] text-neutral-500 text-[11px] tracking-wider uppercase font-semibold">
+            OR CONTINUE WITH
+          </div>
+        </div>
+
+        <!-- Social Buttons (Compact Centered Google Sign In) -->
+        <div class="flex flex-col items-center justify-center gap-2.5">
+          <!-- Google Sign In Container (Rendered by Google GIS) -->
+          <div id="google-login-btn-container" class="w-full max-w-[240px] flex justify-center min-h-[40px] mx-auto"></div>
+
+          <!-- Fallback / Direct Trigger Button -->
+          <button id="google-login-custom-btn" type="button" onclick="triggerGoogleLogin()" class="hidden w-full max-w-[240px] h-10 px-4 rounded-full bg-[#1b1c1c] hover:bg-[#252525] border border-white/10 flex items-center justify-center gap-2.5 text-neutral-200 text-xs font-semibold active:scale-[0.99] transition-all mx-auto shadow-sm">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"></path></svg>
+            <span>Continue with Google</span>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- Bottom Account Switcher -->
+      <footer class="pt-4 border-t border-white/10 text-center flex flex-col gap-2">
+        <div class="text-xs text-neutral-400">
+          Don't have an account?
+          <button type="button" onclick="switchView('view-register')" class="text-[#0078D4] font-semibold hover:underline ml-1">
+            Sign Up
+          </button>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- SCREEN 08: SIGN UP / REGISTRATION VIEW                    -->
+  <!-- ========================================================= -->
+  <div id="view-register" class="hidden min-h-screen flex items-center justify-center p-4 relative">
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 flex justify-center">
+      <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#0078D4]/15 rounded-full blur-[120px]"></div>
+    </div>
+    <main class="w-full max-w-md min-h-[700px] rounded-2xl flex flex-col justify-between p-6 bg-[#0e0e0e]/90 backdrop-blur-2xl border border-white/10 shadow-2xl relative">
+      <header class="h-10 flex items-center justify-between mb-2">
+        <button type="button" onclick="switchView('view-login')" class="w-9 h-9 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 flex items-center justify-center transition-colors" title="Back to Sign In">
+          <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        </button>
+        <span class="text-xs text-neutral-500 font-mono">REGISTRATION</span>
+      </header>
+
+      <section class="flex flex-col items-center text-center mt-1 mb-4">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#0078D4] to-[#00BCF2] p-0.5 shadow-lg shadow-[#0078D4]/25 mb-2.5 flex items-center justify-center">
+          <div class="w-full h-full rounded-[14px] bg-[#121316] flex items-center justify-center">
+            <span class="material-symbols-outlined text-[28px] text-[#0078D4]">person_add</span>
+          </div>
+        </div>
+        <h1 class="text-2xl font-black tracking-tight text-white font-headline">Create your account</h1>
+        <p class="text-xs text-neutral-400 mt-1 max-w-[280px]">Join Rhynia AI to empower your intelligence</p>
+      </section>
+
+      <form id="register-form" class="space-y-3" onsubmit="handleRegisterSubmit(event)">
+        <!-- Full Name -->
+        <div class="space-y-1">
+          <label class="block text-xs font-medium text-neutral-300 select-none" for="register-name-input">Full Name</label>
+          <div class="fluent-input flex items-center bg-[#1E1E1E] border border-white/10 rounded-lg h-11 px-3">
+            <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">person</span>
+            <input id="register-name-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none" placeholder="Alex Rhynia" required type="text"/>
+          </div>
+        </div>
+
+        <!-- Email Address -->
+        <div class="space-y-1">
+          <label class="block text-xs font-medium text-neutral-300 select-none" for="register-email-input">Email Address</label>
+          <div class="fluent-input flex items-center bg-[#1E1E1E] border border-white/10 rounded-lg h-11 px-3">
+            <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">mail</span>
+            <input id="register-email-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none" placeholder="name@example.com" required type="email"/>
+          </div>
+        </div>
+
+        <!-- Mobile Number (Mandatory) -->
+        <div class="space-y-1">
+          <label class="block text-xs font-medium text-neutral-300 select-none" for="register-phone-input">Mobile Phone Number (Required / अनिवार्य) <span class="text-red-400">*</span></label>
+          <div class="fluent-input flex items-center bg-[#1E1E1E] border border-white/10 rounded-lg h-11 px-3">
+            <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">phone_iphone</span>
+            <input id="register-phone-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none" placeholder="10-digit mobile number (e.g. 9876543210)" required type="tel"/>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="space-y-1">
+          <label class="block text-xs font-medium text-neutral-300 select-none" for="register-password-input">Password</label>
+          <div class="fluent-input flex items-center bg-[#1E1E1E] border border-white/10 rounded-lg h-11 px-3">
+            <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">lock</span>
+            <input id="register-password-input" oninput="updatePasswordStrengthMeter(this.value)" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none tracking-wider" placeholder="Create password" required type="password"/>
+            <button id="register-password-eye-btn" type="button" onclick="togglePasswordVisibility('register-password-input', 'register-password-eye-icon')" class="text-neutral-400 hover:text-white p-1 rounded transition-colors" title="Toggle password visibility">
+              <span id="register-password-eye-icon" class="material-symbols-outlined text-[18px]">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Password Strength Meter -->
+        <div class="bg-[#1b1c1c] border border-white/5 rounded-lg p-2.5 space-y-1.5">
+          <div class="flex items-center justify-between text-xs text-neutral-400">
+            <span>Security Strength</span>
+            <span id="pwd-strength-text" class="text-neutral-400 font-medium text-[11px]">None</span>
+          </div>
+          <div class="grid grid-cols-4 gap-1.5 h-1.5 w-full">
+            <div id="pwd-bar-1" class="h-full rounded-full bg-white/10 transition-colors"></div>
+            <div id="pwd-bar-2" class="h-full rounded-full bg-white/10 transition-colors"></div>
+            <div id="pwd-bar-3" class="h-full rounded-full bg-white/10 transition-colors"></div>
+            <div id="pwd-bar-4" class="h-full rounded-full bg-white/10 transition-colors"></div>
+          </div>
+        </div>
+
+        <!-- Submit Button (Larger Font Size Blue Pill Button) -->
+        <button id="register-submit-btn" type="submit" class="w-full max-w-[240px] mx-auto mt-2 h-12 rounded-full bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white font-black text-base sm:text-lg flex items-center justify-center gap-2 border border-white/15 shadow-md active:scale-[0.98] transition-all cursor-pointer">
+          <span>Create Account</span>
+          <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div class="relative my-3 flex items-center justify-center">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-white/10"></div>
+        </div>
+        <div class="relative px-3 bg-[#0e0e0e] text-neutral-500 text-[11px] tracking-wider uppercase font-semibold">
+          OR SIGN UP WITH
+        </div>
+      </div>
+
+      <!-- Google Sign Up Container (Rendered by Google GIS) -->
+      <div id="google-register-btn-container" class="w-full flex justify-center min-h-[40px]"></div>
+
+      <!-- Fallback Register Button -->
+      <button id="google-register-custom-btn" type="button" onclick="triggerGoogleLogin()" class="hidden w-full h-10 px-3.5 rounded-lg bg-[#1b1c1c] hover:bg-[#252525] border border-white/10 flex items-center justify-between text-neutral-200 text-xs font-medium active:scale-[0.99] transition-all">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-4 h-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"></path></svg>
+          <span>Sign up with Google</span>
+        </div>
+        <span class="material-symbols-outlined text-neutral-500 text-[16px]">chevron_right</span>
+      </button>
+
+      <footer class="mt-3 pt-3 border-t border-white/10 text-center">
+        <p class="text-xs text-neutral-400">
+          Already have an account?
+          <button type="button" onclick="switchView('view-login')" class="text-[#0078D4] font-semibold hover:underline ml-1">
+            Sign In
+          </button>
+        </p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- SCREEN 09: VERIFY SMS OTP VIEW                            -->
+  <!-- ========================================================= -->
+  <div id="view-sms-otp" class="hidden min-h-screen flex items-center justify-center p-4 relative">
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 flex justify-center">
+      <div class="absolute -top-32 w-[480px] h-[480px] bg-gradient-to-b from-[#0078D4]/20 via-[#00a4ef]/10 to-transparent rounded-full blur-[130px]"></div>
+    </div>
+    <main class="w-full max-w-[400px] min-h-[580px] rounded-[32px] flex flex-col justify-between p-7 bg-[#121317]/95 backdrop-blur-2xl border border-white/15 shadow-[0_25px_60px_rgba(0,0,0,0.8)] relative">
+      <header class="h-10 flex items-center justify-between mb-2">
+        <button type="button" onclick="switchView('view-login')" class="w-9 h-9 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        </button>
+        <span class="text-xs text-neutral-500 font-mono">SMS VERIFICATION</span>
+      </header>
+
+      <section class="flex flex-col items-center text-center my-auto py-2">
+        <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-[#0078D4] via-[#00A4EF] to-[#00BCF2] p-0.5 shadow-xl shadow-[#0078D4]/30 mb-3 flex items-center justify-center animate-pulse">
+          <div class="w-full h-full rounded-[22px] bg-[#121316] flex items-center justify-center">
+            <span class="material-symbols-outlined text-[32px] text-[#0078D4]">sms</span>
+          </div>
+        </div>
+        <h1 class="text-xl font-black tracking-tight text-white font-headline">Verify SMS Code</h1>
+        <p class="text-xs text-neutral-400 mt-1 max-w-[280px] leading-relaxed">
+          Enter the 6-digit verification code sent to your registered mobile phone.
+        </p>
+        <div id="sms-phone-target" class="text-xs text-[#0078D4] font-medium font-mono mt-1.5"></div>
+        <button type="button" onclick="startPhoneLogin()" class="text-[11px] text-neutral-400 hover:text-white underline mt-0.5">Change phone number</button>
+
+
+        <!-- 6 OTP Slots -->
+        <div class="flex items-center justify-center gap-2 mt-6 mb-4">
+          <input id="otp-sms-1" maxlength="1" class="w-11 h-13 text-center text-lg font-bold font-mono rounded-xl bg-[#1b1c1c] border border-white/15 text-white focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] focus:outline-none" type="text"/>
+          <input id="otp-sms-2" maxlength="1" class="w-11 h-13 text-center text-lg font-bold font-mono rounded-xl bg-[#1b1c1c] border border-white/15 text-white focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] focus:outline-none" type="text"/>
+          <input id="otp-sms-3" maxlength="1" class="w-11 h-13 text-center text-lg font-bold font-mono rounded-xl bg-[#1b1c1c] border border-white/15 text-white focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] focus:outline-none" type="text"/>
+          <input id="otp-sms-4" maxlength="1" class="w-11 h-13 text-center text-lg font-bold font-mono rounded-xl bg-[#1b1c1c] border border-white/15 text-white focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] focus:outline-none" type="text"/>
+          <input id="otp-sms-5" maxlength="1" class="w-11 h-13 text-center text-lg font-bold font-mono rounded-xl bg-[#1b1c1c] border border-white/15 text-white focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] focus:outline-none" type="text"/>
+          <input id="otp-sms-6" maxlength="1" class="w-11 h-13 text-center text-lg font-bold font-mono rounded-xl bg-[#1b1c1c] border border-white/15 text-white focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] focus:outline-none" type="text"/>
+        </div>
+
+        <button type="button" onclick="pasteOtpFromClipboard('sms')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 text-xs transition-all active:scale-95 mb-4">
+          <span class="material-symbols-outlined text-[14px] text-[#0078D4]">content_paste</span>
+          <span>Paste code from clipboard</span>
+        </button>
+
+        <!-- Countdown / Resend -->
+        <div class="text-xs text-neutral-400 flex flex-col items-center gap-1.5">
+          <span id="sms-resend-countdown" class="text-neutral-500">Resend code in <strong class="text-white font-mono countdown-display">00:48</strong></span>
+          <button id="btn-resend-sms-otp" type="button" onclick="resendOtpCode('sms')" disabled class="text-[#0078D4] hover:underline disabled:text-neutral-600 disabled:no-underline">
+            Didn't receive code? Resend SMS
+          </button>
+        </div>
+      </section>
+
+      <footer class="pt-4 border-t border-white/10 text-center">
+        <button id="btn-verify-sms-otp" type="button" onclick="verifySmsOtp()" class="w-full max-w-[220px] mx-auto h-11 rounded-full bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white font-bold text-sm flex items-center justify-center gap-2 border border-white/15 shadow-md active:scale-[0.98] transition-all cursor-pointer">
+          <span>Verify & Proceed</span>
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </button>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- SCREEN 10: VERIFY EMAIL OTP VIEW                          -->
+  <!-- ========================================================= -->
+  <div id="view-email-otp" class="hidden min-h-screen flex items-center justify-center p-4 relative">
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 flex justify-center">
+      <div class="absolute -top-32 w-[480px] h-[480px] bg-gradient-to-b from-[#0078D4]/20 via-[#00a4ef]/10 to-transparent rounded-full blur-[130px]"></div>
+    </div>
+    <main class="w-full max-w-[400px] min-h-[580px] rounded-[32px] flex flex-col justify-between p-7 bg-[#121317]/95 backdrop-blur-2xl border border-white/15 shadow-[0_25px_60px_rgba(0,0,0,0.8)] relative">
+      <header class="h-10 flex items-center justify-between mb-2">
+        <button type="button" onclick="switchView('view-login')" class="w-9 h-9 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        </button>
+        <span class="text-xs text-neutral-500 font-mono">EMAIL VERIFICATION</span>
+      </header>
+
+      <section class="flex flex-col items-center text-center my-auto py-2">
+        <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-[#0078D4] via-[#00A4EF] to-[#00BCF2] p-0.5 shadow-xl shadow-[#0078D4]/30 mb-3 flex items-center justify-center animate-pulse">
+          <div class="w-full h-full rounded-[22px] bg-[#121316] flex items-center justify-center">
+            <span class="material-symbols-outlined text-[32px] text-[#0078D4]">mail</span>
+          </div>
+        </div>
+        <h1 class="text-xl font-black tracking-tight text-white font-headline">Verify Email Address</h1>
+        <p class="text-xs text-neutral-400 mt-1 max-w-[280px] leading-relaxed">
+          Enter the 6-digit confirmation code sent to your registered email inbox.
+        </p>
+        <div id="email-otp-target" class="text-xs text-[#0078D4] font-medium font-mono mt-1.5"></div>
+
+        <!-- 6 OTP Slots -->
+        <div class="flex items-center justify-center gap-2 mt-6 mb-4">
+          <input id="otp-email-1" maxlength="1" class="w-11 h-13 text-center text-lg font-bold font-mono rounded-xl bg-[#1b1c1c] border border-white/15 text-white focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] focus:outline-none" type="text"/>
+          <input id="otp-email-2" maxlength="1" class="w-11 h-13 text-center text-lg font-bold font-mono rounded-xl bg-[#1b1c1c] border border-white/15 text-white focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] focus:outline-none" type="text"/>
+          <input id="otp-email-3" maxlength="1" class="w-11 h-13 text-center text-lg font-bold font-mono rounded-xl bg-[#1b1c1c] border border-white/15 text-white focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] focus:outline-none" type="text"/>
+          <input id="otp-email-4" maxlength="1" class="w-11 h-13 text-center text-lg font-bold font-mono rounded-xl bg-[#1b1c1c] border border-white/15 text-white focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] focus:outline-none" type="text"/>
+          <input id="otp-email-5" maxlength="1" class="w-11 h-13 text-center text-lg font-bold font-mono rounded-xl bg-[#1b1c1c] border border-white/15 text-white focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] focus:outline-none" type="text"/>
+          <input id="otp-email-6" maxlength="1" class="w-11 h-13 text-center text-lg font-bold font-mono rounded-xl bg-[#1b1c1c] border border-white/15 text-white focus:border-[#0078D4] focus:ring-1 focus:ring-[#0078D4] focus:outline-none" type="text"/>
+        </div>
+
+        <button type="button" onclick="pasteOtpFromClipboard('email')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 text-xs transition-all active:scale-95 mb-4">
+          <span class="material-symbols-outlined text-[14px] text-[#0078D4]">content_paste</span>
+          <span>Paste code from clipboard</span>
+        </button>
+
+        <!-- Countdown / Resend -->
+        <div class="text-xs text-neutral-400 flex flex-col items-center gap-1.5">
+          <span id="email-resend-countdown" class="text-neutral-500">Resend code in <strong class="text-white font-mono countdown-display">00:48</strong></span>
+          <button id="btn-resend-email-otp" type="button" onclick="resendOtpCode('email')" disabled class="text-[#0078D4] hover:underline disabled:text-neutral-600 disabled:no-underline">
+            Didn't receive email? Resend code
+          </button>
+        </div>
+      </section>
+
+      <footer class="pt-4 border-t border-white/10 text-center">
+        <button id="btn-verify-email-otp" type="button" onclick="verifyEmailOtp()" class="w-full max-w-[220px] mx-auto h-11 rounded-full bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white font-bold text-sm flex items-center justify-center gap-2 border border-white/15 shadow-md active:scale-[0.98] transition-all cursor-pointer">
+          <span>Verify & Proceed</span>
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </button>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- SCREEN 11: FORGOT / RESET PASSWORD VIEW                   -->
+  <!-- ========================================================= -->
+  <div id="view-forgot-password" class="hidden min-h-screen flex items-center justify-center p-4 relative">
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 flex justify-center">
+      <div class="absolute -top-32 w-[480px] h-[480px] bg-gradient-to-b from-[#0078D4]/20 via-[#00a4ef]/10 to-transparent rounded-full blur-[130px]"></div>
+    </div>
+    <main class="w-full max-w-[400px] min-h-[560px] rounded-[32px] flex flex-col justify-between p-7 bg-[#121317]/95 backdrop-blur-2xl border border-white/15 shadow-[0_25px_60px_rgba(0,0,0,0.8)] relative">
+      <header class="h-10 flex items-center justify-end mb-2">
+        <span class="text-xs text-neutral-500 font-mono">ACCOUNT RECOVERY</span>
+      </header>
+
+      <section class="flex flex-col items-center text-center my-auto py-2">
+        <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-[#0078D4] via-[#00A4EF] to-[#00BCF2] p-0.5 shadow-xl shadow-[#0078D4]/30 mb-3 flex items-center justify-center animate-pulse">
+          <div class="w-full h-full rounded-[22px] bg-[#121316] flex items-center justify-center">
+            <span class="material-symbols-outlined text-[32px] text-[#0078D4]">lock_reset</span>
+          </div>
+        </div>
+        <h1 class="text-xl font-black tracking-tight text-white font-headline">Reset Password</h1>
+        <p class="text-xs text-neutral-400 mt-1 max-w-[290px] leading-relaxed">
+          Enter your registered email address or mobile number to receive password reset instructions.
+        </p>
+
+        <form id="forgot-pwd-form" class="w-full space-y-3 mt-5" onsubmit="handleForgotSubmit(event)">
+          <div class="space-y-1 text-left">
+            <label class="block text-xs font-medium text-neutral-300 select-none" for="forgot-identifier-input">Email or Phone</label>
+            <div class="fluent-input flex items-center bg-[#1E1E1E] border border-white/10 rounded-lg h-11 px-3">
+              <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">contact_mail</span>
+              <input id="forgot-identifier-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none" placeholder="name@example.com or +1 (555) 000-0000" required type="text"/>
+            </div>
+          </div>
+
+          <button id="btn-send-reset-otp" type="submit" class="w-full max-w-[220px] mx-auto mt-4 h-11 rounded-full bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white font-bold text-sm flex items-center justify-center gap-2 border border-white/15 shadow-md active:scale-[0.98] transition-all cursor-pointer">
+            <span>Send Reset Code</span>
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </button>
+        </form>
+      </section>
+
+      <footer class="pt-4 border-t border-white/10 text-center">
+        <p class="text-xs text-neutral-400">
+          Remember your password?
+          <button type="button" onclick="switchView('view-login')" class="text-[#0078D4] font-semibold hover:underline ml-1">
+            Sign In
+          </button>
+        </p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- SCREEN 12: CREATE / SET NEW PASSWORD VIEW                 -->
+  <!-- ========================================================= -->
+  <div id="view-new-password" class="hidden min-h-screen flex items-center justify-center p-4 relative">
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 flex justify-center">
+      <div class="absolute -top-32 w-[480px] h-[480px] bg-gradient-to-b from-[#0078D4]/20 via-[#00a4ef]/10 to-transparent rounded-full blur-[130px]"></div>
+    </div>
+    <main class="w-full max-w-[400px] min-h-[580px] rounded-[32px] flex flex-col justify-between p-7 bg-[#121317]/95 backdrop-blur-2xl border border-white/15 shadow-[0_25px_60px_rgba(0,0,0,0.8)] relative">
+      <header class="h-10 flex items-center justify-between mb-2">
+        <button type="button" onclick="switchView('view-login')" class="w-9 h-9 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 flex items-center justify-center transition-colors">
+          <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        </button>
+        <span class="text-xs text-neutral-500 font-mono">NEW CREDENTIALS</span>
+      </header>
+
+      <section class="flex flex-col items-center text-center my-auto py-2">
+        <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-[#0078D4] via-[#00A4EF] to-[#00BCF2] p-0.5 shadow-xl shadow-[#0078D4]/30 mb-3 flex items-center justify-center animate-pulse">
+          <div class="w-full h-full rounded-[22px] bg-[#121316] flex items-center justify-center">
+            <span class="material-symbols-outlined text-[32px] text-[#0078D4]">key</span>
+          </div>
+        </div>
+        <h1 class="text-xl font-black tracking-tight text-white font-headline">Create New Password</h1>
+        <p class="text-xs text-neutral-400 mt-1 max-w-[300px] leading-relaxed">
+          Your identity has been verified. Choose a strong new password of at least 8 characters.
+        </p>
+        <div id="new-password-target-info" class="text-xs text-[#0078D4] font-medium font-mono mt-1.5"></div>
+
+        <form id="new-password-form" class="w-full space-y-3 mt-5" onsubmit="handleNewPasswordSubmit(event)">
+          <!-- New Password Input -->
+          <div class="space-y-1 text-left">
+            <label class="block text-xs font-medium text-neutral-300 select-none" for="reset-new-password-input">New Password</label>
+            <div class="fluent-input flex items-center bg-[#1E1E1E] border border-white/10 rounded-lg h-11 px-3">
+              <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">lock</span>
+              <input id="reset-new-password-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none" placeholder="Enter new password (min. 8 chars)" required type="password" minlength="8"/>
+              <button type="button" onclick="togglePasswordVisibility('reset-new-password-input')" class="text-neutral-400 hover:text-white p-1 ml-1">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Confirm Password Input -->
+          <div class="space-y-1 text-left">
+            <label class="block text-xs font-medium text-neutral-300 select-none" for="reset-confirm-password-input">Confirm New Password</label>
+            <div class="fluent-input flex items-center bg-[#1E1E1E] border border-white/10 rounded-lg h-11 px-3">
+              <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">lock_reset</span>
+              <input id="reset-confirm-password-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none" placeholder="Re-enter your new password" required type="password" minlength="8"/>
+              <button type="button" onclick="togglePasswordVisibility('reset-confirm-password-input')" class="text-neutral-400 hover:text-white p-1 ml-1">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Password Requirement Hint -->
+          <div class="text-[11px] text-neutral-500 text-left flex items-center gap-1.5 px-1 pt-1">
+            <span class="material-symbols-outlined text-[14px] text-[#0078D4]">check_circle</span>
+            <span>Minimum 8 characters with letters & numbers recommended</span>
+          </div>
+
+          <!-- Submit Button -->
+          <button id="btn-save-new-password" type="submit" class="w-full max-w-[240px] mx-auto mt-4 h-11 rounded-full bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white font-bold text-sm flex items-center justify-center gap-2 border border-white/15 shadow-md active:scale-[0.98] transition-all cursor-pointer">
+            <span>Update Password & Sign In</span>
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </button>
+        </form>
+      </section>
+
+      <footer class="pt-4 border-t border-white/10 text-center">
+        <p class="text-xs text-neutral-400">
+          Want to cancel?
+          <button type="button" onclick="switchView('view-login')" class="text-[#0078D4] font-semibold hover:underline ml-1">
+            Back to Sign In
+          </button>
+        </p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- SCREENS 01 - 06: AUTHENTICATED MAIN WORKSPACE             -->
+  <!-- ========================================================= -->
+  <div id="view-app" class="hidden min-h-screen flex flex-col justify-between relative bg-[#000000]">
+
+    <!-- Top Navigation Header (Screen 01 & 02: Transparent Floating, Only Left & Right Buttons Visible) -->
+    <header class="fixed top-0 left-0 right-0 z-50 h-[104px] bg-transparent border-0 px-4 sm:px-6 flex items-center justify-between transition-all pointer-events-none">
+      <!-- Left: Hamburger Drawer Menu Pill Card (Extra Large: 84x84px) -->
+      <div class="flex items-center pointer-events-auto">
+        <button id="btn-hamburger-menu" type="button" onclick="toggleSidebarDrawer(true)" class="w-[84px] h-[84px] bg-[#121212] border border-white/10 text-neutral-200 hover:text-white rounded-full hover:bg-white/20 active:scale-95 shadow-lg flex items-center justify-center transition-all" title="Open Drawer" data-i18n-title="open_drawer">
+          <span class="material-symbols-outlined text-[48px]">menu</span>
+        </button>
+      </div>
+
+      <!-- Right: Action Buttons in Combined Capsule Card (New Chat + 3-Dots, Extra Large: 72x72px) -->
+      <div class="relative flex items-center pointer-events-auto">
+        <div id="header-right-capsule" class="flex items-center bg-[#121212] border border-white/10 rounded-full px-3 py-2 shadow-lg gap-2.5">
+          <button type="button" onclick="startNewChat()" class="w-[72px] h-[72px] text-neutral-200 hover:text-white rounded-full hover:bg-white/15 active:scale-95 flex items-center justify-center transition-all" title="New Chat" data-i18n-title="new_chat">
+            <span class="material-symbols-outlined text-[40px]">edit_square</span>
+          </button>
+          <button id="btn-three-dots-trigger" type="button" onclick="toggle3DotsMenu()" class="w-[72px] h-[72px] text-neutral-200 hover:text-white rounded-full hover:bg-white/15 active:scale-95 flex items-center justify-center transition-all" title="More Options" data-i18n-title="more_options">
+            <span class="material-symbols-outlined text-[40px]">more_vert</span>
+          </button>
+        </div>
+
+        <!-- Screen 03: 3-Dots Flyout Menu (Fluent 2 Dark Context Menu: Clean Icons) -->
+        <div id="three-dots-menu" class="hidden absolute top-[112px] right-0 w-[270px] sm:w-[290px] fluent-flyout rounded-3xl p-3.5 shadow-2xl z-50 divide-y divide-white/10 border border-white/10 bg-[#121212]/95 backdrop-blur-xl">
+          <div class="py-2.5 space-y-2.5">
+            <button type="button" onclick="shareActiveSession()" class="w-full flex items-center gap-4 px-5 py-4 min-h-[76px] rounded-2xl text-left text-neutral-100 hover:bg-white/15 active:bg-white/20 transition-all text-2xl font-bold">
+              <span class="material-symbols-outlined text-[32px] text-neutral-300">share</span>
+              <span data-i18n="share_chat" class="text-2xl font-bold">Share Chat</span>
+            </button>
+            <button type="button" onclick="pinActiveSession()" class="w-full flex items-center gap-4 px-5 py-4 min-h-[76px] rounded-2xl text-left text-neutral-100 hover:bg-white/15 active:bg-white/20 transition-all text-2xl font-bold">
+              <span class="material-symbols-outlined text-[32px] text-neutral-300">push_pin</span>
+              <span data-i18n="pin_chat" class="text-2xl font-bold">Pin Chat</span>
+            </button>
+          </div>
+          <div class="py-2.5 pt-3">
+            <button type="button" onclick="deleteActiveSession()" class="w-full flex items-center gap-4 px-5 py-4 min-h-[76px] rounded-2xl text-left text-[#ff7b7b] hover:bg-[#93000a]/25 active:bg-[#93000a]/40 transition-all text-2xl font-bold">
+              <span class="material-symbols-outlined text-[32px] text-[#ff7b7b]">delete</span>
+              <span data-i18n="delete_chat" class="text-2xl font-bold">Delete Chat</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Chat Workspace Container -->
+    <div id="main-chat-container" class="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 pt-[112px] flex flex-col justify-between relative pb-36">
+
+      <!-- SCREEN 01: EMPTY STATE -->
+      <div id="screen-empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-10 sm:py-16 animate-fade-in select-none">
+        <!-- Greeting with dynamic User Name and Cyan Radiance Spikes -->
+        <div class="flex items-center justify-center gap-2.5 text-4xl sm:text-5xl font-bold text-white tracking-tight">
+          <span class="text-[#00d2ff] font-light text-3xl select-none">˗</span>
+          <h2 class="flex items-center gap-2.5">
+            <span>Hello</span>
+            <span id="empty-state-username" class="text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-[#00d2ff] font-extrabold"></span>
+          </h2>
+          <span class="text-[#00d2ff] font-light text-3xl select-none">˗</span>
+        </div>
+
+        <script>
+          (function() {
+            try {
+              var u = JSON.parse(localStorage.getItem("rhynia_user") || "null");
+              if (u) {
+                var raw = (u.display_name && u.display_name.trim()) ||
+                          (u.full_name && u.full_name.trim()) ||
+                          (u.name && u.name.trim()) ||
+                          (u.username && u.username.trim()) ||
+                          (u.email ? u.email.split("@")[0] : "");
+                if (raw) {
+                  var clean = raw.replace(/[_\d]+$/, "");
+                  var finalN = clean ? (clean.charAt(0).toUpperCase() + clean.slice(1)) : raw;
+                  var el = document.getElementById("empty-state-username");
+                  if (el) el.textContent = finalN;
+                }
+              }
+            } catch(e) {}
+          })();
+        </script>
+      </div>
+
+      <!-- SCREEN 02: ACTIVE CHAT (Clean open layout, ZERO watermark) -->
+      <div id="screen-active-chat" class="hidden flex-1 flex flex-col gap-6 py-6 overflow-y-auto">
+        <div id="chat-messages-container" class="flex flex-col gap-6 w-full">
+          <!-- Dynamic User & Rhynia message bubbles injected here -->
+        </div>
+        <!-- Dedicated Bottom Auto-Scroll Anchor (Guarantees zero overlap with docked composer) -->
+        <div id="chat-scroll-anchor" class="w-full h-16 sm:h-20 pointer-events-none select-none opacity-0 shrink-0" aria-hidden="true"></div>
+      </div>
+
+      <!-- Docked Bottom Persistent Composer (Screens 01 & 02) -->
+      <div class="fixed bottom-0 inset-x-0 z-20 pb-3 sm:pb-4 pt-1 sm:pt-2 px-3 sm:px-4 max-w-3xl mx-auto pointer-events-none" style="padding-bottom: max(0.85rem, env(safe-area-inset-bottom, 12px));">
+        <div class="relative w-full pointer-events-auto">
+
+          <!-- Attachment Chips Preview Container -->
+          <div id="input-attachment-chips" class="hidden flex-wrap gap-2 mb-2 px-2"></div>
+
+          <!-- Attachment Popover Context Menu -->
+          <div id="attachmentMenu" class="hidden absolute bottom-28 left-2 z-40 w-[270px] sm:w-[290px] fluent-flyout rounded-3xl p-3.5 shadow-2xl border border-white/15 bg-[#252525]/95 backdrop-blur-xl">
+            <div class="flex flex-col gap-2">
+              <button type="button" id="btnCameraCapture" onclick="triggerCameraCapture()" class="flex items-center gap-4 w-full px-5 py-4 min-h-[76px] rounded-2xl text-left text-white hover:bg-white/15 active:bg-white/20 transition-all">
+                <span class="text-3xl select-none leading-none">📸</span>
+                <span class="text-2xl font-bold text-white tracking-wide">Camera</span>
+              </button>
+              <button type="button" id="btnFileManager" onclick="triggerFileManager()" class="flex items-center gap-4 w-full px-5 py-4 min-h-[76px] rounded-2xl text-left text-white hover:bg-white/15 active:bg-white/20 transition-all">
+                <span class="text-3xl select-none leading-none">📁</span>
+                <span class="text-2xl font-bold text-white tracking-wide">Files</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Hidden Native File Inputs -->
+          <input id="fileInput" multiple type="file" class="hidden" onchange="handleFileSelection(event)"/>
+          <input id="cameraInput" accept="image/*" capture="environment" type="file" class="hidden" onchange="handleFileSelection(event)"/>
+
+          <!-- ChatGPT & Gemini Style Floating Scroll-To-Bottom Down Arrow Button (Extra Large & Elevated) -->
+          <div class="absolute bottom-[calc(100%+44px)] md:bottom-[calc(100%+32px)] inset-x-0 flex justify-center pointer-events-none z-30">
+            <button id="btn-scroll-to-bottom" type="button" onclick="onScrollToBottomClick()" aria-label="Scroll to bottom" title="Scroll to bottom" class="opacity-0 translate-y-4 pointer-events-none transition-all duration-300 ease-out w-[88px] h-[88px] md:w-[76px] md:h-[76px] rounded-full bg-[#1b1b22]/95 hover:bg-[#282834] active:bg-[#343444] border-2 border-white/30 text-white shadow-2xl shadow-black/95 backdrop-blur-2xl flex items-center justify-center cursor-pointer active:scale-90 group focus:outline-none">
+              <span class="material-symbols-outlined text-[56px] md:text-[44px] font-bold transition-transform group-hover:translate-y-1">arrow_downward</span>
+            </button>
+          </div>
+
+          <!-- Continuous Stadium Capsule Pill (rounded-full) -->
+          <div class="fluent-composer-pill rounded-full p-4 pl-6 md:p-2.5 md:pl-4 flex items-center gap-4 md:gap-3 bg-[#121212] border border-white/10 shadow-2xl backdrop-blur-xl min-h-[100px] md:min-h-[64px]">
+            <!-- (+) Attachment Button -->
+            <button id="plusToggle" type="button" onclick="toggleAttachmentMenu()" aria-label="Add attachment" data-i18n-aria="add_attachment" class="w-18 h-18 md:w-11 md:h-11 rounded-full flex items-center justify-center text-neutral-300 hover:text-white hover:bg-white/10 active:scale-95 transition-all shrink-0">
+              <span id="plusIcon" class="material-symbols-outlined text-[40px] md:text-[24px] transition-transform">add</span>
+            </button>
+
+            <!-- Text Input Field (22px font for mobile, 16px for desktop) -->
+            <input id="chat-input" type="text" autocomplete="off" oninput="updateSendButtonState()" onkeydown="handleChatInputKeyDown(event)" placeholder="Ask anything or start a project..." data-i18n-placeholder="ask_placeholder" class="flex-1 bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-[22px] md:text-base focus:ring-0 focus:outline-none px-4 py-3.5"/>
+
+            <!-- Mic Voice Dictation Button (Larger & Prominent) -->
+            <button id="micBtn" type="button" onclick="toggleVoiceInput()" aria-label="Voice input" data-i18n-aria="voice_input" class="w-20 h-20 md:w-12 md:h-12 rounded-full flex items-center justify-center text-white bg-white/10 hover:bg-white/20 active:scale-95 transition-all shrink-0 shadow-sm border border-white/10" title="Voice Dictation">
+              <span class="material-symbols-outlined text-[42px] md:text-[26px]">mic</span>
+            </button>
+
+            <!-- Azure Blue Send Message Button -->
+            <button id="btn-send-message" type="button" onclick="sendChatMessage()" disabled aria-label="Send message" data-i18n-aria="send_message" class="btn-send-disabled w-20 h-20 md:w-12 md:h-12 rounded-full bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white flex items-center justify-center active:scale-95 transition-all shrink-0 shadow-md shadow-[#0078D4]/30">
+              <span class="material-symbols-outlined text-[38px] md:text-[24px] transform -rotate-45 ml-0.5">near_me</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- SCREEN 04: NAVIGATION DRAWER                              -->
+    <!-- ========================================================= -->
+    <!-- Scrim without any blur, only smooth clean dimming -->
+    <div id="drawer-scrim" onclick="toggleSidebarDrawer(false)" ontouchstart="toggleSidebarDrawer(false)" class="hidden fixed inset-0 bg-black/60 z-40 transition-opacity"></div>
+    <aside id="sidebar-drawer" class="fixed inset-y-0 left-0 z-50 flex flex-col justify-between w-[98vw] max-w-[620px] md:w-[600px] md:max-w-2xl bg-[#080808] border-r border-white/[0.06] shadow-2xl transition-transform duration-300 transform -translate-x-full">
+      <!-- Drawer Header: Seamless with body (no dividing border), Brand Name (38px) + Magnifying Glass (46px Icon) in Extra Large Card -->
+      <div class="h-[104px] px-6 flex items-center justify-between bg-[#080808]">
+        <div class="flex items-center gap-2">
+          <span class="text-4xl sm:text-[40px] font-black tracking-tight text-white font-sans">Rhynia</span>
+        </div>
+        <div class="flex items-center">
+          <button id="drawer-search-btn" type="button" onclick="toggleDrawerSearch()" aria-label="Search conversations" data-i18n-title="search_conversations" class="w-[76px] h-[76px] rounded-[24px] bg-white/[0.08] hover:bg-white/[0.14] active:scale-95 border-2 border-white/15 text-neutral-100 hover:text-white flex items-center justify-center transition-all shadow-lg group cursor-pointer" title="Search conversations...">
+            <span class="material-symbols-outlined text-[46px] group-hover:scale-110 transition-transform">search</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Search Bar (Expands on Search Icon Click — Ultra-Large & Generous Top/Bottom Spacing) -->
+      <div id="drawer-search-container" class="hidden px-6 pt-6 pb-8 my-3 bg-[#080808] border-b border-white/10 transition-all">
+        <div class="relative flex items-center w-full">
+          <span class="material-symbols-outlined absolute left-6 text-neutral-200 text-[46px] pointer-events-none">search</span>
+          <input id="drawer-search-input" oninput="filterDrawerSessions(this.value)" type="text" placeholder="Search conversations..." data-i18n-placeholder="search_conversations" class="w-full min-h-[88px] rounded-[24px] bg-white/[0.12] border-2 border-white/25 pl-[72px] pr-16 py-6 text-3xl sm:text-4xl font-bold text-white placeholder-neutral-400 focus:outline-none focus:border-white/60 focus:bg-white/[0.16] transition-colors shadow-2xl"/>
+          <button type="button" onclick="toggleDrawerSearch()" class="absolute right-5 w-14 h-14 rounded-2xl flex items-center justify-center text-neutral-300 hover:text-white hover:bg-white/15 active:scale-90 transition-all cursor-pointer">
+            <span class="material-symbols-outlined text-[38px]">close</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Drawer Scroll Content: Pinned & Recent (Overscroll contained, seamless tone) -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar px-5 py-3 space-y-7 overscroll-contain bg-[#080808]">
+        <!-- Pinned Section -->
+        <div id="drawer-pinned-section" class="space-y-2.5 mb-7" style="display: none;">
+          <div id="drawer-pinned-header" class="px-2 py-2 flex items-center">
+            <span class="header-title text-[28px] font-extrabold text-neutral-100 tracking-tight" data-i18n="pinned_chats">Pinned</span>
+          </div>
+          <div id="drawer-pinned-list" class="space-y-2.5"></div>
+        </div>
+
+        <!-- Recent Section with Distinct Top Spacing -->
+        <div id="drawer-recent-section" class="space-y-2.5 mt-6">
+          <div id="drawer-recent-header" class="px-2 py-2 flex items-center">
+            <span class="header-title text-[28px] font-extrabold text-neutral-100 tracking-tight" data-i18n="recent_chats">Recent</span>
+          </div>
+          <div id="drawer-recent-list" class="space-y-2.5"></div>
+        </div>
+      </div>
+
+      <!-- Bottom Action Bar: Seamless with body (no dividing border), ChatGPT-style Neutral Icon Buttons (Both 42px Icons in 68px Cards) -->
+      <div class="h-[98px] px-6 flex items-center justify-between bg-[#171717]">
+        <!-- Left: New Chat Icon Button (ChatGPT style: 42px edit_square icon, neutral dark glass) -->
+        <button id="drawer-new-chat-btn" type="button" onclick="startNewChat(); toggleSidebarDrawer(false);" class="w-[68px] h-[68px] rounded-[20px] bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 border border-white/10 text-neutral-200 hover:text-white flex items-center justify-center transition-all shadow-sm group" title="New Chat">
+          <span class="material-symbols-outlined text-[42px] group-hover:scale-105 transition-transform">edit_square</span>
+        </button>
+
+        <!-- Right: Settings Icon Button (Matching ChatGPT neutral glass style: 42px settings icon) -->
+        <button id="drawer-settings-btn" type="button" onclick="openSettingsPanel(); toggleSidebarDrawer(false);" class="w-[68px] h-[68px] rounded-[20px] bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 border border-white/10 text-neutral-200 hover:text-white flex items-center justify-center transition-all shadow-sm group" title="Settings & Profile">
+          <span class="material-symbols-outlined text-[42px] group-hover:scale-105 transition-transform">settings</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ========================================================= -->
+    <!-- CHATGPT STYLE FLOATING CONTEXT MENU (Extra Large)         -->
+    <!-- ========================================================= -->
+    <div id="chatgpt-context-backdrop" class="hidden fixed inset-0 z-[80] bg-transparent" onclick="closeContextMenu()"></div>
+    <div id="chatgpt-context-menu" class="hidden fixed z-[85] w-[280px] bg-[#222225] border border-white/20 rounded-[28px] p-3 shadow-2xl space-y-2 select-none transition-all">
+      <!-- 1. Pin / Unpin Item (Extra Large) -->
+      <button id="ctx-pin-btn" type="button" onclick="executeContextAction('pin')" class="w-full h-[76px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center gap-4 transition-colors">
+        <span id="ctx-pin-icon" class="text-[32px] flex-shrink-0 leading-none">📌</span>
+        <span id="ctx-pin-text" class="text-[26px] font-bold">Pin</span>
+      </button>
+
+      <!-- 2. Rename Item (Extra Large) -->
+      <button id="ctx-rename-btn" type="button" onclick="executeContextAction('rename')" class="w-full h-[76px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center gap-4 transition-colors">
+        <span class="material-symbols-outlined text-[34px] text-neutral-200">edit</span>
+        <span class="text-[26px] font-bold">Rename</span>
+      </button>
+
+      <!-- 3. Delete Item (Extra Large) -->
+      <button id="ctx-delete-btn" type="button" onclick="executeContextAction('delete')" class="w-full h-[76px] px-5 rounded-2xl hover:bg-red-500/[0.12] active:bg-red-500/[0.2] text-[#f87171] flex items-center gap-4 transition-colors">
+        <span class="material-symbols-outlined text-[34px] text-[#f87171]">delete</span>
+        <span class="text-[26px] font-bold text-[#f87171]">Delete</span>
+      </button>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- USER MESSAGE LONG-PRESS CONTEXT MENU (ChatGPT Style Grand Scale) -->
+    <!-- ========================================================= -->
+    <div id="user-msg-context-backdrop" class="hidden fixed inset-0 z-[88] bg-transparent" onclick="closeUserMsgContextMenu()"></div>
+    <div id="user-msg-context-menu" class="hidden fixed z-[89] w-[320px] sm:w-[340px] bg-[#222225] border border-white/20 rounded-[34px] p-3.5 shadow-[0_30px_70px_rgba(0,0,0,0.95)] space-y-2.5 select-none transition-all">
+      <!-- Timestamp Header e.g. "Today, 11:30 am" -->
+      <div id="user-msg-ctx-time" class="px-5 pt-3 pb-2 text-xl sm:text-2xl font-black text-neutral-300">
+        Today, 11:30 am
+      </div>
+
+      <!-- 1. Copy -->
+      <button type="button" onclick="executeUserMsgAction('copy')" class="w-full h-[84px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center gap-5 transition-colors cursor-pointer">
+        <span class="material-symbols-outlined text-[38px] sm:text-[40px] text-neutral-300 flex-shrink-0">content_copy</span>
+        <span class="text-[27px] sm:text-[29px] font-bold tracking-tight">Copy</span>
+      </button>
+
+      <!-- 2. Select text -->
+      <button type="button" onclick="executeUserMsgAction('select_text')" class="w-full h-[84px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center gap-5 transition-colors cursor-pointer">
+        <span class="material-symbols-outlined text-[38px] sm:text-[40px] text-neutral-300 flex-shrink-0">subject</span>
+        <span class="text-[27px] sm:text-[29px] font-bold tracking-tight">Select text</span>
+      </button>
+
+      <!-- 3. Edit message -->
+      <button type="button" onclick="executeUserMsgAction('edit')" class="w-full h-[84px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center gap-5 transition-colors cursor-pointer">
+        <span class="material-symbols-outlined text-[38px] sm:text-[40px] text-neutral-300 flex-shrink-0">edit</span>
+        <span class="text-[27px] sm:text-[29px] font-bold tracking-tight">Edit message</span>
+      </button>
+
+      <!-- 4. Share prompt -->
+      <button type="button" onclick="executeUserMsgAction('share')" class="w-full h-[84px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center gap-5 transition-colors cursor-pointer">
+        <span class="material-symbols-outlined text-[38px] sm:text-[40px] text-neutral-300 flex-shrink-0">share</span>
+        <span class="text-[27px] sm:text-[29px] font-bold tracking-tight">Share prompt</span>
+      </button>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- SCREEN: SELECT TEXT (Exact ChatGPT Full Screen Experience) -->
+    <!-- ========================================================= -->
+    <div id="screen-select-text" class="hidden fixed inset-0 z-[95] bg-[#000000] flex flex-col justify-start p-4 sm:p-6 animate-fade-in select-text">
+      <!-- Top Bar: Back button + Center Title "Select text" -->
+      <header class="h-[90px] sm:h-[98px] flex items-center justify-between px-2 pb-2">
+        <button id="btn-select-text-back" type="button" onclick="closeSelectTextScreen(event)" ontouchend="closeSelectTextScreen(event)" class="w-[72px] h-[72px] min-w-[72px] min-h-[72px] rounded-full bg-[#1c1c1e] hover:bg-[#2c2c2e] active:scale-90 flex items-center justify-center text-white transition-all cursor-pointer shadow-2xl border border-white/20" title="Back to Chat">
+          <span class="material-symbols-outlined text-[42px] sm:text-[44px]">arrow_back</span>
+        </button>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white text-center flex-1 pr-[72px]">Select text</h2>
+      </header>
+
+      <!-- Main Text Selection Body with generous extra distance from header -->
+      <main class="flex-1 overflow-y-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-16 select-text">
+        <div id="select-text-content" class="text-white text-2xl sm:text-[26px] font-normal leading-[1.8] whitespace-pre-wrap select-text selection:bg-[#0078D4] selection:text-white cursor-text">
+        </div>
+      </main>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- RENAME CHAT MODAL (Extra Large Card & Font, No Blur)      -->
+    <!-- ========================================================= -->
+    <div id="modal-rename-session" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-5 bg-black/70 animate-fade-in" onclick="if(event.target===this) closeRenameModal()">
+      <div class="w-full max-w-[520px] sm:max-w-[560px] bg-[#222226] border border-white/20 rounded-[36px] p-8 sm:p-10 shadow-2xl flex flex-col gap-7 animate-scale-in">
+        <!-- Floating Label Input Container -->
+        <div class="relative w-full mt-3">
+          <label class="absolute -top-4 left-5 px-2.5 bg-[#222226] text-base font-extrabold text-neutral-200 tracking-wide z-10">New name</label>
+          <input id="rename-chat-modal-input" type="text" onkeydown="handleRenameModalKeyDown(event)" autocomplete="off" class="w-full bg-transparent border-2 border-white/60 focus:border-white rounded-2xl px-6 py-5 text-2xl sm:text-3xl font-medium text-white focus:outline-none transition-colors min-h-[72px]" />
+        </div>
+
+        <!-- Right-Aligned Action Buttons -->
+        <div class="flex items-center justify-end gap-6 pt-2">
+          <button type="button" onclick="closeRenameModal()" class="px-5 py-2.5 text-xl sm:text-2xl font-extrabold text-neutral-300 hover:text-white active:scale-95 transition-all cursor-pointer">
+            Cancel
+          </button>
+          <button id="rename-chat-confirm-btn" type="button" onclick="confirmRenameModal()" class="px-5 py-2.5 text-xl sm:text-2xl font-extrabold text-white hover:text-blue-400 active:scale-95 transition-all cursor-pointer">
+            Rename
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- DELETE CHAT MODAL (Extra Large Card & Font, No Blur)      -->
+    <!-- ========================================================= -->
+    <div id="modal-delete-session" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-5 bg-black/70 animate-fade-in" onclick="if(event.target===this) closeDeleteModal()">
+      <div class="w-full max-w-[520px] sm:max-w-[560px] bg-[#222226] border border-white/20 rounded-[36px] p-8 sm:p-10 shadow-2xl flex flex-col gap-6 animate-scale-in">
+        <h3 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">Delete Chat</h3>
+        <p class="text-xl sm:text-2xl text-neutral-100 leading-relaxed font-normal">
+          This can't be undone. Visit your <span class="underline cursor-pointer hover:text-white" onclick="closeDeleteModal(); if(typeof switchView==='function') switchView('screen-settings-panel');">settings</span> to delete any memories saved during this chat.
+        </p>
+
+        <!-- Right-Aligned Action Buttons -->
+        <div class="flex items-center justify-end gap-7 pt-4">
+          <button type="button" onclick="closeDeleteModal()" class="px-5 py-2.5 text-xl sm:text-2xl font-extrabold text-neutral-300 hover:text-white active:scale-95 transition-all cursor-pointer">
+            Cancel
+          </button>
+          <button id="delete-session-confirm-btn" type="button" onclick="confirmDeleteSession()" class="px-5 py-2.5 text-xl sm:text-2xl font-extrabold text-[#ef4444] hover:text-red-400 active:scale-95 transition-all cursor-pointer">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- SCREEN 05: FULL SETTINGS & PROFILE PANEL                  -->
+    <!-- ========================================================= -->
+    <div id="screen-settings-panel" class="hidden fixed inset-0 z-[60] bg-[#000000] overflow-y-auto p-4 sm:p-6 animate-fade-in">
+      <div class="max-w-[700px] mx-auto space-y-6 pb-24">
+        <!-- Header with Back to Chat -->
+        <div class="flex items-center justify-between pb-5 border-b border-white/10">
+          <button type="button" onclick="closeSettingsPanel()" class="inline-flex items-center gap-3 text-2xl sm:text-3xl font-extrabold text-white hover:text-[#4cc2ff] px-5 py-2.5 rounded-2xl hover:bg-white/10 active:bg-white/15 transition-all">
+            <span class="material-symbols-outlined text-[32px] sm:text-[36px]">arrow_back</span>
+            <span>Back to Chat</span>
+          </button>
+          <span class="text-base sm:text-lg text-white font-mono tracking-widest uppercase bg-white/10 px-5 py-2.5 rounded-full border border-white/20 font-black">SETTINGS</span>
+        </div>
+
+        <!-- Profile Section: Circular Avatar Box, Name & Edit Icon (No Outer Box Card) -->
+        <section class="flex flex-col items-center text-center py-4 sm:py-6">
+          <div class="relative shrink-0 cursor-pointer" onclick="toggleEditProfileModal(true)">
+            <div class="w-48 h-48 sm:w-56 sm:h-56 rounded-full p-2 bg-white/10 ring-4 ring-white/20 shadow-2xl hover:ring-[#0078D4] transition-all">
+              <div class="w-full h-full rounded-full overflow-hidden bg-[#161616] flex items-center justify-center text-7xl sm:text-8xl font-black text-white">
+                <img id="settings-avatar-img" alt="Profile" class="live-user-avatar w-full h-full object-cover hidden"/>
+                <span class="user-avatar-initial text-7xl sm:text-8xl font-black">U</span>
+              </div>
+            </div>
+            <!-- Edit Pencil Badge (Extra Large Size) -->
+            <button type="button" onclick="event.stopPropagation(); toggleEditProfileModal(true);" class="absolute bottom-1 right-1 w-15 h-15 sm:w-16 sm:h-16 rounded-full bg-[#0078D4] hover:bg-[#1084d9] text-white flex items-center justify-center shadow-2xl border-4 border-[#000000] active:scale-95 transition-all cursor-pointer" title="Edit Profile Details">
+              <span class="material-symbols-outlined text-[28px] sm:text-[32px]">edit</span>
+            </button>
+          </div>
+          <h2 id="settings-user-name" class="text-4xl sm:text-5xl font-black text-white tracking-tight font-headline mt-5">User</h2>
+        </section>
+
+        <!-- Account Details Card -->
+        <section class="fluent-mica-card rounded-[32px] p-8 sm:p-10 space-y-6 bg-[#0d0d0d] border border-white/10 shadow-2xl">
+          <div class="flex items-center justify-between pb-4 border-b border-white/10">
+            <h3 class="text-3xl sm:text-4xl font-black text-white">Account Details</h3>
+            <span class="text-sm sm:text-base text-white bg-[#1a1a1a] px-4 py-2 rounded-xl border border-white/10 font-black">Credentials</span>
+          </div>
+          <div class="flex flex-col gap-4">
+            <div class="p-6 rounded-2xl bg-[#141414] border border-white/5 flex items-center gap-4 min-h-[84px]">
+              <span class="material-symbols-outlined text-[32px] sm:text-[36px] text-neutral-300 shrink-0">mail</span>
+              <div class="min-w-0 flex-1">
+                <span class="text-sm sm:text-base font-black text-neutral-400 uppercase tracking-wider block mb-1">Email</span>
+                <p id="settings-user-email" class="text-xl sm:text-2xl font-extrabold text-white truncate">user@rhynia.com</p>
+              </div>
+            </div>
+            <div class="p-6 rounded-2xl bg-[#141414] border border-white/5 flex items-center gap-4 min-h-[84px]">
+              <span class="material-symbols-outlined text-[32px] sm:text-[36px] text-neutral-300 shrink-0">phone</span>
+              <div class="min-w-0 flex-1">
+                <span class="text-sm sm:text-base font-black text-neutral-400 uppercase tracking-wider block mb-1">Mobile</span>
+                <p id="settings-user-phone" class="text-xl sm:text-2xl font-extrabold text-white truncate">+1 (555) 000-0000</p>
+              </div>
+            </div>
+            <div class="p-6 rounded-2xl bg-[#141414] border border-white/5 flex items-center gap-4 min-h-[84px]">
+              <span class="material-symbols-outlined text-[32px] sm:text-[36px] text-neutral-300 shrink-0">workspace_premium</span>
+              <div class="min-w-0 flex-1">
+                <span class="text-sm sm:text-base font-black text-neutral-400 uppercase tracking-wider block mb-1">Subscription</span>
+                <p id="settings-user-plan" class="text-xl sm:text-2xl font-black text-white flex items-center flex-wrap gap-3">
+                  <span>Ultra Pro</span>
+                  <span class="text-sm sm:text-base font-bold text-white bg-white/10 px-3.5 py-1.5 rounded-xl border border-white/20">25 GB • 1,000 msg/day</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Preferences Card -->
+        <section class="fluent-mica-card rounded-[32px] p-8 sm:p-10 space-y-6 bg-[#0d0d0d] border border-white/10 shadow-2xl">
+          <div class="pb-4 border-b border-white/10">
+            <h3 class="text-3xl sm:text-4xl font-black text-white">Preferences</h3>
+          </div>
+          <div class="space-y-5">
+            <!-- Appearance Row with ChatGPT Floating Popup Menu -->
+            <div id="settings-appearance-row" class="relative flex items-center justify-between p-5 sm:p-6 rounded-2xl bg-[#141414] hover:bg-[#1c1c1c] border border-white/5 transition-colors cursor-pointer select-none min-h-[82px] sm:min-h-[90px]" onclick="toggleAppearancePopupMenu(event)">
+              <div class="flex items-center gap-4 min-w-0 pr-2">
+                <span class="material-symbols-outlined text-[32px] sm:text-[36px] text-neutral-300 shrink-0">light_mode</span>
+                <div class="min-w-0">
+                  <p data-i18n="appearance" class="text-2xl sm:text-3xl font-black text-white truncate">Appearance</p>
+                  <p id="settings-theme-label" class="text-base sm:text-lg text-neutral-400 mt-0.5 font-semibold truncate">Dark</p>
+                </div>
+              </div>
+              <div class="flex items-center shrink-0">
+                <span id="settings-appearance-chevron" class="material-symbols-outlined text-[32px] sm:text-[36px] text-neutral-400 transition-transform duration-200">expand_more</span>
+              </div>
+
+              <!-- FLOATING THEME POPUP MENU (ChatGPT Exact Design - Extra Large, Sleek Width, Tall Rows) -->
+              <div id="appearance-popup-backdrop" class="hidden fixed inset-0 z-[70] bg-transparent" onclick="closeAppearancePopupMenu(event)"></div>
+              <div id="appearance-popup-menu" class="hidden absolute right-2 sm:right-4 bottom-[100px] z-[75] w-[245px] sm:w-[260px] bg-[#222225] border border-white/20 rounded-[30px] p-3 shadow-[0_25px_60px_rgba(0,0,0,0.95)] space-y-2.5 select-none transition-all" onclick="event.stopPropagation();">
+                <!-- Option 1: System (Default) -->
+                <button type="button" onclick="selectThemeOption('system', event)" class="theme-option-btn w-full h-[80px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center justify-between transition-colors cursor-pointer" data-theme-val="system">
+                  <span class="text-[24px] sm:text-[25px] font-bold">System</span>
+                  <span class="theme-check-icon hidden material-symbols-outlined text-[34px] text-white">check</span>
+                </button>
+                
+                <!-- Option 2: Light -->
+                <button type="button" onclick="selectThemeOption('light', event)" class="theme-option-btn w-full h-[80px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center justify-between transition-colors cursor-pointer" data-theme-val="light">
+                  <span class="text-[24px] sm:text-[25px] font-bold">Light</span>
+                  <span class="theme-check-icon hidden material-symbols-outlined text-[34px] text-white">check</span>
+                </button>
+                
+                <!-- Option 3: Dark (Default) -->
+                <button type="button" onclick="selectThemeOption('dark', event)" class="theme-option-btn w-full h-[80px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center justify-between transition-colors cursor-pointer" data-theme-val="dark">
+                  <span class="text-[24px] sm:text-[25px] font-bold">Dark</span>
+                  <span class="theme-check-icon material-symbols-outlined text-[34px] text-white">check</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Accent Color Row with ChatGPT Floating Popup Menu -->
+            <div id="settings-accent-row" class="relative flex items-center justify-between p-5 sm:p-6 rounded-2xl bg-[#141414] hover:bg-[#1c1c1c] border border-white/5 transition-colors cursor-pointer select-none min-h-[82px] sm:min-h-[90px]" onclick="toggleAccentPopupMenu(event)">
+              <div class="flex items-center gap-4 min-w-0 pr-2">
+                <span class="material-symbols-outlined text-[32px] sm:text-[36px] text-neutral-300 shrink-0">palette</span>
+                <div class="min-w-0">
+                  <p data-i18n="accent_color" class="text-2xl sm:text-3xl font-black text-white truncate">Accent color</p>
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <span id="settings-accent-dot" class="w-3.5 h-3.5 rounded-full bg-[#8B5CF6] shrink-0 inline-block shadow-sm"></span>
+                    <p id="settings-accent-label" class="text-base sm:text-lg text-neutral-400 font-semibold truncate">Purple</p>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center shrink-0">
+                <span id="settings-accent-chevron" class="material-symbols-outlined text-[32px] sm:text-[36px] text-neutral-400 transition-transform duration-200">expand_more</span>
+              </div>
+
+              <!-- FLOATING ACCENT COLOR POPUP MENU (ChatGPT Exact Design - Wider & Clear Colors) -->
+              <div id="accent-popup-backdrop" class="hidden fixed inset-0 z-[70] bg-transparent" onclick="closeAccentPopupMenu(event)"></div>
+              <div id="accent-popup-menu" class="hidden absolute right-2 sm:right-4 bottom-[100px] z-[75] w-[290px] sm:w-[325px] max-h-[480px] overflow-y-auto bg-[#222225] border border-white/20 rounded-[32px] p-3.5 shadow-[0_25px_60px_rgba(0,0,0,0.95)] space-y-2 select-none transition-all" onclick="event.stopPropagation();">
+                <!-- 1. Blue -->
+                <button type="button" onclick="selectAccentColorOption('#3B82F6', 'Blue', event)" class="accent-option-btn w-full h-[68px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center justify-between transition-colors cursor-pointer" data-color-hex="#3B82F6">
+                  <div class="flex items-center gap-4.5 min-w-0">
+                    <span class="color-circle-dot w-[22px] h-[22px] min-w-[22px] min-h-[22px] rounded-full shrink-0 shadow-md ring-2 ring-white/10" style="background-color: #3B82F6 !important;"></span>
+                    <span class="text-[23px] sm:text-[25px] font-bold">Blue</span>
+                  </div>
+                  <span class="accent-check-icon hidden material-symbols-outlined text-[32px] sm:text-[34px] text-white shrink-0">check</span>
+                </button>
+
+                <!-- 2. Cyan -->
+                <button type="button" onclick="selectAccentColorOption('#06B6D4', 'Cyan', event)" class="accent-option-btn w-full h-[68px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center justify-between transition-colors cursor-pointer" data-color-hex="#06B6D4">
+                  <div class="flex items-center gap-4.5 min-w-0">
+                    <span class="color-circle-dot w-[22px] h-[22px] min-w-[22px] min-h-[22px] rounded-full shrink-0 shadow-md ring-2 ring-white/10" style="background-color: #06B6D4 !important;"></span>
+                    <span class="text-[23px] sm:text-[25px] font-bold">Cyan</span>
+                  </div>
+                  <span class="accent-check-icon hidden material-symbols-outlined text-[32px] sm:text-[34px] text-white shrink-0">check</span>
+                </button>
+
+                <!-- 3. Green -->
+                <button type="button" onclick="selectAccentColorOption('#10B981', 'Green', event)" class="accent-option-btn w-full h-[68px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center justify-between transition-colors cursor-pointer" data-color-hex="#10B981">
+                  <div class="flex items-center gap-4.5 min-w-0">
+                    <span class="color-circle-dot w-[22px] h-[22px] min-w-[22px] min-h-[22px] rounded-full shrink-0 shadow-md ring-2 ring-white/10" style="background-color: #10B981 !important;"></span>
+                    <span class="text-[23px] sm:text-[25px] font-bold">Green</span>
+                  </div>
+                  <span class="accent-check-icon hidden material-symbols-outlined text-[32px] sm:text-[34px] text-white shrink-0">check</span>
+                </button>
+
+                <!-- 4. Lime -->
+                <button type="button" onclick="selectAccentColorOption('#84CC16', 'Lime', event)" class="accent-option-btn w-full h-[68px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center justify-between transition-colors cursor-pointer" data-color-hex="#84CC16">
+                  <div class="flex items-center gap-4.5 min-w-0">
+                    <span class="color-circle-dot w-[22px] h-[22px] min-w-[22px] min-h-[22px] rounded-full shrink-0 shadow-md ring-2 ring-white/10" style="background-color: #84CC16 !important;"></span>
+                    <span class="text-[23px] sm:text-[25px] font-bold">Lime</span>
+                  </div>
+                  <span class="accent-check-icon hidden material-symbols-outlined text-[32px] sm:text-[34px] text-white shrink-0">check</span>
+                </button>
+
+                <!-- 5. Yellow -->
+                <button type="button" onclick="selectAccentColorOption('#EAB308', 'Yellow', event)" class="accent-option-btn w-full h-[68px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center justify-between transition-colors cursor-pointer" data-color-hex="#EAB308">
+                  <div class="flex items-center gap-4.5 min-w-0">
+                    <span class="color-circle-dot w-[22px] h-[22px] min-w-[22px] min-h-[22px] rounded-full shrink-0 shadow-md ring-2 ring-white/10" style="background-color: #EAB308 !important;"></span>
+                    <span class="text-[23px] sm:text-[25px] font-bold">Yellow</span>
+                  </div>
+                  <span class="accent-check-icon hidden material-symbols-outlined text-[32px] sm:text-[34px] text-white shrink-0">check</span>
+                </button>
+
+                <!-- 6. Orange -->
+                <button type="button" onclick="selectAccentColorOption('#F97316', 'Orange', event)" class="accent-option-btn w-full h-[68px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center justify-between transition-colors cursor-pointer" data-color-hex="#F97316">
+                  <div class="flex items-center gap-4.5 min-w-0">
+                    <span class="color-circle-dot w-[22px] h-[22px] min-w-[22px] min-h-[22px] rounded-full shrink-0 shadow-md ring-2 ring-white/10" style="background-color: #F97316 !important;"></span>
+                    <span class="text-[23px] sm:text-[25px] font-bold">Orange</span>
+                  </div>
+                  <span class="accent-check-icon hidden material-symbols-outlined text-[32px] sm:text-[34px] text-white shrink-0">check</span>
+                </button>
+
+                <!-- 7. Pink -->
+                <button type="button" onclick="selectAccentColorOption('#EC4899', 'Pink', event)" class="accent-option-btn w-full h-[68px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center justify-between transition-colors cursor-pointer" data-color-hex="#EC4899">
+                  <div class="flex items-center gap-4.5 min-w-0">
+                    <span class="color-circle-dot w-[22px] h-[22px] min-w-[22px] min-h-[22px] rounded-full shrink-0 shadow-md ring-2 ring-white/10" style="background-color: #EC4899 !important;"></span>
+                    <span class="text-[23px] sm:text-[25px] font-bold">Pink</span>
+                  </div>
+                  <span class="accent-check-icon hidden material-symbols-outlined text-[32px] sm:text-[34px] text-white shrink-0">check</span>
+                </button>
+
+                <!-- 8. Magenta -->
+                <button type="button" onclick="selectAccentColorOption('#D946EF', 'Magenta', event)" class="accent-option-btn w-full h-[68px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center justify-between transition-colors cursor-pointer" data-color-hex="#D946EF">
+                  <div class="flex items-center gap-4.5 min-w-0">
+                    <span class="color-circle-dot w-[22px] h-[22px] min-w-[22px] min-h-[22px] rounded-full shrink-0 shadow-md ring-2 ring-white/10" style="background-color: #D946EF !important;"></span>
+                    <span class="text-[23px] sm:text-[25px] font-bold">Magenta</span>
+                  </div>
+                  <span class="accent-check-icon hidden material-symbols-outlined text-[32px] sm:text-[34px] text-white shrink-0">check</span>
+                </button>
+
+                <!-- 9. Purple -->
+                <button type="button" onclick="selectAccentColorOption('#8B5CF6', 'Purple', event)" class="accent-option-btn w-full h-[68px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center justify-between transition-colors cursor-pointer" data-color-hex="#8B5CF6">
+                  <div class="flex items-center gap-4.5 min-w-0">
+                    <span class="color-circle-dot w-[22px] h-[22px] min-w-[22px] min-h-[22px] rounded-full shrink-0 shadow-md ring-2 ring-white/10" style="background-color: #8B5CF6 !important;"></span>
+                    <span class="text-[23px] sm:text-[25px] font-bold">Purple</span>
+                  </div>
+                  <span class="accent-check-icon hidden material-symbols-outlined text-[32px] sm:text-[34px] text-white shrink-0">check</span>
+                </button>
+
+                <!-- 10. White -->
+                <button type="button" onclick="selectAccentColorOption('#FFFFFF', 'White', event)" class="accent-option-btn w-full h-[68px] px-5 rounded-2xl hover:bg-white/[0.08] active:bg-white/[0.14] text-neutral-100 hover:text-white flex items-center justify-between transition-colors cursor-pointer" data-color-hex="#FFFFFF">
+                  <div class="flex items-center gap-4.5 min-w-0">
+                    <span class="color-circle-dot w-[22px] h-[22px] min-w-[22px] min-h-[22px] rounded-full shrink-0 shadow-md ring-2 ring-white/30 border border-black/30" style="background-color: #FFFFFF !important;"></span>
+                    <span class="text-[23px] sm:text-[25px] font-bold">White</span>
+                  </div>
+                  <span class="accent-check-icon hidden material-symbols-outlined text-[32px] sm:text-[34px] text-white shrink-0">check</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Language Row with ChatGPT App Language Modal -->
+            <div id="settings-language-row" class="relative flex items-center justify-between p-5 sm:p-6 rounded-2xl bg-[#141414] hover:bg-[#1c1c1c] border border-white/5 transition-colors cursor-pointer select-none min-h-[82px] sm:min-h-[90px]" onclick="openAppLanguageModal(event)">
+              <div class="flex items-center gap-4 min-w-0 pr-2">
+                <span class="material-symbols-outlined text-[32px] sm:text-[36px] text-neutral-300 shrink-0">translate</span>
+                <div class="min-w-0">
+                  <p data-i18n="language" class="text-2xl sm:text-3xl font-black text-white truncate">Language</p>
+                  <p id="settings-language-label" class="text-base sm:text-lg text-neutral-400 current-lang-label mt-0.5 font-semibold truncate">English</p>
+                </div>
+              </div>
+              <div class="flex items-center shrink-0">
+                <span id="settings-language-chevron" class="material-symbols-outlined text-[32px] sm:text-[36px] text-neutral-400 transition-transform duration-200">expand_more</span>
+              </div>
+            </div>
+
+            <!-- Notifications Row with ChatGPT Sub-screen Flow (5 Categories) -->
+            <div id="settings-notifications-row" class="relative flex items-center justify-between p-5 sm:p-6 rounded-2xl bg-[#141414] hover:bg-[#1c1c1c] border border-white/5 transition-colors cursor-pointer select-none min-h-[82px] sm:min-h-[90px]" onclick="openNotificationsScreen(event)">
+              <div class="flex items-center gap-4 min-w-0 pr-2">
+                <span class="material-symbols-outlined text-[32px] sm:text-[36px] text-neutral-300 shrink-0">notifications</span>
+                <p data-i18n="notifications" class="text-2xl sm:text-3xl font-black text-white truncate">Notifications</p>
+              </div>
+              <div class="flex items-center shrink-0">
+                <span class="material-symbols-outlined text-[32px] sm:text-[36px] text-neutral-400">chevron_right</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Storage Card (Live Dynamic Metrics) -->
+        <section class="fluent-mica-card rounded-[32px] p-8 sm:p-10 space-y-6 bg-[#1f1f1f] border border-white/10 shadow-2xl">
+          <div class="flex items-center justify-between flex-wrap gap-4 pb-4 border-b border-white/10">
+            <h3 id="settings-storage-title" class="text-3xl sm:text-4xl font-black text-white flex items-center gap-3.5">
+              Storage
+              <span class="text-sm sm:text-base text-white bg-white/10 px-4 py-1.5 rounded-xl border border-white/20 font-black">25 GB</span>
+            </h3>
+            <span id="settings-storage-badge" class="text-sm sm:text-base font-black text-white bg-white/10 px-4 py-2 rounded-xl border border-white/20 font-mono shadow-sm">
+              0 MB of 25 GB used (0%)
+            </span>
+          </div>
+          <div class="space-y-6 pt-1">
+            <!-- Two-Tone Progress Bar Track -->
+            <div class="w-full h-7 bg-[#303030] rounded-full overflow-hidden flex border border-white/10">
+              <div id="storage-bar-threads" class="h-full bg-[#0078D4] transition-all duration-300 rounded-l-full" style="width: 0%;"></div>
+              <div id="storage-bar-media" class="h-full bg-[#00a4ef] transition-all duration-300" style="width: 0%;"></div>
+              <div class="h-full bg-transparent flex-1"></div>
+            </div>
+            <!-- Breakdown Legend -->
+            <div class="flex flex-wrap items-center gap-6 text-lg sm:text-xl text-white">
+              <div class="flex items-center gap-3">
+                <span class="w-4 h-4 rounded-full bg-[#0078D4] shrink-0"></span>
+                <span><span data-i18n="threads">Threads</span> <strong id="storage-val-threads" class="text-white font-black">0 MB</strong></span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="w-4 h-4 rounded-full bg-[#00a4ef] shrink-0"></span>
+                <span><span data-i18n="media">Media</span> <strong id="storage-val-media" class="text-white font-black">0 MB</strong></span>
+              </div>
+              <div class="flex items-center gap-3 ml-auto">
+                <span class="w-4 h-4 rounded-full bg-white/30 shrink-0"></span>
+                <span><strong id="storage-val-free" class="text-white font-black">25 GB</strong> <span data-i18n="free">Free</span></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Log Out Button: Extra Tall & Super Bold -->
+        <section class="pt-3">
+          <button id="btn-logout" type="button" onclick="logoutUser()" class="w-full h-22 sm:h-24 rounded-3xl bg-[#93000a]/30 hover:bg-[#93000a]/40 border-2 border-[#ffb4ab]/40 text-[#ffb4ab] flex items-center justify-center font-black text-3xl sm:text-4xl transition-all active:scale-[0.98] shadow-2xl" title="Log out of Rhynia">
+            <span data-i18n="logout">Log Out</span>
+          </button>
+        </section>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- SCREEN: NOTIFICATIONS SUB-SCREEN (ChatGPT Style - 5 Categories) -->
+    <!-- ========================================================= -->
+    <div id="screen-notifications-subscreen" class="hidden fixed inset-0 z-[80] bg-[#000000] overflow-y-auto p-4 sm:p-8 pt-16 sm:pt-24 animate-fade-in">
+      <div class="max-w-[720px] mx-auto space-y-10 sm:space-y-12 pb-32 pt-4 sm:pt-8">
+        <!-- Header: Extra Large Circular Back Button + Centered Title "Notifications" (Lowered from Top) -->
+        <header class="min-h-[104px] sm:min-h-[116px] flex items-center justify-between border-b border-white/15 pb-6 mt-3 sm:mt-6">
+          <button id="btn-back-notifications-screen" type="button" onclick="closeNotificationsScreen(event)" class="w-[72px] h-[72px] sm:w-[80px] sm:h-[80px] min-w-[72px] min-h-[72px] rounded-full bg-[#1c1c1e] hover:bg-[#2c2c2e] active:scale-90 flex items-center justify-center text-white transition-all cursor-pointer shadow-2xl border-2 border-white/20 shrink-0 pointer-events-auto my-auto" title="Back to Settings">
+            <span class="material-symbols-outlined text-[42px] sm:text-[48px]">arrow_back</span>
+          </button>
+          <h2 class="text-3xl sm:text-4xl font-black text-white text-center flex-1 pr-[72px] sm:pr-[80px] tracking-tight">Notifications</h2>
+        </header>
+
+        <!-- Stacked Unibody Card List of the 5 Notification Categories (Shifted down with generous gap) -->
+        <div class="pt-4 sm:pt-6">
+          <div id="notifications-categories-stack" class="bg-[#1c1c1e] sm:bg-[#222225] border border-white/15 rounded-[36px] overflow-hidden shadow-2xl divide-y divide-white/10">
+            <!-- Populated dynamically by renderNotificationCategoriesList() -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- SCREEN: NOTIFICATION DETAIL SUB-SCREEN (Where you'll be notified) -->
+    <!-- ========================================================= -->
+    <div id="screen-notification-detail-subscreen" class="hidden fixed inset-0 z-[90] bg-[#000000] overflow-y-auto p-4 sm:p-8 pt-16 sm:pt-24 animate-fade-in">
+      <div class="max-w-[720px] mx-auto space-y-10 sm:space-y-12 pb-32 pt-4 sm:pt-8">
+        <!-- Header: Extra Large Circular Back Button + Category Title (Lowered from Top) -->
+        <header class="min-h-[104px] sm:min-h-[116px] flex items-center justify-between border-b border-white/15 pb-6 mt-3 sm:mt-6">
+          <button id="btn-back-notification-detail-screen" type="button" onclick="closeNotificationDetailScreen(event)" class="w-[72px] h-[72px] sm:w-[80px] sm:h-[80px] min-w-[72px] min-h-[72px] rounded-full bg-[#1c1c1e] hover:bg-[#2c2c2e] active:scale-90 flex items-center justify-center text-white transition-all cursor-pointer shadow-2xl border-2 border-white/20 shrink-0 pointer-events-auto my-auto" title="Back to Notifications">
+            <span class="material-symbols-outlined text-[42px] sm:text-[48px]">arrow_back</span>
+          </button>
+          <h2 id="notif-detail-title" class="text-3xl sm:text-4xl font-black text-white text-center flex-1 pr-[72px] sm:pr-[80px] truncate px-3 tracking-tight">Notification</h2>
+        </header>
+
+        <!-- Detail Settings Content (Where you'll be notified) with Generous Distance -->
+        <div class="space-y-8 pt-4 sm:pt-6">
+          <span class="text-xl sm:text-2xl font-black text-neutral-300 pl-4 block">Where you'll be notified</span>
+          
+          <!-- Push/Alert Notification Toggle Card -->
+          <div class="p-6 sm:p-8 rounded-[32px] bg-[#1c1c1e] sm:bg-[#222225] border border-white/15 flex items-center justify-between shadow-2xl min-h-[96px] sm:min-h-[104px] w-full box-border overflow-hidden">
+            <span id="notif-detail-channel-label" class="text-2xl sm:text-3xl font-black text-white">Push</span>
+            <label class="relative inline-flex items-center cursor-pointer select-none shrink-0 ml-4">
+              <input id="notif-detail-push-toggle" type="checkbox" checked class="sr-only peer" onchange="handleNotificationDetailToggle(this)"/>
+              <div class="w-16 sm:w-[72px] h-9 sm:h-[40px] bg-[#353535] rounded-full peer-focus:outline-none transition-colors peer-checked:bg-[#0078D4] border border-white/15"></div>
+              <div class="absolute left-1 top-1 w-7 sm:w-8 h-7 sm:h-8 bg-white rounded-full transition-transform peer-checked:translate-x-7 sm:peer-checked:translate-x-8 shadow-md"></div>
+            </label>
+          </div>
+
+          <!-- Category Subtext Description -->
+          <p id="notif-detail-description" class="text-lg sm:text-xl text-neutral-300 pl-4 pt-2 font-medium leading-relaxed">
+            Get notified about tasks and updates.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- SCREEN 06: EDIT PROFILE MODAL (ChatGPT Bottom Sheet Match) -->
+    <!-- ========================================================= -->
+    <div id="edit-profile-modal" onclick="if (event.target === this) toggleEditProfileModal(false);" class="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm transition-opacity p-0 m-0" style="display: none;">
+      <div id="edit-profile-modal-sheet" class="fixed bottom-0 left-0 right-0 w-full bg-white dark:bg-[#212121] rounded-t-[32px] rounded-b-none border-t border-black/5 dark:border-white/10 px-6 pt-3.5 pb-8 shadow-2xl relative flex flex-col justify-between overflow-y-auto m-0 max-h-[88vh]">
+        
+        <!-- Top Drag Handle -->
+        <div class="w-10 h-1 bg-[#d1d5db] dark:bg-[#52525b] rounded-full mx-auto mt-1 mb-3 shrink-0"></div>
+
+        <!-- Hidden avatar file input -->
+        <input id="profile-avatar-file-input" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" onchange="handleAvatarFileSelected(event)"/>
+
+        <!-- Form: Compact vertical flow with inputs sitting just slightly above the save button -->
+        <form id="fluent-profile-form" class="w-full max-w-[540px] mx-auto flex flex-col justify-start" onsubmit="saveUserProfile(event)">
+          
+          <div class="flex flex-col items-center w-full pt-1">
+            <!-- Avatar Circle with Camera Badge -->
+            <div class="relative mx-auto mb-6 shrink-0">
+              <div class="w-44 h-44 sm:w-52 sm:h-52 rounded-full overflow-hidden bg-[#8e60b8] flex items-center justify-center text-7xl sm:text-8xl font-black text-white shadow-2xl mx-auto ring-4 ring-black/5 dark:ring-white/10">
+                <img id="modal-avatar-preview" alt="Profile" class="live-user-avatar w-full h-full object-cover hidden"/>
+                <span class="user-avatar-initial text-7xl sm:text-8xl font-black tracking-wider">MK</span>
+              </div>
+              <!-- White Circular Camera Upload Button (Extra Large Size) -->
+              <button type="button" onclick="triggerAvatarUpload()" class="absolute bottom-1 right-1 w-15 h-15 sm:w-16 sm:h-16 rounded-full bg-white text-black flex items-center justify-center shadow-2xl border-4 border-white active:scale-95 transition-all" title="Upload new photo">
+                <span class="material-symbols-outlined text-[32px] sm:text-[38px] text-neutral-900">photo_camera</span>
+              </button>
+            </div>
+
+            <!-- Controlled Spacing: Input Boxes with Notched Labels -->
+            <div class="w-full space-y-3.5">
+              <!-- Name Input Box (Extra Large Size) -->
+              <div class="relative rounded-3xl border-2 border-[#d1d5db] dark:border-[#3f3f46] px-6 pt-3.5 pb-3 bg-transparent focus-within:border-black dark:focus-within:border-white transition-colors min-h-[72px] sm:min-h-[78px] flex items-center">
+                <label class="absolute -top-3.5 left-6 bg-white dark:bg-[#212121] px-2.5 text-base sm:text-lg text-neutral-500 dark:text-neutral-400 font-bold" for="profile-name-input">Name</label>
+                <input id="profile-name-input" type="text" class="w-full bg-transparent border-none outline-none text-2xl sm:text-3xl text-neutral-900 dark:text-white font-semibold p-0 focus:ring-0 placeholder-neutral-400" placeholder="Your name"/>
+              </div>
+
+              <!-- Username Input Box (Extra Large Size) -->
+              <div class="relative rounded-3xl border-2 border-[#d1d5db] dark:border-[#3f3f46] px-6 pt-3.5 pb-3 bg-transparent focus-within:border-black dark:focus-within:border-white transition-colors min-h-[72px] sm:min-h-[78px] flex items-center">
+                <label class="absolute -top-3.5 left-6 bg-white dark:bg-[#212121] px-2.5 text-base sm:text-lg text-neutral-500 dark:text-neutral-400 font-bold" for="profile-username-input">Username</label>
+                <input id="profile-username-input" type="text" class="w-full bg-transparent border-none outline-none text-2xl sm:text-3xl text-neutral-900 dark:text-white font-semibold p-0 focus:ring-0 placeholder-neutral-400" placeholder="username"/>
+              </div>
+
+              <!-- Helper text -->
+              <p class="text-center text-sm sm:text-base text-neutral-500 dark:text-neutral-400 font-medium pt-0.5 pb-0">Your profile helps people recognize you.</p>
+            </div>
+          </div>
+
+          <!-- Action Buttons (Sitting just slightly below the inputs with minimal gap) -->
+          <div class="flex flex-col items-center justify-center gap-2.5 pt-3 pb-1 mt-2">
+            <button type="submit" class="w-full max-w-[380px] sm:max-w-[420px] py-4 px-10 rounded-full bg-black dark:bg-white text-white dark:text-black text-2xl sm:text-3xl font-extrabold shadow-2xl active:scale-95 transition-all text-center min-h-[66px] sm:min-h-[74px]">
+              Save profile
+            </button>
+            <button type="button" onclick="toggleEditProfileModal(false)" class="text-xl sm:text-2xl font-bold text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white transition-colors py-1 cursor-pointer">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- SCREENSHOT MATCH: LIKE & DISLIKE FEEDBACK MODAL           -->
+    <!-- ========================================================= -->
+    <!-- ========================================================= -->
+    <!-- SCREENSHOT MATCH: LIKE & DISLIKE FEEDBACK MODAL (COMPACT TIGHT FIT) -->
+    <div id="feedback-modal-backdrop" onclick="handleFeedbackBackdropClick(event)" class="hidden fixed inset-0 z-50 flex items-end justify-center p-0 bg-black/60 backdrop-blur-sm animate-fade-in">
+      <div id="feedback-modal-card" class="fluent-feedback-card relative w-full rounded-t-[32px] rounded-b-none bg-[#232429] border-t border-x border-white/15 shadow-2xl p-5 sm:p-7 pb-6 sm:pb-7 flex flex-col gap-3.5 text-white max-h-[90vh] overflow-y-auto custom-scrollbar animate-slide-up">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between gap-4 pb-2 border-b border-white/10">
+          <h3 id="feedback-modal-title" class="text-xl sm:text-2xl font-black tracking-tight text-white flex-1 leading-snug">
+            What did you like? (Optional)
+          </h3>
+          <div class="relative flex items-center gap-2 shrink-0 text-neutral-300">
+            <!-- 3-Dots Button: Opens Privacy & Usage Info Box -->
+            <button id="feedback-info-toggle-btn" type="button" onclick="toggleFeedbackInfoFlyout(event)" class="w-10 h-10 rounded-full flex items-center justify-center hover:text-white hover:bg-white/10 transition-colors" title="Data Privacy & Usage Information">
+              <span class="material-symbols-outlined text-[24px]">more_vert</span>
+            </button>
+
+            <!-- Contextual Privacy & Data Security Information Flyout Box -->
+            <div id="feedback-info-flyout" class="hidden absolute top-12 right-0 z-50 w-80 sm:w-96 rounded-2xl bg-[#1e1f23] border border-white/15 p-5 shadow-2xl text-sm space-y-3 animate-fade-in text-left">
+              <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+                <div class="flex items-center gap-2 font-bold text-white text-base">
+                  <span class="material-symbols-outlined text-[20px] text-[#0078D4]">verified_user</span>
+                  <span id="feedback-info-title">Feedback & Data Security</span>
+                </div>
+                <button type="button" onclick="toggleFeedbackInfoFlyout(event, false)" class="text-neutral-400 hover:text-white">
+                  <span class="material-symbols-outlined text-[18px]">close</span>
+                </button>
+              </div>
+              
+              <div class="space-y-2.5 text-neutral-300 text-xs sm:text-sm leading-relaxed">
+                <div>
+                  <p class="font-bold text-white mb-1" id="feedback-info-usage-head">🎯 How is feedback used?</p>
+                  <p id="feedback-info-usage-text">Your feedback is used directly to improve Rhynia AI's model accuracy, speed, and response quality.</p>
+                </div>
+                <div>
+                  <p class="font-bold text-white mb-1" id="feedback-info-privacy-head">🔒 Privacy & Security:</p>
+                  <p id="feedback-info-privacy-text">Your privacy is 100% protected and encrypted. Your data is never sold or shared with any third party.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feedback Tags / Chips Container (Dynamically rendered in feedback.js) -->
+        <div id="feedback-tags-container" class="flex flex-wrap gap-2.5 py-1">
+          <!-- Chips injected by renderFeedbackTags() -->
+        </div>
+
+        <!-- Textarea for Additional Details -->
+        <div class="w-full pt-1">
+          <textarea id="feedback-modal-comment" rows="3" placeholder="Share some details..." class="fluent-feedback-textarea w-full rounded-2xl bg-[#2b2c31] border border-white/15 p-4 text-base sm:text-lg text-white placeholder-neutral-400 focus:border-[#0078D4] focus:outline-none transition-all resize-none font-medium leading-relaxed"></textarea>
+        </div>
+
+        <!-- Chat Copy Disclosure Notice -->
+        <p id="feedback-modal-notice" class="text-xs sm:text-sm text-neutral-300 leading-relaxed font-medium">
+          A copy of this chat will be included.
+        </p>
+
+        <!-- Submit Button -->
+        <button id="feedback-modal-submit-btn" type="button" onclick="submitFeedbackModal()" class="w-full py-4 rounded-2xl bg-[#0078D4] hover:bg-[#1084d9] active:scale-[0.98] text-white font-black text-lg sm:text-xl tracking-wide shadow-xl transition-all flex items-center justify-center">
+          Submit
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Full-Screen High-Resolution Image Lightbox Modal with Carousel Navigation -->
+  <div id="rhynia-lightbox" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-4 transition-opacity select-none" onclick="closeRhyniaLightbox(event)">
+    <div class="absolute top-4 right-4 flex items-center gap-2 z-10">
+      <span id="lightbox-counter" class="text-xs text-neutral-300 font-mono px-2.5 py-1 rounded-md bg-white/10 border border-white/10 hidden">1 / 1</span>
+      <a id="lightbox-download-btn" href="#" target="_blank" download class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium flex items-center gap-1.5 transition-all">
+        <span class="material-symbols-outlined text-[16px] text-[#10b981]">file_download</span>
+        <span>Download</span>
+      </a>
+      <button type="button" onclick="closeRhyniaLightbox()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all" aria-label="Close Preview">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <!-- Prev Arrow Button -->
+    <button type="button" id="lightbox-prev-btn" onclick="prevRhyniaLightbox(event)" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white hidden items-center justify-center transition-all z-10 shadow-2xl active:scale-95" aria-label="Previous Diagram" title="Previous (Left Arrow)">
+      <span class="material-symbols-outlined text-[26px]">chevron_left</span>
+    </button>
+
+    <!-- Next Arrow Button -->
+    <button type="button" id="lightbox-next-btn" onclick="nextRhyniaLightbox(event)" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white hidden items-center justify-center transition-all z-10 shadow-2xl active:scale-95" aria-label="Next Diagram" title="Next (Right Arrow)">
+      <span class="material-symbols-outlined text-[26px]">chevron_right</span>
+    </button>
+
+    <div class="max-w-4xl max-h-[85vh] w-full flex flex-col items-center justify-center" onclick="event.stopPropagation()">
+      <div class="rounded-2xl overflow-hidden border border-white/15 bg-[#0e0e0e] shadow-2xl p-2 max-h-[75vh] flex items-center justify-center">
+        <img id="lightbox-img" src="" alt="" class="max-h-[72vh] max-w-full object-contain rounded-xl" referrerpolicy="no-referrer"/>
+      </div>
+      <p id="lightbox-caption" class="text-sm text-neutral-200 mt-3 font-medium text-center px-4 max-w-2xl truncate"></p>
+    </div>
+  </div>
+
+  <!-- Modal: Mandatory Mobile Number for Google OAuth -->
+  <div id="modal-google-phone" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="w-full max-w-sm rounded-2xl p-6 bg-[#181818] border border-white/15 shadow-2xl flex flex-col items-center text-center">
+      <div class="w-12 h-12 rounded-xl bg-[#0078D4]/20 text-[#0078D4] flex items-center justify-center mb-3">
+        <span class="material-symbols-outlined text-2xl">phone_iphone</span>
+      </div>
+      <h3 class="text-lg font-bold text-white font-headline">Enter Mobile Number</h3>
+      <p class="text-xs text-neutral-400 mt-1 max-w-[260px] leading-relaxed">
+        Mobile number is mandatory. Please enter your 10-digit mobile number to complete Google Sign In.
+      </p>
+      <form id="form-google-phone" class="w-full space-y-3 mt-4" onsubmit="submitGooglePhoneNumber(event)">
+        <div class="fluent-input flex items-center bg-[#252525] border border-white/15 rounded-lg h-11 px-3">
+          <span class="material-symbols-outlined text-neutral-400 mr-2 text-[18px]">call</span>
+          <input id="google-phone-input" class="w-full bg-transparent border-0 p-0 text-white placeholder-neutral-500 text-sm focus:ring-0 focus:outline-none" placeholder="10-digit mobile number" required type="tel" maxlength="15"/>
+        </div>
+        <button id="btn-submit-google-phone" type="submit" class="w-full h-11 rounded-lg bg-[#0078D4] hover:bg-[#1084d9] active:bg-[#006cbe] text-white font-medium text-sm flex items-center justify-center gap-2 border border-white/15 shadow-md active:scale-[0.98] transition-all">
+          <span>Complete Sign In</span>
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add Memory Fact (Phase 5) -->
+  <div id="modal-add-fact" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+    <div class="fluent-mica-card w-full max-w-md rounded-3xl p-6 bg-[#212121] border border-white/15 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#a855f7]">bookmark_add</span>
+          Add Personal Fact
+        </h3>
+        <button type="button" onclick="closeAddFactModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-neutral-400 hover:text-white transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+      <div class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-semibold text-neutral-300 mb-1">Fact Key / Attribute</label>
+          <input id="input-fact-key" type="text" placeholder="e.g. profession, preferred_language, tech_stack" class="w-full px-4 py-2.5 rounded-xl bg-[#2a2a2a] border border-white/10 text-white text-sm focus:border-[#0078D4] focus:outline-none"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-neutral-300 mb-1">Fact Value / Information</label>
+          <input id="input-fact-value" type="text" placeholder="e.g. AI Research Engineer, Hinglish, Python & Flutter" class="w-full px-4 py-2.5 rounded-xl bg-[#2a2a2a] border border-white/10 text-white text-sm focus:border-[#0078D4] focus:outline-none"/>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-neutral-300 mb-1">Category</label>
+          <select id="select-fact-category" class="w-full px-4 py-2.5 rounded-xl bg-[#2a2a2a] border border-white/10 text-white text-sm focus:border-[#0078D4] focus:outline-none">
+            <option value="general">General</option>
+            <option value="identity">Identity</option>
+            <option value="profession">Profession & Study</option>
+            <option value="technical">Technical Stack</option>
+            <option value="preferences">Preferences & Tone</option>
+            <option value="goals">Goals & Projects</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button type="button" onclick="closeAddFactModal()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm text-neutral-300 font-semibold transition-colors">
+          Cancel
+        </button>
+        <button type="button" onclick="submitAddFact()" class="px-5 py-2 rounded-xl bg-[#0078D4] hover:bg-[#006cbd] text-sm text-white font-bold transition-all shadow-md active:scale-95">
+          Save Fact
+        </button>
+      </div>
+    </div>
+  </div>
+
+    <!-- ========================================================= -->
+    <!-- APP LANGUAGE MODAL DIALOG (Exact ChatGPT Design - Grand Scale) -->
+    <!-- ========================================================= -->
+    <div id="app-language-modal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 select-none animate-fade-in" onclick="closeAppLanguageModal(event)">
+      <div class="w-full max-w-[480px] sm:max-w-[540px] bg-[#222225] border border-white/20 rounded-[38px] overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.98)] flex flex-col animate-scale-in" onclick="event.stopPropagation();">
+        <!-- Modal Header -->
+        <div class="p-7 sm:p-8 pb-3">
+          <h3 class="text-3xl sm:text-4xl font-black text-white tracking-tight">App language</h3>
+        </div>
+
+        <!-- Scrollable Language List with Radio Buttons -->
+        <div id="app-language-list" class="max-h-[440px] sm:max-h-[500px] overflow-y-auto px-5 py-2 space-y-2 scrollbar-thin">
+          <!-- Dynamically Populated by renderAppLanguageList() -->
+        </div>
+
+        <!-- Modal Footer with OK Button -->
+        <div class="p-5 sm:p-6 pt-3 flex items-center justify-end">
+          <button type="button" onclick="confirmAppLanguageSelection()" class="px-8 py-3.5 rounded-2xl text-2xl font-black text-white hover:bg-white/10 active:bg-white/20 uppercase tracking-wider transition-colors cursor-pointer">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+  <!-- ========================================================= -->
+  <!-- SCRIPTS (Configuration, Modules & App Orchestrator)       -->
+  <!-- ========================================================= -->
+  <script src="config.js?v=112"></script>
+  <script src="modules/i18n.js?v=112"></script>
+  <script src="modules/ppt_viewer.js?v=112"></script>
+  <script src="modules/auth.js?v=112"></script>
+  <script src="modules/composer.js?v=112"></script>
+  <script src="modules/chat.js?v=112"></script>
+  <script src="modules/feedback.js?v=112"></script>
+  <script src="modules/drawer.js?v=112"></script>
+  <script src="modules/settings.js?v=112"></script>
+  <script src="app.js?v=112"></script>
+
+</body>
+</html>

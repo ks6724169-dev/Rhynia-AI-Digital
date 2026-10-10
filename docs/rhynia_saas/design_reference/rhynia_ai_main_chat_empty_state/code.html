@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Rhynia AI - Main Chat</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&amp;family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Typography -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with Container Queries and Forms -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"primary-container": "#a078ff", "on-surface": "#e4e1e9", tertiary: "#4edea3", "error-container": "#93000a", "on-tertiary-fixed": "#002113", surface: "#131318", background: "#131318", "surface-container-highest": "#35343a", "on-background": "#e4e1e9", "on-primary": "#3c0091", "on-error-container": "#ffdad6", "on-secondary-fixed-variant": "#004395", "secondary-container": "#0566d9", "tertiary-container": "#00a572", "secondary-fixed-dim": "#adc6ff", "on-secondary-container": "#e6ecff", "surface-container-lowest": "#0e0e13", "on-primary-container": "#340080", "primary-fixed-dim": "#d0bcff", "surface-container": "#1f1f24", "on-tertiary-fixed-variant": "#005236", "surface-tint": "#d0bcff", error: "#ffb4ab", "inverse-on-surface": "#303035", "tertiary-fixed": "#6ffbbe", outline: "#958ea0", "surface-bright": "#39393e", "on-secondary-fixed": "#001a42", primary: "#d0bcff", "outline-variant": "#494454", "on-primary-fixed-variant": "#5516be", "surface-container-low": "#1b1b20", "primary-fixed": "#e9ddff", secondary: "#adc6ff", "surface-dim": "#131318", "secondary-fixed": "#d8e2ff", "inverse-primary": "#6d3bd7", "on-tertiary": "#003824", "inverse-surface": "#e4e1e9", "tertiary-fixed-dim": "#4edea3", "on-tertiary-container": "#00311f", "on-error": "#690005", "surface-variant": "#35343a", "on-surface-variant": "#cbc3d7", "on-secondary": "#002e6a", "on-primary-fixed": "#23005c", "surface-container-high": "#2a292f"}, borderRadius: {DEFAULT: "1rem", lg: "2rem", xl: "3rem", full: "9999px"}, spacing: {"gutter-desktop": "1.5rem", "space-2xl": "3.5rem", "space-lg": "1.5rem", gutter: "1rem", "space-sm": "0.5rem", "margin-tablet": "2rem", "space-md": "1rem", "margin-desktop": "3rem", "space-xl": "2.25rem", "space-xs": "0.25rem", margin: "1rem"}, fontFamily: {"body-lg": ["Inter"], "label-md": ["Inter"], "headline-xl": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-sm": ["Inter"], "headline-sm": ["Plus Jakarta Sans"], "headline-xl-mobile": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-sm": ["Inter"], code: ["Inter"], "body-md": ["Inter"], headline: ["Plus Jakarta Sans"], display: ["Plus Jakarta Sans"], body: ["Inter"], label: ["Inter"]}, fontSize: {"body-lg": ["16px", {lineHeight: "26px", letterSpacing: "-0.005em", fontWeight: "400"}], "label-md": ["13px", {lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "500"}], "headline-xl": ["40px", {lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "600"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "600"}], "headline-lg-mobile": ["24px", {lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600"}], "body-sm": ["12px", {lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "400"}], "headline-sm": ["18px", {lineHeight: "24px", letterSpacing: "0em", fontWeight: "500"}], "headline-xl-mobile": ["28px", {lineHeight: "36px", letterSpacing: "-0.015em", fontWeight: "600"}], "headline-md": ["22px", {lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "500"}], "label-sm": ["11px", {lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "600"}], code: ["13px", {lineHeight: "20px", letterSpacing: "0em", fontWeight: "400"}], "body-md": ["14px", {lineHeight: "22px", letterSpacing: "0em", fontWeight: "400"}]}}}};</script>
+<style>
+    /* Material Symbols base styling */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      line-height: 1;
+      text-transform: none;
+      letter-spacing: normal;
+      word-wrap: normal;
+      white-space: nowrap;
+      direction: ltr;
+    }
+
+    /* Ambient background glowing orbs */
+    .glow-conduit {
+      background: radial-gradient(circle 380px at 50% 48%, rgba(160, 120, 255, 0.08), transparent 70%);
+    }
+
+    /* Rim light glass highlights */
+    .glass-pill {
+      background: rgba(22, 22, 31, 0.82);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-menu {
+      background: rgba(26, 26, 38, 0.92);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.85), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative selection:bg-primary-container selection:text-on-primary-container" style="background: radial-gradient(circle at 50% 0%, rgb(17, 24, 39) 0%, rgb(11, 15, 25) 100%) fixed;">
+<!-- Ambient Backdrop -->
+<div class="fixed inset-0 pointer-events-none glow-conduit z-0"></div>
+<!-- Top Bar: Strictly minimalist hamburger menu per wireframe -->
+<header class="relative z-40 w-full max-w-screen-md mx-auto px-margin pt-4 pb-2 flex items-center justify-between">
+<!-- 48px touch target [ ≡ ] button -->
+<button aria-label="Open Navigation Drawer" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface apple-glass-button transition-all duration-200 active:scale-95 focus:outline-none shadow-sm" id="menuToggle"><span class="material-symbols-outlined text-[24px] text-white/90" data-icon="menu">menu</span></button>
+</header>
+<!-- Navigation Drawer (Anchored from Shared Components JSON) -->
+<div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0 pointer-events-none" id="drawerOverlay"></div>
+<aside class="fixed inset-y-0 left-0 z-50 flex flex-col justify-between p-margin-tablet w-80 max-w-[85vw] bg-surface-container-low rounded-r-2xl border-r border-outline-variant/20 shadow-2xl transition-transform duration-300 -translate-x-full" id="navDrawer">
+<!-- Drawer Header / Profile -->
+<div class="flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary font-headline-sm">
+<span class="material-symbols-outlined text-primary" data-icon="person">person</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface leading-tight">Rhynia AI</h2>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">alex_rhynia</span>
+<span class="inline-block w-1 h-1 rounded-full bg-outline"></span>
+<span class="font-label-sm text-label-sm text-tertiary">Free Tier</span>
+</div>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high active:scale-95 transition-transform duration-100" id="closeDrawer">
+<span class="material-symbols-outlined text-[20px]" data-icon="close">close</span>
+</button>
+</div>
+<!-- Drawer History Tabs (From JSON) -->
+<div class="flex flex-col gap-1.5 pt-2">
+<div class="font-label-sm text-label-sm text-outline px-3 mb-1 tracking-wider uppercase">History</div>
+<!-- Tab 1: Today (Active) -->
+<a class="flex items-center gap-3 bg-surface-container-highest text-primary font-medium rounded-xl px-4 py-3 active:scale-[0.99] transition-transform duration-100" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="schedule">schedule</span>
+<span class="font-body-md text-body-md">Today</span>
+</a>
+<!-- Tab 2: Yesterday -->
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60 transition-colors duration-150 px-4 py-3 rounded-xl active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="history">history</span>
+<span class="font-body-md text-body-md">Yesterday</span>
+</a>
+<!-- Tab 3: Previous 7 Days -->
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60 transition-colors duration-150 px-4 py-3 rounded-xl active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="date_range">date_range</span>
+<span class="font-body-md text-body-md">Previous 7 Days</span>
+</a>
+</div>
+</div>
+<!-- Drawer Footer Actions -->
+<div class="pt-4 border-t border-outline-variant/20 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/60 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Updates &amp; FAQ</span>
+</a>
+</div>
+</aside>
+<!-- Center Area: Clean, wide open space with subtle Rhynia logo/mark and greeting -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center px-margin max-w-screen-md mx-auto w-full text-center select-none py-12"></main>
+<!-- Input Bar Docked at Bottom with Modal / Popover for (+) Attachment triggers -->
+<footer class="fixed bottom-0 inset-x-0 z-30 w-full max-w-screen-md mx-auto px-margin pb-6 pt-2">
+<!-- Attachment Flyout Menu (Triggered by + button) -->
+<div class="hidden absolute bottom-24 left-margin sm:left-4 z-40 w-64 glass-menu border border-outline-variant/30 rounded-2xl p-1.5 transition-all transform origin-bottom-left" id="attachmentMenu">
+<div class="flex flex-col gap-1">
+<!-- Option 1: Camera Capture -->
+<button class="flex items-center gap-3 w-full px-3.5 py-2.5 rounded-xl text-left text-on-surface hover:bg-surface-container-high transition-colors active:scale-[0.98]" id="btnCameraCapture">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]" data-icon="photo_camera">photo_camera</span>
+</div>
+<span class="font-label-md text-label-md tracking-tight">Camera Capture</span>
+</button>
+<!-- Option 2: Device File Manager -->
+<button class="flex items-center gap-3 w-full px-3.5 py-2.5 rounded-xl text-left text-on-surface hover:bg-surface-container-high transition-colors active:scale-[0.98]" id="btnFileManager">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]" data-icon="folder_open">folder_open</span>
+</div>
+<span class="font-label-md text-label-md tracking-tight">Device File Manager</span>
+</button>
+</div>
+</div>
+<!-- Hidden native file input for actual handling -->
+<input class="hidden" id="fileInput" multiple="" type="file"/>
+<input accept="image/*" capture="environment" class="hidden" id="cameraInput" type="file"/>
+<!-- Docked Floating Composer Pill Container -->
+<div class="fluent-glass-pill rounded-full border border-white/10 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-200 px-2.5 py-1.5 flex items-center gap-2">
+<!-- (+) Button for attachments -->
+<button aria-expanded="false" aria-label="Attach Media or File" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-white hover:bg-white/[0.06] active:scale-95 transition-all duration-150 flex-shrink-0" id="plusToggle" type="button">
+<span class="material-symbols-outlined text-[22px] transition-transform duration-200" data-icon="add" id="plusIcon">add</span>
+</button>
+<!-- Input Text Field -->
+<input autocomplete="off" class="flex-1 bg-transparent border-none text-white placeholder:text-outline font-body-md text-body-md focus:ring-0 focus:outline-none px-2 py-2" id="chatInput" placeholder="Ask Rhynia…" type="text"/>
+<!-- Mode Pill Indicator (Compact Apple/Material pill) -->
+<div class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-on-surface-variant flex-shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-outline tracking-wider font-medium">v2.4</span>
+</div>
+<!-- Voice Input Button -->
+<button aria-label="Voice Input" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-white hover:bg-white/[0.06] active:scale-95 transition-all duration-150 flex-shrink-0" id="micBtn" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="mic">mic</span>
+</button>
+<!-- Send Action Button with Electric Gradient -->
+<button aria-label="Send message" class="w-10 h-10 rounded-full gradient-send-btn text-white flex items-center justify-center active:scale-95 transition-all duration-200 flex-shrink-0" id="sendBtn" type="button">
+<span class="material-symbols-outlined text-[20px] transform -rotate-45 ml-0.5" data-icon="near_me">near_me</span>
+</button>
+</div>
+<!-- Active Attachment Tag Container (Dynamically populates) -->
+<div class="hidden items-center gap-2 mt-2 px-3 text-label-sm font-label-sm text-primary" id="attachmentIndicator">
+<span class="material-symbols-outlined text-[16px]" data-icon="attachment">attachment</span>
+<span class="" id="attachmentFileName">File attached</span>
+<button class="ml-1 text-on-surface-variant hover:text-error" id="clearAttachment">
+<span class="material-symbols-outlined text-[14px]" data-icon="close">close</span>
+</button>
+</div>
+</footer>
+<!-- Vanilla JS Interactions -->
+<script>
+    // Navigation Drawer Logic
+    const menuToggle = document.getElementById('menuToggle');
+    const closeDrawer = document.getElementById('closeDrawer');
+    const navDrawer = document.getElementById('navDrawer');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+
+    function openNav() {
+      navDrawer.classList.remove('-translate-x-full');
+      drawerOverlay.classList.remove('opacity-0', 'pointer-events-none');
+      drawerOverlay.classList.add('opacity-100');
+    }
+
+    function closeNav() {
+      navDrawer.classList.add('-translate-x-full');
+      drawerOverlay.classList.remove('opacity-100');
+      drawerOverlay.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    menuToggle.addEventListener('click', openNav);
+    closeDrawer.addEventListener('click', closeNav);
+    drawerOverlay.addEventListener('click', closeNav);
+
+    // (+) Attachment Popover Logic
+    const plusToggle = document.getElementById('plusToggle');
+    const plusIcon = document.getElementById('plusIcon');
+    const attachmentMenu = document.getElementById('attachmentMenu');
+    const btnCameraCapture = document.getElementById('btnCameraCapture');
+    const btnFileManager = document.getElementById('btnFileManager');
+    const fileInput = document.getElementById('fileInput');
+    const cameraInput = document.getElementById('cameraInput');
+    const attachmentIndicator = document.getElementById('attachmentIndicator');
+    const attachmentFileName = document.getElementById('attachmentFileName');
+    const clearAttachment = document.getElementById('clearAttachment');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    let menuOpen = false;
+
+    function toggleAttachmentMenu(e) {
+      if (e) e.stopPropagation();
+      menuOpen = !menuOpen;
+      if (menuOpen) {
+        attachmentMenu.classList.remove('hidden');
+        plusIcon.style.transform = 'rotate(45deg)';
+        plusToggle.setAttribute('aria-expanded', 'true');
+      } else {
+        attachmentMenu.classList.add('hidden');
+        plusIcon.style.transform = 'rotate(0deg)';
+        plusToggle.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    plusToggle.addEventListener('click', toggleAttachmentMenu);
+
+    document.addEventListener('click', (e) => {
+      if (menuOpen && !attachmentMenu.contains(e.target) && !plusToggle.contains(e.target)) {
+        toggleAttachmentMenu();
+      }
+    });
+
+    btnCameraCapture.addEventListener('click', () => {
+      cameraInput.click();
+      toggleAttachmentMenu();
+    });
+
+    btnFileManager.addEventListener('click', () => {
+      fileInput.click();
+      toggleAttachmentMenu();
+    });
+
+    function handleFileSelection(event) {
+      const files = event.target.files;
+      if (files && files.length > 0) {
+        attachmentFileName.textContent = files[0].name;
+        attachmentIndicator.classList.remove('hidden');
+        attachmentIndicator.classList.add('flex');
+      }
+    }
+
+    fileInput.addEventListener('change', handleFileSelection);
+    cameraInput.addEventListener('change', handleFileSelection);
+
+    clearAttachment.addEventListener('click', () => {
+      fileInput.value = '';
+      cameraInput.value = '';
+      attachmentIndicator.classList.add('hidden');
+      attachmentIndicator.classList.remove('flex');
+    });
+
+    // Suggestion pills auto-fill input
+    document.querySelectorAll('.suggestion-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chatInput.value = chip.textContent.trim();
+        chatInput.focus();
+      });
+    });
+
+    // Composer submission interaction
+    sendBtn.addEventListener('click', () => {
+      if (chatInput.value.trim() !== '') {
+        chatInput.value = '';
+        clearAttachment.click();
+      }
+    });
+
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        sendBtn.click();
+      }
+    });
+  </script>
+</body></html>
