@@ -142,30 +142,58 @@ async function handleLoginSubmit(event) {
       submitBtn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span> <span>Signing in...</span>`;
     }
 
-    const res = await fetch(`${CONFIG.API_BASE}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        identifier: identifier,
-        email: identifier,
-        password: password
-      })
-    });
+    let res = null;
+    let data = null;
+    let attempts = 0;
+    const maxAttempts = 6;
 
-    let data;
-    try {
-      data = await res.json();
-    } catch (_) {
-      if (res.status === 502 || res.status === 503 || res.status === 504) {
-        throw new Error("Rhynia cloud server is waking up from standby. Please retry in 15 seconds.");
+    while (attempts < maxAttempts) {
+      attempts++;
+      try {
+        res = await fetch(`${CONFIG.API_BASE}/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            identifier: identifier,
+            email: identifier,
+            password: password
+          })
+        });
+
+        if (res.status === 502 || res.status === 503 || res.status === 504) {
+          if (attempts < maxAttempts) {
+            if (submitBtn) {
+              submitBtn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">cloud_sync</span> <span>Connecting to cloud... (${attempts}/${maxAttempts})</span>`;
+            }
+            await new Promise(r => setTimeout(r, 4000));
+            continue;
+          }
+        }
+
+        try {
+          data = await res.json();
+        } catch (_) {
+          if (attempts < maxAttempts) {
+            await new Promise(r => setTimeout(r, 3000));
+            continue;
+          }
+          throw new Error("Unable to connect to server. Please try again.");
+        }
+
+        break;
+      } catch (networkErr) {
+        if (attempts < maxAttempts) {
+          if (submitBtn) {
+            submitBtn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">cloud_sync</span> <span>Connecting to cloud... (${attempts}/${maxAttempts})</span>`;
+          }
+          await new Promise(r => setTimeout(r, 4000));
+          continue;
+        }
+        throw networkErr;
       }
-      throw new Error(`Server connection issue (${res.status}). Please retry in a few moments.`);
     }
 
-    if (!res.ok) {
-      if (res.status === 502 || res.status === 503 || res.status === 504) {
-        throw new Error("Rhynia cloud server is waking up from standby. Please retry in 15 seconds.");
-      }
+    if (!res || !res.ok) {
       let errMsg = "Authentication failed";
       if (data && typeof data.detail === "string") {
         errMsg = data.detail;
@@ -192,6 +220,7 @@ async function handleLoginSubmit(event) {
     }
   }
 }
+
 
 /**
  * Handle Register Form Submit (Screen 08)
