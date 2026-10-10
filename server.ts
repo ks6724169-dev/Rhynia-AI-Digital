@@ -5,26 +5,14 @@ import path from "path";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { fileURLToPath } from "url";
 import pg from "pg";
 import { GoogleGenAI } from "@google/genai";
 
 const { Pool } = pg;
 
-let __dirnameSafe = process.cwd();
-try {
-  if (typeof __dirname !== "undefined") {
-    __dirnameSafe = __dirname;
-  } else if (typeof import.meta !== "undefined" && import.meta.url) {
-    __dirnameSafe = path.dirname(fileURLToPath(import.meta.url));
-  }
-} catch (_) {
-  __dirnameSafe = process.cwd();
-}
-
 const app = express();
 const PORT = 3000;
-const FRONTEND_DIR = path.join(__dirnameSafe, "public");
+const FRONTEND_DIR = path.join(process.cwd(), "public");
 const BACKEND_API_BASE = "https://rhynia-ai-api.onrender.com/api";
 const JWT_SECRET = "rhynia_super_secure_jwt_secret_key_2026_horizon_luminescent";
 
