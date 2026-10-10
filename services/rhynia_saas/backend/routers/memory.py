@@ -4,7 +4,7 @@ Provides full control for user personalization memory, facts inspection,
 manual editing, reset memory, and storage telemetry.
 """
 
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -58,9 +58,27 @@ class MemorySearchResult(BaseModel):
     recalled_snippet: str
 
 
+class PersonalizationRequest(BaseModel):
+    nickname: Optional[str] = None
+    occupation: Optional[str] = None
+    more_about_you: Optional[str] = None
+    overview: Optional[str] = None
+    sections: Optional[Union[List, str]] = None
+    memory_enabled: Optional[bool] = None
+
+
+class MemoryToggleRequest(BaseModel):
+    enabled: bool
+
+
+class MemoryAskUpdateRequest(BaseModel):
+    message: str
+
+
 # ==========================================
 # ENDPOINTS
 # ==========================================
+
 @router.get("/search", response_model=List[MemorySearchResult])
 def search_memory(
     q: str,
@@ -178,3 +196,112 @@ def clear_all_memory_facts(
     """Reset and clear all personalization memory facts for the authenticated user."""
     count = memory_service.clear_user_facts(current_user.id, db)
     return {"status": "success", "message": f"Cleared {count} memory facts."}
+
+
+# ==========================================
+# CHATGPT-STYLE MEMORY SUMMARY ENDPOINTS
+# ==========================================
+@router.get("/summary")
+def get_memory_summary(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Retrieve user memory profile summary, personalized details, and ChatGPT-style sections."""
+    profile = memory_service.get_or_create_user_memory_profile(current_user.id, db)
+    return memory_service.serialize_memory_profile(profile)
+
+
+@router.put("/personalization")
+@router.post("/personalization")
+def update_memory_personalization(
+    req: PersonalizationRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Update personalization inputs (nickname, occupation, background, sections, memory enabled)."""
+    profile = memory_service.update_user_memory_profile(
+        user_id=current_user.id,
+        db=db,
+        nickname=req.nickname,
+        occupation=req.occupation,
+        more_about_you=req.more_about_you,
+        overview=req.overview,
+        sections=req.sections,
+        memory_enabled=req.memory_enabled,
+    )
+    return memory_service.serialize_memory_profile(profile)
+
+
+@router.post("/summary/toggle")
+def toggle_memory_summary(
+    req: MemoryToggleRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Toggle master memory setting on or off."""
+    profile = memory_service.toggle_user_memory_enabled(current_user.id, req.enabled, db)
+    return {
+        "status": "success",
+        "memory_enabled": profile.memory_enabled,
+        "profile": memory_service.serialize_memory_profile(profile)
+    }
+
+
+@router.post("/summary/refresh")
+def refresh_memory_summary(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Re-synthesize memory sections from stored facts and recent conversations."""
+    profile = memory_service.refresh_user_memory_summary(current_user.id, db)
+    return memory_service.serialize_memory_profile(profile)
+
+
+@router.post("/summary/clear")
+def clear_memory_summary(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Clear all stored facts and reset memory profile sections."""
+    profile = memory_service.clear_user_memory_summary(current_user.id, db)
+    return memory_service.serialize_memory_profile(profile)
+
+
+@router.post("/summary/ask-update")
+async def ask_update_memory(
+    req: MemoryAskUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Directly teach Rhynia a new detail or preference in natural language."""
+    if not req.message or len(req.message.strip()) < 2:
+        raise HTTPException(status_code=400, detail="Message cannot be empty.")
+
+    facts = memory_service.extract_facts_from_user_message(req.message)
+    if facts:
+        for f in facts:
+            memory_service.save_or_update_fact(
+                user_id=current_user.id,
+                fact_key=f["fact_key"],
+                fact_value=f["fact_value"],
+                category=f.get("category", "general"),
+                confidence_score=f.get("confidence_score", 95),
+                db=db,
+            )
+    else:
+        memory_service.save_or_update_fact(
+            user_id=current_user.id,
+            fact_key="user_instruction",
+            fact_value=req.message.strip(),
+            category="preferences",
+            confidence_score=95,
+            db=db,
+        )
+
+    profile = memory_service.refresh_user_memory_summary(current_user.id, db)
+    return {
+        "status": "success",
+        "reply": f"Rhynia remembered: \"{req.message.strip()}\"",
+        "profile": memory_service.serialize_memory_profile(profile)
+    }
+

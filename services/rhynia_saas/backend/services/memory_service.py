@@ -4,6 +4,7 @@ Handles Tiered Quota Tracking (8MB / 16MB / 25MB), Long-Term Fact Persistence,
 and 2-Tier Rolling Summary Buffering.
 """
 
+import json
 import logging
 import re
 from typing import Any, Dict, List, Optional, Union
@@ -16,10 +17,12 @@ from services.rhynia_saas.backend.database import (
     ChatSession,
     ChatMessage,
     UserMemoryFact,
+    UserMemoryProfile,
     ChatSummaryBuffer,
     SessionLocal,
     get_utc_now,
 )
+
 
 logger = logging.getLogger("rhynia.memory_service")
 
@@ -762,3 +765,169 @@ def retrieve_relevant_prior_context(
         + "\n\n".join(recalled_blocks) + "\n\n"
         "- INSTRUCTION: Use these recalled discussions directly to answer the user's inquiry authoritatively and accurately."
     )
+
+
+# ==========================================
+# CHATGPT-STYLE MEMORY SUMMARY PROFILE ENGINE
+# ==========================================
+def get_or_create_user_memory_profile(user_id: str, db: Session) -> UserMemoryProfile:
+    """Retrieve or create user's ChatGPT-style memory summary profile."""
+    profile = db.query(UserMemoryProfile).filter(UserMemoryProfile.user_id == user_id).first()
+    if not profile:
+        profile = UserMemoryProfile(
+            user_id=user_id,
+            nickname="",
+            occupation="",
+            more_about_you="",
+            overview="",
+            sections="[]",
+            memory_enabled=True,
+            last_refreshed_at=get_utc_now(),
+            created_at=get_utc_now(),
+            updated_at=get_utc_now()
+        )
+        db.add(profile)
+        db.commit()
+        db.refresh(profile)
+
+    return profile
+
+
+def serialize_memory_profile(profile: UserMemoryProfile) -> Dict[str, Any]:
+    """Convert UserMemoryProfile model to clean dictionary with parsed sections list."""
+    sections_parsed = []
+    if profile.sections:
+        if isinstance(profile.sections, str):
+            try:
+                sections_parsed = json.loads(profile.sections)
+            except Exception:
+                sections_parsed = []
+        elif isinstance(profile.sections, list):
+            sections_parsed = profile.sections
+
+    return {
+        "id": profile.user_id,
+        "user_id": profile.user_id,
+        "nickname": profile.nickname or "",
+        "occupation": profile.occupation or "",
+        "more_about_you": profile.more_about_you or "",
+        "overview": profile.overview or profile.more_about_you or "",
+        "sections": sections_parsed,
+        "memory_enabled": profile.memory_enabled if profile.memory_enabled is not None else True,
+        "last_refreshed_at": profile.last_refreshed_at.isoformat() if profile.last_refreshed_at else get_utc_now().isoformat()
+    }
+
+
+def update_user_memory_profile(
+    user_id: str,
+    db: Session,
+    nickname: Optional[str] = None,
+    occupation: Optional[str] = None,
+    more_about_you: Optional[str] = None,
+    overview: Optional[str] = None,
+    sections: Optional[Union[List, str]] = None,
+    memory_enabled: Optional[bool] = None,
+) -> UserMemoryProfile:
+    """Update personalization profile attributes and/or sections."""
+    profile = get_or_create_user_memory_profile(user_id, db)
+
+    if nickname is not None:
+        profile.nickname = nickname.strip()
+    if occupation is not None:
+        profile.occupation = occupation.strip()
+    if more_about_you is not None:
+        profile.more_about_you = more_about_you.strip()
+    if overview is not None:
+        profile.overview = overview.strip()
+    if sections is not None:
+        if isinstance(sections, list):
+            profile.sections = json.dumps(sections)
+        elif isinstance(sections, str):
+            profile.sections = sections
+    if memory_enabled is not None:
+        profile.memory_enabled = memory_enabled
+
+    profile.updated_at = get_utc_now()
+    db.commit()
+    db.refresh(profile)
+    return profile
+
+
+def toggle_user_memory_enabled(user_id: str, enabled: bool, db: Session) -> UserMemoryProfile:
+    """Toggle master memory switch."""
+    return update_user_memory_profile(user_id, db, memory_enabled=enabled)
+
+
+def refresh_user_memory_summary(user_id: str, db: Session) -> UserMemoryProfile:
+    """
+    Re-synthesizes memory sections from stored user facts and recent session summaries.
+    Creates ChatGPT-style categorized sections.
+    """
+    profile = get_or_create_user_memory_profile(user_id, db)
+    facts = get_user_facts(user_id, db)
+
+    # Group facts by category into sections
+    category_groups: Dict[str, List[str]] = {}
+    for f in facts:
+        cat_title = f.category.replace("_", " ").title()
+        if cat_title not in category_groups:
+            category_groups[cat_title] = []
+        fact_label = f.fact_key.replace("_", " ").title()
+        category_groups[cat_title].append(f"{fact_label}: {f.fact_value}")
+
+    sections_list = []
+    sec_id = 1
+    for cat, items in category_groups.items():
+        sections_list.append({
+            "id": f"sec_{sec_id}",
+            "title": cat,
+            "items": items
+        })
+        sec_id += 1
+
+    # If user provided profile details, ensure a "Personal & Professional Context" section exists
+    if profile.nickname or profile.occupation or profile.more_about_you:
+        personal_items = []
+        if profile.nickname:
+            personal_items.append(f"Preferred Name: {profile.nickname}")
+        if profile.occupation:
+            personal_items.append(f"Occupation / Role: {profile.occupation}")
+        if profile.more_about_you:
+            personal_items.append(f"Background & Overview: {profile.more_about_you}")
+
+        found = False
+        for s in sections_list:
+            if s["title"].lower() in ["personal context", "identity", "general", "personal & professional context"]:
+                s["items"] = list(dict.fromkeys(personal_items + s["items"]))
+                found = True
+                break
+        if not found:
+            sections_list.insert(0, {
+                "id": "sec_0",
+                "title": "Personal & Professional Context",
+                "items": personal_items
+            })
+
+    profile.sections = json.dumps(sections_list)
+    profile.last_refreshed_at = get_utc_now()
+    profile.updated_at = get_utc_now()
+
+    db.commit()
+    db.refresh(profile)
+    return profile
+
+
+def clear_user_memory_summary(user_id: str, db: Session) -> UserMemoryProfile:
+    """Clear all memory facts and reset profile sections."""
+    clear_user_facts(user_id, db)
+    profile = get_or_create_user_memory_profile(user_id, db)
+    profile.nickname = ""
+    profile.occupation = ""
+    profile.more_about_you = ""
+    profile.overview = ""
+    profile.sections = "[]"
+    profile.updated_at = get_utc_now()
+    db.commit()
+    db.refresh(profile)
+    return profile
+

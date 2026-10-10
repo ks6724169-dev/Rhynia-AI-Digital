@@ -109,6 +109,8 @@ class User(Base):
     )
     memory_facts = relationship("UserMemoryFact", back_populates="user", cascade="all, delete-orphan")
     summary_buffers = relationship("ChatSummaryBuffer", back_populates="user", cascade="all, delete-orphan")
+    memory_profile = relationship("UserMemoryProfile", back_populates="user", uselist=False, cascade="all, delete-orphan")
+
 
 
 # ==========================================
@@ -269,9 +271,34 @@ class UserNotificationPreference(Base):
 
 
 # ==========================================
+# 7.5 USER MEMORY PROFILE MODEL (ChatGPT-Style Memory Summary)
+# ==========================================
+class UserMemoryProfile(Base):
+    __tablename__ = "user_memory_profiles"
+
+    user_id = Column(
+        String(36), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True, index=True
+    )
+    nickname = Column(Text, default="", nullable=True)
+    occupation = Column(Text, default="", nullable=True)
+    more_about_you = Column(Text, default="", nullable=True)
+    overview = Column(Text, default="", nullable=True)
+    sections = Column(Text, default="[]", nullable=True)
+    memory_enabled = Column(Boolean, default=True, nullable=False)
+    last_refreshed_at = Column(DateTime(timezone=True), default=get_utc_now, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=get_utc_now, nullable=False)
+    updated_at = Column(
+        DateTime(timezone=True), default=get_utc_now, onupdate=get_utc_now, nullable=False
+    )
+
+    user = relationship("User", back_populates="memory_profile")
+
+
+# ==========================================
 # 8. USER MEMORY FACT MODEL (Long-Term Personalization)
 # ==========================================
 class UserMemoryFact(Base):
+
     __tablename__ = "user_memory_facts"
 
     id = Column(String(36), primary_key=True, default=generate_uuid, index=True)
